@@ -1,1 +1,0 @@
-Submitted case forecasts go here

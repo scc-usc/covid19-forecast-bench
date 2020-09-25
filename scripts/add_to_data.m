@@ -1,4 +1,6 @@
 path = '../historical-data/';
+forecast_date = datetime((now),'ConvertFrom','datenum', 'TimeZone', 'America/Los_Angeles');
+forecast_date = datestr(forecast_date, 'yyyy-mm-dd');
 dirname = datestr(forecast_date, 'yyyy-mm-dd');
 
 fullpath = [path dirname '/'];

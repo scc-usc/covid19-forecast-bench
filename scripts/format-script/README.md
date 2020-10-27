@@ -22,4 +22,9 @@
     ```
 4. The new reports will be created under `output` folder, the report's name will be `<model_name>_<state_death/state_death/county_case>_<number_of_epidemic_days>.csv`.
 
-5. It is better to clean out the `input` and `output` folders, and clear `state_case.txt`, `state_death.txt` and `county_case.txt` after the script finished.
+5. (Optional) If you want to add `reich_` prefix to all output files, run 
+    ```
+    source add_reich_prefix.sh
+    ```
+
+6. It is better to clean out the `input` and `output` folders, and clear `state_case.txt`, `state_death.txt` and `county_case.txt` after the script finished.

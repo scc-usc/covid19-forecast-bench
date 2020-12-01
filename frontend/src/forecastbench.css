@@ -1,0 +1,14 @@
+@import '~antd/dist/antd.css';
+
+.app-wrapper {
+  height: 100vh;
+}
+
+#chartdiv {
+  height: 100%;
+  width: 100%;
+}
+
+.main-content {
+  padding: 20px 50px;
+}

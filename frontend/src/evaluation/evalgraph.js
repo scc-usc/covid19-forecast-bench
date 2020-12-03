@@ -110,7 +110,7 @@ class EvalGraph extends Component {
             )
         }
         return(
-            <LineChart width={1400} height={300} data={chartData}
+            <LineChart width={1400} height={600} data={chartData}
             margin={{ top: 40, right: 30, left: 40, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />

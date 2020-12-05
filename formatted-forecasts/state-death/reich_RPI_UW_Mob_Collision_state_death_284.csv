@@ -4,13 +4,13 @@
 2,California,17671,354,356,360,365
 3,Arizona,5979,59,64,69,76
 4,Massachusetts,10013,140,146,152,153
-5,Wisconsin,2047,142,136,130,124
-6,Texas,18502,563,678,815,960
+5,Wisconsin,2363,142,136,130,124
+6,Texas,18501,563,678,815,960
 7,Nebraska,654,NaN,NaN,NaN,NaN
 8,Utah,614,NaN,NaN,NaN,NaN
 9,Oregon,691,NaN,NaN,NaN,NaN
 10,Florida,16789,463,477,496,519
-11,New York,33535,49,45,41,38
+11,New York,33752,49,45,41,38
 12,Rhode Island,1201,NaN,NaN,NaN,NaN
 13,Georgia,7981,238,258,285,314
 14,New Hampshire,483,NaN,NaN,NaN,NaN
@@ -18,7 +18,7 @@
 16,New Jersey,16354,60,60,60,60
 17,Colorado,2288,47,54,60,67
 18,Maryland,4152,48,51,54,56
-19,Nevada,1777,42,56,77,105
+19,Nevada,1781,42,56,77,105
 20,Tennessee,3353,215,241,266,299
 21,Hawaii,219,NaN,NaN,NaN,NaN
 22,Indiana,4364,177,177,177,175
@@ -28,7 +28,7 @@
 26,Pennsylvania,8803,167,173,181,186
 27,South Carolina,3936,135,132,131,129
 28,District of Columbia,646,NaN,NaN,NaN,NaN
-29,Kansas,1025,NaN,NaN,NaN,NaN
+29,Kansas,1029,NaN,NaN,NaN,NaN
 30,Missouri,3038,229,255,284,311
 31,Vermont,58,NaN,NaN,NaN,NaN
 32,Virginia,3655,146,172,198,235

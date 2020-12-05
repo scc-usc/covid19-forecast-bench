@@ -4,13 +4,13 @@
 2,California,17671,329,327
 3,Arizona,5979,138,152
 4,Massachusetts,10013,104,101
-5,Wisconsin,2047,217,158
-6,Texas,18502,623,617
+5,Wisconsin,2363,217,158
+6,Texas,18501,623,617
 7,Nebraska,654,29,27
 8,Utah,614,31,26
 9,Oregon,691,36,39
 10,Florida,16789,388,391
-11,New York,33535,47,44
+11,New York,33752,47,44
 12,Rhode Island,1201,22,24
 13,Georgia,7981,196,195
 14,New Hampshire,483,10,13
@@ -18,7 +18,7 @@
 16,New Jersey,16354,72,62
 17,Colorado,2288,63,53
 18,Maryland,4152,55,52
-19,Nevada,1777,34,37
+19,Nevada,1781,34,37
 20,Tennessee,3353,224,247
 21,Hawaii,219,NaN,NaN
 22,Indiana,4364,210,193
@@ -28,7 +28,7 @@
 26,Pennsylvania,8803,160,146
 27,South Carolina,3936,147,148
 28,District of Columbia,646,3,2
-29,Kansas,1025,56,60
+29,Kansas,1029,56,60
 30,Missouri,3038,269,279
 31,Vermont,58,0,0
 32,Virginia,3655,95,98

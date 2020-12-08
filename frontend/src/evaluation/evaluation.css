@@ -1,7 +1,7 @@
-.eval-page-wrapper{
+.leader-page-wrapper{
     margin: 2%;
 }
-.eval-page-wrapper h2{
+.leader-page-wrapper h2{
     text-align: center;
 }
 .graph-container {
@@ -24,12 +24,6 @@
     margin-bottom: 28px;
     padding: 20px 20px;
 }
-
-.recharts-wrapper {
-    margin: auto!important;
-}
-
-
 /*
 .grid {
     align-content: center;

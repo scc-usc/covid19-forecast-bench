@@ -9,8 +9,8 @@ import {
     magenta
   } from "@ant-design/colors";
 
-import {
-    LineChart,
+import { 
+    LineChart, 
     Line,
     CartesianGrid,
     XAxis,
@@ -38,8 +38,8 @@ function getLineColor(index) {
 
 
 
-class EvalGraph extends Component {
-    parseData = (data, errorType) => {
+class Evalgraph extends Component {
+    parseData = (data, errorType) => { 
         const firstModel = Object.keys(data)[0];
         if (data[firstModel])
         {
@@ -58,7 +58,7 @@ class EvalGraph extends Component {
                         if (!isNaN(error) && error !== "")
                         {
                           dataSet[Object.keys(data)[i]] = error;
-                        }
+                        }  
                     }
                     return dataSet
                 });
@@ -79,7 +79,7 @@ class EvalGraph extends Component {
                         if (!isNaN(error) && error !== "")
                         {
                           dataSet[Object.keys(data)[i]] = error;
-                        }
+                        }  
                     }
                     return dataSet
               });
@@ -87,13 +87,11 @@ class EvalGraph extends Component {
             }
         }
     }
-
+    
     render(){
         let {data, errorType} = this.props;
         //map data
         const chartData = this.parseData(data, errorType);
-        console.log(data)
-        console.log(chartData);
         //areas and line color
         const models = Object.keys(data);
         let colors = [];
@@ -110,7 +108,7 @@ class EvalGraph extends Component {
             )
         }
         return(
-            <LineChart width={1400} height={600} data={chartData}
+            <LineChart width={1400} height={300} data={chartData}
             margin={{ top: 40, right: 30, left: 40, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
@@ -129,4 +127,5 @@ class EvalGraph extends Component {
     }
 }
 
-export default EvalGraph;
+export default Evalgraph;
+

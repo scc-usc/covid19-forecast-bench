@@ -1,10 +1,13 @@
 import React, { Component } from "react";
 import Papa from "papaparse";
+import {readRemoteFile} from "react-papaparse";
 import Leadergraph from "./evalgraph";
 //import "../covid19app.css";
 import "./evaluation.css";
-import summaryCSV from "./summary/summary_4_weeks_ahead_states.csv";
-
+import summaryCSV_1 from "./summary/summary_1_weeks_ahead_states.csv";
+import summaryCSV_2 from "./summary/summary_2_weeks_ahead_states.csv";
+import summaryCSV_3 from "./summary/summary_3_weeks_ahead_states.csv";
+import summaryCSV_4 from "./summary/summary_4_weeks_ahead_states.csv";
 import {
     Form,
     Select,
@@ -15,6 +18,8 @@ import {
     Avatar
   } from "antd";
 
+//const fs = require('fs');
+const summaryCSV = [summaryCSV_1, summaryCSV_2, summaryCSV_3, summaryCSV_4];
 const { Option } = Select;
 
 class Evaluation extends Component {
@@ -32,32 +37,59 @@ class Evaluation extends Component {
             recentRmse: [],
             recentMae: [],
             errorType: "rmse",
+            timeSpan: "4",
             lastDate: ""
         };
     }
 
     componentDidMount = () => {
         this.formRef = React.createRef();
-        Papa.parse(summaryCSV, {
-            header: true,
+        //const file = fs.createReadStream('./summary/summary_4_weeks_ahead_states.csv');
+        //let path = "/Users/bobyang/Desktop/Data Lab/covid19-forecast-bench/frontend/src/evaluation/summary/summary_4_weeks_ahead_states.csv";
+        //const url = "https://github.com/youyanggu/covid19-forecast-hub-evaluation/blob/master/summary/summary_4_weeks_ahead_states.csv";
+        //const fs = require('fs');
+        //const papa = require('papaparse');
+        //const file = fs.createReadStream('./summary/summary_4_weeks_ahead_states.csv');
+        //File file() = new File('./summary/summary_4_weeks_ahead_states.csv');
+        //const file = require("./summary/summary_4_weeks_ahead_states.csv");
+        //console.log(typeof(file));
+        //console.log(summaryCSV);
+        //console.log(summaryCSV_4);
+        console.log(summaryCSV[3]);
+        console.log(typeof(summaryCSV[3]));
+        Papa.parse(summaryCSV[3], {
             download: true,
+            header: true,
             skipEmptyLines: true,
-            complete: this.updateData
+            complete: this.initialize
         });
     }
 
-    updateData = (result) => {
-        const rmseSummary = result.data.map((csvRow, index) => {
-            const model = {id: "", data: []};
+    initialize = (result) => {
+        result.data.map((csvRow, index) => {
             for (const col in csvRow) {
                 if (col === "") {
-                    model.id = csvRow[col];
                     this.setState(state => {
                         const modelList = state.modelList.concat(csvRow[col]);
                         return {
                             modelList,
                         };
                     });
+                }
+            }
+        });
+       
+        this.updateData(result, ()=>{
+            this.addModel('USC-SI_kJalpha');
+        });
+    }
+
+    updateData = (result, func) => {
+        const rmseSummary = result.data.map((csvRow, index) => {
+            const model = {id: "", data: []};
+            for (const col in csvRow) {
+                if (col === "") {
+                    model.id = csvRow[col];
                 } else if (col.indexOf("mean_sq_abs_error_") >= 0) {
                     model.data.push({
                         x: col.substring(18, col.length),
@@ -171,7 +203,11 @@ class Evaluation extends Component {
             recentRmse: recentRmse,
             recentMae: recentMae
         }, ()=>{
-            this.addModel('USC-SI_kJalpha');
+            this.reloadAll();
+            if (typeof(func) === 'function' && func())
+            {
+                func();
+            }
         });
     }
 
@@ -234,9 +270,33 @@ class Evaluation extends Component {
         }
     }
 
+    reloadAll = ()=>{
+        const prevModels = this.state.models;
+        this.setState(
+        {
+            models: [],
+            mainGraphData: {}
+        }, ()=>{
+            prevModels.forEach(this.addModel);
+        }
+        );
+    }
+
     handleErrorTypeSelect = e =>{
         this.setState({
             errorType: e.target.value
+        });
+    }
+
+    handleTimeSpanSelect = e =>{
+        this.setState({
+            timeSpan: e.target.value
+        });
+        Papa.parse(summaryCSV[e.target.value - 1], {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: this.updateData
         });
     }
 
@@ -268,6 +328,7 @@ class Evaluation extends Component {
             maeSummary,
             modelList,
             errorType,
+            timeSpan,
             mainGraphData,
             lastDate,
             averageRmse,
@@ -319,7 +380,6 @@ class Evaluation extends Component {
             runningAvgRankings: runningAvgRankings,
             recentRankings: recentRankings
         }};
-
         return(
             <div className='leader-page-wrapper'>
                 <Row>
@@ -371,7 +431,7 @@ class Evaluation extends Component {
                     </Row> 
             <div className="graph-container">
                 <Row type="flex" justify="space-around">
-                    <Col span={10}>
+                    <Col span={12}>
                         <Form 
                             ref={this.formRef}
                             onValuesChange={this.onValuesChange}
@@ -397,6 +457,17 @@ class Evaluation extends Component {
                             >
                                 <Radio value="rmse">Root Mean Square Error</Radio>
                                 <Radio value="mae">Mean Absolute Error</Radio>
+                            </Radio.Group>
+                        </div>
+                        <div className="radio-group">Prediction Time Span:&nbsp;&nbsp;  
+                            <Radio.Group
+                                value={timeSpan}
+                                onChange={this.handleTimeSpanSelect}
+                            >
+                                <Radio value="1">1-week-ahead</Radio>
+                                <Radio value="2">2-week-ahead</Radio>
+                                <Radio value="3">3-week-ahead</Radio>
+                                <Radio value="4">4-week-ahead</Radio>
                             </Radio.Group>
                         </div>
                     </Col>

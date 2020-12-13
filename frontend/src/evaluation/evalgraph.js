@@ -6,7 +6,7 @@ import {
     cyan,
     geekblue,
     purple,
-    magenta
+    magenta,
   } from "@ant-design/colors";
 
 import { 
@@ -18,6 +18,7 @@ import {
     Tooltip,
     Legend,
     Label,
+    Brush,
     ErrorBar,
     ReferenceLine
 } from 'recharts';
@@ -122,6 +123,7 @@ class Evalgraph extends Component {
             <Tooltip />
             <Legend iconSize={40}/>
             {lines}
+            <Brush />
             </LineChart>
         );
     }

@@ -44,8 +44,6 @@ class Evaluation extends Component {
 
     componentDidMount = () => {
         this.formRef = React.createRef();
-        console.log(summaryCSV[3]);
-        console.log(typeof(summaryCSV[3]));
         Papa.parse(summaryCSV[3], {
             download: true,
             header: true,

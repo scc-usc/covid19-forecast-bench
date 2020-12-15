@@ -6,11 +6,11 @@ import {
     cyan,
     geekblue,
     purple,
-    magenta
+    magenta,
   } from "@ant-design/colors";
 
-import {
-    LineChart,
+import { 
+    LineChart, 
     Line,
     CartesianGrid,
     XAxis,
@@ -18,6 +18,7 @@ import {
     Tooltip,
     Legend,
     Label,
+    Brush,
     ErrorBar,
     ReferenceLine
 } from 'recharts';
@@ -38,8 +39,8 @@ function getLineColor(index) {
 
 
 
-class EvalGraph extends Component {
-    parseData = (data, errorType) => {
+class Evalgraph extends Component {
+    parseData = (data, errorType) => { 
         const firstModel = Object.keys(data)[0];
         if (data[firstModel])
         {
@@ -58,7 +59,7 @@ class EvalGraph extends Component {
                         if (!isNaN(error) && error !== "")
                         {
                           dataSet[Object.keys(data)[i]] = error;
-                        }
+                        }  
                     }
                     return dataSet
                 });
@@ -79,7 +80,7 @@ class EvalGraph extends Component {
                         if (!isNaN(error) && error !== "")
                         {
                           dataSet[Object.keys(data)[i]] = error;
-                        }
+                        }  
                     }
                     return dataSet
               });
@@ -87,13 +88,11 @@ class EvalGraph extends Component {
             }
         }
     }
-
+    
     render(){
         let {data, errorType} = this.props;
         //map data
         const chartData = this.parseData(data, errorType);
-        console.log(data)
-        console.log(chartData);
         //areas and line color
         const models = Object.keys(data);
         let colors = [];
@@ -116,7 +115,7 @@ class EvalGraph extends Component {
             <XAxis dataKey="name" />
             <YAxis>
                 {errorType==="rmse"?
-                <Label value="Root Mean Square Error" dy = {90} position="insideLeft" angle={-90} fontSize={15} />
+                <Label value="Root Mean Square Error" dy = {45} position="insideLeft" angle={-90} fontSize={15} />
                  :
                 <Label value="Mean Absolute Error" dy = {45} position="insideLeft" angle={-90} fontSize={15} />
                 }
@@ -124,9 +123,11 @@ class EvalGraph extends Component {
             <Tooltip />
             <Legend iconSize={40}/>
             {lines}
+            <Brush />
             </LineChart>
         );
     }
 }
 
-export default EvalGraph;
+export default Evalgraph;
+

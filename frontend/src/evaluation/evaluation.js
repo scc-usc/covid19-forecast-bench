@@ -1,144 +1,27 @@
 import React, { Component } from "react";
 import Papa from "papaparse";
-import EvalGraph from "./evalgraph";
-import "../forecastbench.css";
+import {readRemoteFile} from "react-papaparse";
+import Evalgraph from "./evalgraph";
+//import "../covid19app.css";
 import "./evaluation.css";
-import summaryCSV from "./summary/summary_4_weeks_ahead_states.csv";
-
+import summaryCSV_1 from "./summary/summary_1_weeks_ahead_states.csv";
+import summaryCSV_2 from "./summary/summary_2_weeks_ahead_states.csv";
+import summaryCSV_3 from "./summary/summary_3_weeks_ahead_states.csv";
+import summaryCSV_4 from "./summary/summary_4_weeks_ahead_states.csv";
 import {
     Form,
     Select,
     Row,
     Col,
     Radio,
-    List,
+    List, 
     Avatar
   } from "antd";
 
+//const fs = require('fs');
+const summaryCSV = [summaryCSV_1, summaryCSV_2, summaryCSV_3, summaryCSV_4];
 const { Option } = Select;
 
-// const data = {
-//     jhu: {
-// runningAvgRankings: [
-//     {
-//      model: {
-//  name: "YYG_ParamSearch",
-//  description: "Based on the SEIR model to make daily projections regarding COVID-19 infections and deaths in 50 US states. The model's contributor is Youyang Gu.",
-//  link: "http://covid19-projections.com/about/"
-// },
-//  RMSE: 34.35
-// },  {
-//      model: {
-//  name: "SIkJa_USC",
-//  description: "This is our SI-kJalpha model.",
-//  link: "https://scc-usc.github.io/ReCOVER-COVID-19/"
-// },
-//  RMSE: 35.41
-// },  {
-//      model: {
-//  name: "UCLA_SuEIR",
-//  description: "SEIR model by UCLA Statistical Machine Learning Lab.",
-//  link: "https://covid19.uclaml.org/"
-// },
-//  RMSE: 52.53
-// },  {
-//      model: {
-//  name: "Covid19Sim_Simulator",
-//  description: "An interactive tool developed by researchers at Mass General Hospital, Harvard Medical School, Georgia Tech and Boston Medical Center.",
-//  link: "https://covid19sim.org/"
-// },
-//  RMSE: 58.28
-// },  {
-//      model: {
-//  name: "CU_select",
-//  description: "A metapopulation county-level SEIR model by Columbia University.",
-//  link: "https://blogs.cuit.columbia.edu/jls106/publications/covid-19-findings-simulations/"
-// },
-//  RMSE: 64.22
-// },  {
-//      model: {
-//  name: "JHU_IDD_CovidSP",
-//  description: "County-level metapopulation model by Johns Hopkins ID Dynamics COVID-19 Working Group.",
-//  link: "https://github.com/HopkinsIDD/COVIDScenarioPipeline"
-// },
-//  RMSE: 72.68
-// },  {
-//      model: {
-//  name: "IowaStateLW_STEM",
-//  description: "A COVID19 forecast project led by Lily Wang in Iowa State University.",
-//  link: "https://covid19.stat.iastate.edu"
-// },
-//  RMSE: 76.08
-// },  {
-//      model: {
-//  name: "CovidActNow_SEIR_CAN",
-//  description: "SEIR model by the CovidActNow research team.",
-//  link: "https://covidactnow.org/"
-// },
-//  RMSE: 110.82
-// },],
-// recentRankings: [
-//     {
-//      model: {
-//  name: "YYG_ParamSearch",
-//  description: "Based on the SEIR model to make daily projections regarding COVID-19 infections and deaths in 50 US states. The model's contributor is Youyang Gu.",
-//  link: "http://covid19-projections.com/about/"
-// },
-//  RMSE: 18.6
-// },  {
-//      model: {
-//  name: "SIkJa_USC",
-//  description: "This is our SI-kJalpha model.",
-//  link: "https://scc-usc.github.io/ReCOVER-COVID-19/"
-// },
-//  RMSE: 20.03
-// },  {
-//      model: {
-//  name: "Covid19Sim_Simulator",
-//  description: "An interactive tool developed by researchers at Mass General Hospital, Harvard Medical School, Georgia Tech and Boston Medical Center.",
-//  link: "https://covid19sim.org/"
-// },
-//  RMSE: 20.58
-// },  {
-//      model: {
-//  name: "JHU_IDD_CovidSP",
-//  description: "County-level metapopulation model by Johns Hopkins ID Dynamics COVID-19 Working Group.",
-//  link: "https://github.com/HopkinsIDD/COVIDScenarioPipeline"
-// },
-//  RMSE: 24.22
-// },  {
-//      model: {
-//  name: "UCLA_SuEIR",
-//  description: "SEIR model by UCLA Statistical Machine Learning Lab.",
-//  link: "https://covid19.uclaml.org/"
-// },
-//  RMSE: 24.6
-// },  {
-//      model: {
-//  name: "CU_select",
-//  description: "A metapopulation county-level SEIR model by Columbia University.",
-//  link: "https://blogs.cuit.columbia.edu/jls106/publications/covid-19-findings-simulations/"
-// },
-//  RMSE: 40.24
-// },  {
-//      model: {
-//  name: "IowaStateLW_STEM",
-//  description: "A COVID19 forecast project led by Lily Wang in Iowa State University.",
-//  link: "https://covid19.stat.iastate.edu"
-// },
-//  RMSE: 40.41
-// },  {
-//      model: {
-//  name: "CovidActNow_SEIR_CAN",
-//  description: "SEIR model by the CovidActNow research team.",
-//  link: "https://covidactnow.org/"
-// },
-//  RMSE: NaN
-// },]
-//     }
-// };
-
-//import percentCSV from "./summary/summary_4_weeks_ahead_us.csv";
 class Evaluation extends Component {
 
     constructor(props) {
@@ -149,45 +32,59 @@ class Evaluation extends Component {
             rmseSummary: [],
             maeSummary: [],
             mainGraphData: {},
-            errorType: "rmse"
-           // percentSummary: []
+            averageRmse: [],
+            averageMae: [],
+            recentRmse: [],
+            recentMae: [],
+            errorType: "rmse",
+            timeSpan: "4",
+            lastDate: ""
         };
     }
 
     componentDidMount = () => {
         this.formRef = React.createRef();
-        Papa.parse(summaryCSV, {
-            header: true,
+        console.log(summaryCSV[3]);
+        console.log(typeof(summaryCSV[3]));
+        Papa.parse(summaryCSV[3], {
             download: true,
+            header: true,
             skipEmptyLines: true,
-            complete: this.updateData
+            complete: this.initialize
         });
-        // Papa.parse(percentCSV, {
-        //     header: true,
-        //     download: true,
-        //     skipEmptyLines: true,
-        //     complete: this.parsePercentData
-        // })
     }
 
-    updateData = (result) => {
-        const rmseSummary = result.data.map((csvRow, index) => {
-            const model = {id: "", data: []};
+    initialize = (result) => {
+        result.data.map((csvRow, index) => {
             for (const col in csvRow) {
                 if (col === "") {
-                    model.id = csvRow[col];
                     this.setState(state => {
                         const modelList = state.modelList.concat(csvRow[col]);
                         return {
                             modelList,
                         };
                     });
+                }
+            }
+        });
+       
+        this.updateData(result, ()=>{
+            this.addModel('USC-SI_kJalpha');
+        });
+    }
+
+    updateData = (result, func) => {
+        const rmseSummary = result.data.map((csvRow, index) => {
+            const model = {id: "", data: []};
+            for (const col in csvRow) {
+                if (col === "") {
+                    model.id = csvRow[col];
                 } else if (col.indexOf("mean_sq_abs_error_") >= 0) {
                     model.data.push({
                         x: col.substring(18, col.length),
-                        y: Math.sqrt(parseInt(csvRow[col]))
+                        y: parseInt(csvRow[col])
                     });
-                }
+                } 
             }
             return model;
         });
@@ -202,16 +99,104 @@ class Evaluation extends Component {
                         x: col.substring(15, col.length),
                         y: parseInt(csvRow[col])
                     });
-                }
+                } 
             }
             return model;
         });
 
+        const averageRmse = rmseSummary.map((data, idx) => {
+            const model = {name: "", value: ""};
+            model.name = data.id;
+            let filtered_data = data.data.filter(function (element) {
+                return !isNaN(element.y) && element.y !== "";
+              });
+            filtered_data = filtered_data.map((element, idx) =>{
+                return element.y;
+            });
+            model.value = filtered_data.reduce(function (a,b)
+            {   
+                return  a+ b;
+            })/filtered_data.length;
+
+            return model;
+        });
+
+        averageRmse.sort(function(first, second){
+            return first.value - second.value
+        });
+
+        const averageMae = maeSummary.map((data, idx) => {
+            const model = {name: "", value: ""};
+            model.name = data.id;
+            let filtered_data = data.data.filter(function (element) {
+                return !isNaN(element.y) && element.y !== "";
+            });
+            filtered_data = filtered_data.map((element, idx) =>{
+                return element.y;
+            });
+            model.value = filtered_data.reduce(function (a,b)
+            {   
+                return  a+ b;
+            })/filtered_data.length;
+
+            return model;
+        });
+
+        averageMae.sort(function(first, second){
+            return first.value - second.value
+        });
+
+        const lastDate = rmseSummary[0].data[rmseSummary[0].data.length - 1].x;
+
+        let recentRmse = rmseSummary.map((data, idx)=>{
+            const model = {name: "", value: ""};
+            model.name = data.id;
+            let recent = data.data.filter((element)=>{
+                return element.x === lastDate;
+            });
+            model.value = recent[0].y;
+            return model;
+        });
+        recentRmse = recentRmse.filter((element)=>{
+            return !isNaN(element.value) && element.value !== "";
+        });
+
+        recentRmse.sort((first,second)=>{
+            return first.value - second.value
+        });
+        
+        let recentMae = maeSummary.map((data, idx)=>{
+            const model = {name: "", value: ""};
+            model.name = data.id;
+            let recent = data.data.filter((element)=>{
+                return element.x === lastDate;
+            });
+            model.value = recent[0].y;
+            return model;
+        });
+        recentMae = recentMae.filter((element)=>{
+            return !isNaN(element.value) && element.value !== "";
+        });
+
+        recentMae.sort((first,second)=>{
+            return first.value - second.value
+        });
+
+
         this.setState({
             rmseSummary: rmseSummary,
             maeSummary: maeSummary,
+            averageRmse: averageRmse,
+            averageMae: averageMae,
+            lastDate: lastDate,
+            recentRmse: recentRmse,
+            recentMae: recentMae
         }, ()=>{
-            this.addModel('USC-SI_kJalpha');
+            this.reloadAll();
+            if (typeof(func) === 'function' && func())
+            {
+                func();
+            }
         });
     }
 
@@ -268,10 +253,22 @@ class Evaluation extends Component {
             const modelsToRemove = prevModels.filter(
             model => !newModels.includes(model)
             );
-
+        
             modelsToAdd.forEach(this.addModel);
             modelsToRemove.forEach(this.removeModel);
         }
+    }
+
+    reloadAll = ()=>{
+        const prevModels = this.state.models;
+        this.setState(
+        {
+            models: [],
+            mainGraphData: {}
+        }, ()=>{
+            prevModels.forEach(this.addModel);
+        }
+        );
     }
 
     handleErrorTypeSelect = e =>{
@@ -280,26 +277,38 @@ class Evaluation extends Component {
         });
     }
 
-    // getAvatar(number) {
-    //     let icon_src = "";
-    //     switch (number) {
-    //         case 1:
-    //             icon_src = "https://img.icons8.com/officel/80/000000/medal2.png";
-    //             break;
-    //         case 2:
-    //             icon_src = "https://img.icons8.com/officel/80/000000/medal-second-place.png";
-    //             break;
-    //         case 3:
-    //             icon_src = "https://img.icons8.com/officel/80/000000/medal2-third-place.png";
-    //             break;
-    //         default:
-    //             icon_src = "https://img.icons8.com/carbon-copy/100/000000/" + number + "-circle.png";
-    //             break;
-    //     }
+    handleTimeSpanSelect = e =>{
+        this.setState({
+            timeSpan: e.target.value
+        });
+        Papa.parse(summaryCSV[e.target.value - 1], {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: this.updateData
+        });
+    }
 
-    //     return <Avatar className="rank-number" src={icon_src} alt="" />;
+    getAvatar(number) {
+        let icon_src = "";
+        switch (number) {
+            case 1:
+                icon_src = "https://img.icons8.com/officel/80/000000/medal2.png";
+                break;
+            case 2:
+                icon_src = "https://img.icons8.com/officel/80/000000/medal-second-place.png";
+                break;
+            case 3:
+                icon_src = "https://img.icons8.com/officel/80/000000/medal2-third-place.png";
+                break;
+            default:
+                icon_src = "https://img.icons8.com/carbon-copy/100/000000/" + number + "-circle.png";
+                break;
+        }
 
-    // };
+        return <Avatar className="rank-number" src={icon_src} alt="" />;
+
+    };
 
 
     render() {
@@ -308,21 +317,62 @@ class Evaluation extends Component {
             maeSummary,
             modelList,
             errorType,
-            mainGraphData
-            // percentSummary
+            timeSpan,
+            mainGraphData,
+            lastDate,
+            averageRmse,
+            averageMae,
+            recentRmse,
+            recentMae
         } = this.state;
-        //console.log(mainGraphData);
         const modelOptions = modelList
         .filter(model => !this.modelIsSelected(model))
         .sort()
         .map(s => {
         return <Option key={s}> {s} </Option>;
         });
+        let runningAvgRankings = [];
+        let recentRankings = [];
+        if (errorType === "rmse")
+        {
+            runningAvgRankings = averageRmse.map((ele, idx)=>{
+                const model = {model: {}, RMSE: ""};
+                model.model.name = ele.name;
+                model.RMSE = ele.value;
+                return model;
+            });
+            recentRankings = recentRmse.map((ele, idx)=>{
+                const model = {model: {}, RMSE: ""};
+                model.model.name = ele.name;
+                model.RMSE = ele.value;
+                return model;
+            });
+        }
+        else{
+            runningAvgRankings = averageMae.map((ele, idx)=>{
+                const model = {model: {}, MAE: ""};
+                model.model.name = ele.name;
+                model.MAE = ele.value;
+                return model;
+            });
+            recentRankings = recentMae.map((ele, idx)=>{
+                const model = {model: {}, MAE: ""};
+                model.model.name = ele.name;
+                model.MAE= ele.value;
+                return model;
+            });
+        }
+        runningAvgRankings = runningAvgRankings.slice(0, 9);
+        recentRankings = recentRankings.slice(0, 9);
 
+        const data = {jhu:{
+            runningAvgRankings: runningAvgRankings,
+            recentRankings: recentRankings
+        }};
         return(
-            <div className='eval-page-wrapper'>
+            <div className='leader-page-wrapper'>
                 {/* <Row>
-
+                        
                         <Col span={12}>
                             <h2 className="title">Running Average Performance</h2>
                             <List className="leaderboard"
@@ -332,18 +382,21 @@ class Evaluation extends Component {
                                     <List.Item>
                                         <List.Item.Meta
                                             avatar={this.getAvatar(data.jhu.runningAvgRankings.indexOf(item) + 1)}
-                                            title={<a className="model-name" href={item.model.link}>{item.model.name}</a>}
-                                            description={item.model.description}
+                                            title = {item.model.name}
                                         />
                                         <div className="content">
+                                            {errorType === "rmse" ? 
                                             <span>RMSE: <span className="score">{item.RMSE}</span></span>
+                                            :
+                                            <span>MAE: <span className="score">{item.MAE}</span></span>
+                                            }
                                         </div>
                                     </List.Item>
                                 )}
                             />
                         </Col>
                         <Col span={12}>
-                            <h2 className="title">Recent Performance (from 2020-09-20)</h2>
+                            <h2 className="title">Recent Performance (from {`${lastDate.split("_")[0]} to ${lastDate.split("_")[1]}`})</h2>
                             <List className="leaderboard"
                                 itemLayout="horizontal"
                                 dataSource={data.jhu.recentRankings}
@@ -351,11 +404,14 @@ class Evaluation extends Component {
                                     <List.Item>
                                         <List.Item.Meta
                                             avatar={this.getAvatar(data.jhu.recentRankings.indexOf(item) + 1)}
-                                            title={<a className="model-name" href={item.model.link}>{item.model.name}</a>}
-                                            description={item.model.description}
+                                            title = {item.model.name}
                                         />
                                         <div className="content">
+                                            {errorType === "rmse" ? 
                                             <span>RMSE: <span className="score">{item.RMSE}</span></span>
+                                            :
+                                            <span>MAE: <span className="score">{item.MAE}</span></span>
+                                            }
                                         </div>
                                     </List.Item>
                                 )}
@@ -364,8 +420,8 @@ class Evaluation extends Component {
                     </Row>  */}
             <div className="graph-container">
                 <Row type="flex" justify="space-around">
-                    <Col span={10}>
-                        <Form
+                    <Col span={12}>
+                        <Form 
                             ref={this.formRef}
                             onValuesChange={this.onValuesChange}
                         >
@@ -383,22 +439,32 @@ class Evaluation extends Component {
                                 </Select>
                             </Form.Item>
                         </Form>
-                        <div className="radio-group">Error Type:&nbsp;&nbsp;
+                        <div className="radio-group">Error Type:&nbsp;&nbsp;  
                             <Radio.Group
                                 value={errorType}
-                                onChange={this.handleErrorTypeSelect}>
+                                onChange={this.handleErrorTypeSelect}
+                            >
                                 <Radio value="rmse">Root Mean Square Error</Radio>
                                 <Radio value="mae">Mean Absolute Error</Radio>
                             </Radio.Group>
                         </div>
+                        <div className="radio-group">Prediction Time Span:&nbsp;&nbsp;  
+                            <Radio.Group
+                                value={timeSpan}
+                                onChange={this.handleTimeSpanSelect}
+                            >
+                                <Radio value="1">1-week-ahead</Radio>
+                                <Radio value="2">2-week-ahead</Radio>
+                                <Radio value="3">3-week-ahead</Radio>
+                                <Radio value="4">4-week-ahead</Radio>
+                            </Radio.Group>
+                        </div>
                     </Col>
+                    
                 </Row>
                 <Row>
                     <Col span={24}>
-                        <div className="eval-graph-container">
-                            <EvalGraph className="graph" data={mainGraphData} errorType={errorType} />
-                        </div>
-
+                        <Evalgraph className="graph" data={mainGraphData} errorType={errorType} /> 
                     </Col>
                 </Row>
             </div>

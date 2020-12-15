@@ -4,10 +4,6 @@ import {readRemoteFile} from "react-papaparse";
 import Evalgraph from "./evalgraph";
 //import "../covid19app.css";
 import "./evaluation.css";
-import summaryCSV_1 from "./summary/summary_1_weeks_ahead_states.csv";
-import summaryCSV_2 from "./summary/summary_2_weeks_ahead_states.csv";
-import summaryCSV_3 from "./summary/summary_3_weeks_ahead_states.csv";
-import summaryCSV_4 from "./summary/summary_4_weeks_ahead_states.csv";
 import {
     Form,
     Select,
@@ -19,6 +15,10 @@ import {
   } from "antd";
 
 //const fs = require('fs');
+const summaryCSV_1 = "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/frontend/src/evaluation/summary/summary_1_weeks_ahead_states.csv";
+const summaryCSV_2 = "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/frontend/src/evaluation/summary/summary_2_weeks_ahead_states.csv";
+const summaryCSV_3 = "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/frontend/src/evaluation/summary/summary_3_weeks_ahead_states.csv";
+const summaryCSV_4 = "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/frontend/src/evaluation/summary/summary_4_weeks_ahead_states.csv";
 const summaryCSV = [summaryCSV_1, summaryCSV_2, summaryCSV_3, summaryCSV_4];
 const { Option } = Select;
 

@@ -109,13 +109,13 @@ class Evalgraph extends Component {
             )
         }
         return(
-            <LineChart width={1400} height={300} data={chartData}
+            <LineChart width={1400} height={600} data={chartData}
             margin={{ top: 40, right: 30, left: 40, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
             <YAxis>
                 {errorType==="rmse"?
-                <Label value="Root Mean Square Error" dy = {90} position="insideLeft" angle={-90} fontSize={15} />
+                <Label value="Root Mean Square Error" dy = {45} position="insideLeft" angle={-90} fontSize={15} />
                  :
                 <Label value="Mean Absolute Error" dy = {45} position="insideLeft" angle={-90} fontSize={15} />
                 }

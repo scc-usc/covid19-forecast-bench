@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Papa from "papaparse";
 import {readRemoteFile} from "react-papaparse";
-import Leadergraph from "./evalgraph";
+import Evalgraph from "./evalgraph";
 //import "../covid19app.css";
 import "./evaluation.css";
 import summaryCSV_1 from "./summary/summary_1_weeks_ahead_states.csv";
@@ -44,17 +44,6 @@ class Evaluation extends Component {
 
     componentDidMount = () => {
         this.formRef = React.createRef();
-        //const file = fs.createReadStream('./summary/summary_4_weeks_ahead_states.csv');
-        //let path = "/Users/bobyang/Desktop/Data Lab/covid19-forecast-bench/frontend/src/evaluation/summary/summary_4_weeks_ahead_states.csv";
-        //const url = "https://github.com/youyanggu/covid19-forecast-hub-evaluation/blob/master/summary/summary_4_weeks_ahead_states.csv";
-        //const fs = require('fs');
-        //const papa = require('papaparse');
-        //const file = fs.createReadStream('./summary/summary_4_weeks_ahead_states.csv');
-        //File file() = new File('./summary/summary_4_weeks_ahead_states.csv');
-        //const file = require("./summary/summary_4_weeks_ahead_states.csv");
-        //console.log(typeof(file));
-        //console.log(summaryCSV);
-        //console.log(summaryCSV_4);
         console.log(summaryCSV[3]);
         console.log(typeof(summaryCSV[3]));
         Papa.parse(summaryCSV[3], {
@@ -382,7 +371,7 @@ class Evaluation extends Component {
         }};
         return(
             <div className='leader-page-wrapper'>
-                <Row>
+                {/* <Row>
                         
                         <Col span={12}>
                             <h2 className="title">Running Average Performance</h2>
@@ -428,7 +417,7 @@ class Evaluation extends Component {
                                 )}
                             />
                         </Col>
-                    </Row> 
+                    </Row>  */}
             <div className="graph-container">
                 <Row type="flex" justify="space-around">
                     <Col span={12}>
@@ -475,7 +464,7 @@ class Evaluation extends Component {
                 </Row>
                 <Row>
                     <Col span={24}>
-                        <Leadergraph className="graph" data={mainGraphData} errorType={errorType} /> 
+                        <Evalgraph className="graph" data={mainGraphData} errorType={errorType} /> 
                     </Col>
                 </Row>
             </div>

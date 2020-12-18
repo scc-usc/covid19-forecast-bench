@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Papa from "papaparse";
 import {readRemoteFile} from "react-papaparse";
 import Evalgraph from "./evalgraph";
+import NewEvalgraph from "./newEvalgraph";
 //import "../covid19app.css";
 import "./evaluation.css";
 import {
@@ -42,7 +43,7 @@ class Evaluation extends Component {
         };
     }
 
-    componentDidMount = () => {
+    componentWillMount = () => {
         this.formRef = React.createRef();
         Papa.parse(summaryCSV[3], {
             download: true,
@@ -307,12 +308,12 @@ class Evaluation extends Component {
         return <Avatar className="rank-number" src={icon_src} alt="" />;
 
     };
-
-
+    
     render() {
         const {
             rmseSummary,
             maeSummary,
+            models,
             modelList,
             errorType,
             timeSpan,
@@ -329,6 +330,7 @@ class Evaluation extends Component {
         .map(s => {
         return <Option key={s}> {s} </Option>;
         });
+        //const chartData = this.parseData(mainGraphData, errorType);
         let runningAvgRankings = [];
         let recentRankings = [];
         if (errorType === "rmse")
@@ -462,7 +464,7 @@ class Evaluation extends Component {
                 </Row>
                 <Row>
                     <Col span={24}>
-                        <Evalgraph className="graph" data={mainGraphData} errorType={errorType} /> 
+                        <NewEvalgraph className="graph" data={mainGraphData} errorType={errorType} models={models}/> 
                     </Col>
                 </Row>
             </div>

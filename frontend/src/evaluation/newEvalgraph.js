@@ -54,15 +54,11 @@ class NewEvalgraph extends Component {
           let dataSet = { name: date };
           if (!isNaN(value.y) && value.y !== "") {
             dataSet[Object.keys(data)[0]] = value.y;
-          } else {
-            dataSet[Object.keys(data)[0]] = null;
           }
           for (let i = 1; i < Object.keys(data).length; ++i) {
             let error = data[Object.keys(data)[i]].rmseData[idx].y;
             if (!isNaN(error) && error !== "") {
               dataSet[Object.keys(data)[i]] = error;
-            } else {
-              dataSet[Object.keys(data)[i]] = null;
             }
           }
           return dataSet;

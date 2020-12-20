@@ -465,6 +465,7 @@ class Evaluation extends Component {
                 <Row>
                     <Col span={24}>
                         <NewEvalgraph className="graph" data={mainGraphData} errorType={errorType} models={models}/> 
+                        {/* <Evalgraph className='graph' data={mainGraphData} errorType={errorType}/> */}
                     </Col>
                 </Row>
             </div>

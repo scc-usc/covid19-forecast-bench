@@ -44,6 +44,7 @@ class NewEvalgraph extends Component {
 
   parseData = (data, errorType, callback) => {
     const firstModel = Object.keys(data)[0];
+    //let foundData = new Array(Object.keys(data).length).fill(0);
     if (data[firstModel]) {
       if (errorType === "rmse") {
         const chartData = data[firstModel].rmseData.map((value, idx) => {
@@ -54,12 +55,22 @@ class NewEvalgraph extends Component {
           let dataSet = { name: date };
           if (!isNaN(value.y) && value.y !== "") {
             dataSet[Object.keys(data)[0]] = value.y;
+            //foundData[0] = 1;
           }
+          // else if (foundData[0])
+          // {
+          //   dataSet[Object.keys(data)[0]] = 0;
+          // }
           for (let i = 1; i < Object.keys(data).length; ++i) {
             let error = data[Object.keys(data)[i]].rmseData[idx].y;
             if (!isNaN(error) && error !== "") {
               dataSet[Object.keys(data)[i]] = error;
+              //foundData[i] = 1;
             }
+            // else if (foundData[i])
+            // {
+            //   dataSet[Object.keys(data)[0]] = 0;
+            // }
           }
           return dataSet;
         });
@@ -90,6 +101,7 @@ class NewEvalgraph extends Component {
   render() {
     const { chartData, models, viewport } = this.state;
     const { errorType } = this.props;
+    console.log(chartData);
     const TooltipContent = ({ targetItem }) => {
       const item = chartData[targetItem.point];
       return (

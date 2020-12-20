@@ -63,6 +63,7 @@ class Evaluation extends Component {
     });
 
     this.updateData(result, () => {
+      this.addModel("Baseline")
       this.addModel("USC-SI_kJalpha");
     });
   };

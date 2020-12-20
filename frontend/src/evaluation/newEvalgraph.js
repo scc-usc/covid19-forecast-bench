@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import Paper from "@material-ui/core/Paper";
-import { Plugin } from '@devexpress/dx-react-core';
+import { Plugin } from "@devexpress/dx-react-core";
 import {
   ArgumentAxis,
   ValueAxis,
@@ -8,16 +8,15 @@ import {
   LineSeries,
   Tooltip,
   Legend,
-  ZoomAndPan
+  ZoomAndPan,
 } from "@devexpress/dx-react-chart-material-ui";
-import { EventTracker} from '@devexpress/dx-react-chart';
+import { EventTracker } from "@devexpress/dx-react-chart";
 
 const testData = [
   { argument: 1, value: 10 },
   { argument: 2, value: 20 },
   { argument: 3, value: 30 },
 ];
-
 
 class NewEvalgraph extends Component {
   constructor(props) {
@@ -93,8 +92,8 @@ class NewEvalgraph extends Component {
   };
 
   render() {
-    const { chartData, models, viewport} = this.state;
-    const {errorType} = this.props;
+    const { chartData, models, viewport } = this.state;
+    const { errorType } = this.props;
     const TooltipContent = ({ targetItem }) => {
       const item = chartData[targetItem.point];
       return (
@@ -136,11 +135,14 @@ class NewEvalgraph extends Component {
             lines.every(line => React.isValidElement(line))
               ? lines
               : null} */}
-              {lines}
+            {lines}
+            <ZoomAndPan
+              viewport={viewport}
+              onViewportChange={this.viewportChange}
+            />
           </Plugin>
-           {/* <ZoomAndPan viewport={viewport} onViewportChange={this.viewportChange} /> */}
           <EventTracker />
-          <Tooltip  contentComponent={TooltipContent}/>
+          <Tooltip contentComponent={TooltipContent} />
           <Legend />
         </Chart>
       </Paper>

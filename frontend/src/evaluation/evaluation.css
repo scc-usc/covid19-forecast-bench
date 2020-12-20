@@ -4,10 +4,15 @@
 .leader-page-wrapper h2{
     text-align: center;
 }
-.graph-container {
+.evaluation-container {
     margin-top: 2%;
     width: 100vw;
     height: 100vh;
+}
+
+.evalgraph-container {
+    margin-left: 5vw;
+    margin-right: 10vw;
 }
 
 .class {

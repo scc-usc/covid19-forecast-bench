@@ -51,10 +51,20 @@ def get_model_reports_mapping(forecasts_names):
                 mapping[model].append(filename.strip())
     return mapping
 
-def evaluate(inc_truth, model_name, reports, region_col):
-    model_evals = [pd.DataFrame() for i in range(4)]
-    for eval in model_evals:
-        eval.insert(0, "State", region_col)
+def generate_evaluation_df(regions, models):
+    wk_intervals = list(inc_truth.columns)[22:]
+    model_evals = {}
+
+    for region in regions:
+        model_evals[region] = []
+        for i in range(0, 4):
+            empty_array = np.empty((len(models), len(wk_intervals)))
+            empty_array[:] = np.nan
+            model_evals[region].append(pd.DataFrame(empty_array, columns=wk_intervals, index=models))
+
+    return model_evals
+
+def evaluate(inc_truth, model_name, reports, regions, model_evals):
     for report in reports:
         # Fetch report data.
         pred = pd.read_csv("../../formatted-forecasts/state-death/" + report, index_col=0)
@@ -85,14 +95,12 @@ def evaluate(inc_truth, model_name, reports, region_col):
 
         mae_df = mae_df.append(overall_mae, ignore_index=True)
         for i in range(0, observed_wks):
-            col_name = mae_df.columns[i+1]
-            col_val = mae_df[col_name]
-            model_evals[i][col_name] = col_val
+            interval = mae_df.columns[i+1]
+            if interval in model_evals["Overall"][i].columns:
+                for region in regions:
+                    model_evals[region][i][interval][model] = mae_df[interval][mae_df["State"] == region]
 
-    for i in range(4):
-        eval_name = "./output/" + model_name + "_state_death_mae_" + str(i+1) + "wk_ahead.csv"
-        model_evals[i].to_csv(eval_name)
-        print("Evaluated " + eval_name)
+        print("Evaluated " + model_name)
 
 if __name__ == "__main__":
     inc_truth = get_inc_truth(US_DEATH_URL)
@@ -101,6 +109,11 @@ if __name__ == "__main__":
     state_col = list(inc_truth["State"])
     state_col.append("Overall")
 
+    model_evals = generate_evaluation_df(state_col, model_reports_mapping.keys())
     for model in model_reports_mapping:
-        thread = threading.Thread(target=evaluate, args=(inc_truth, model, model_reports_mapping[model], state_col))
-        thread.start()
+        reports = model_reports_mapping[model]
+        evaluate(inc_truth, model, reports, state_col, model_evals)
+
+    for state in model_evals:
+        for i in range(len(model_evals[state])):
+            model_evals[state][i].to_csv("./output/summary_{0}_weeks_ahead_{1}.csv".format(i+1, state))

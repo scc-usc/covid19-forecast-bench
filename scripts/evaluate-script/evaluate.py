@@ -81,6 +81,7 @@ def evaluate(inc_truth, model_name, reports, regions, model_evals):
 
         # Calculate MAE for each state.
         pred_num = pred.drop(columns=["State"])
+        pred_num = pred_num[sorted(pred_num.columns)]
         observed_wks = 4;
         for i in range(0, 4):
             if i >= len(pred_num.columns) or pred_num.columns[i] > inc_truth.columns[-1]:
@@ -91,12 +92,12 @@ def evaluate(inc_truth, model_name, reports, regions, model_evals):
 
         # Calculate the mean MAE as the overall error.
         overall_mae = mae_df.mean()
-        overall_mae['State'] = "Overall"
+        overall_mae['State'] = "states"
 
         mae_df = mae_df.append(overall_mae, ignore_index=True)
         for i in range(0, observed_wks):
             interval = mae_df.columns[i+1]
-            if interval in model_evals["Overall"][i].columns:
+            if interval in model_evals["states"][i].columns:
                 for region in regions:
                     model_evals[region][i][interval][model] = mae_df[interval][mae_df["State"] == region]
 
@@ -107,7 +108,7 @@ if __name__ == "__main__":
     model_reports_mapping = get_model_reports_mapping(FORECASTS_NAMES)
 
     state_col = list(inc_truth["State"])
-    state_col.append("Overall")
+    state_col.append("states")
 
     model_evals = generate_evaluation_df(state_col, model_reports_mapping.keys())
     for model in model_reports_mapping:
@@ -116,4 +117,5 @@ if __name__ == "__main__":
 
     for state in model_evals:
         for i in range(len(model_evals[state])):
+            model_evals[state][i].loc[" "] = 0
             model_evals[state][i].to_csv("./output/summary_{0}_weeks_ahead_{1}.csv".format(i+1, state))

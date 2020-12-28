@@ -92,7 +92,6 @@ class NewEvalgraph extends Component {
   render() {
     const { chartData, models, viewport } = this.state;
     const { errorType } = this.props;
-    console.log(chartData);
     const TooltipContent = ({ targetItem }) => {
       const item = chartData[targetItem.point];
       return (

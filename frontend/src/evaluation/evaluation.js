@@ -98,8 +98,6 @@ class Evaluation extends Component {
       return model;
     });
 
-    console.log(maeSummary);
-
     // const averageRmse = rmseSummary.map((data, idx) => {
     //   const model = { name: "", value: "" };
     //   model.name = data.id;
@@ -233,6 +231,11 @@ class Evaluation extends Component {
   };
 
   removeModel = targetModel => {
+    console.log(targetModel);
+    if (targetModel === " ")
+    {
+      return;
+    }
     this.setState(prevState => {
       return {
         models: prevState.models.filter(model => model !== targetModel),

@@ -9,13 +9,13 @@ import { Form, Select, Row, Col, Radio, List, Avatar } from "antd";
 
 //const fs = require('fs');
 const summaryCSV_1 =
-  "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/frontend/src/evaluation/summary/summary_1_weeks_ahead_states.csv";
+  "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/summary_1_weeks_ahead_states.csv";
 const summaryCSV_2 =
-  "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/frontend/src/evaluation/summary/summary_2_weeks_ahead_states.csv";
+  "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/summary_2_weeks_ahead_states.csv";
 const summaryCSV_3 =
-  "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/frontend/src/evaluation/summary/summary_3_weeks_ahead_states.csv";
+  "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/summary_3_weeks_ahead_states.csv";
 const summaryCSV_4 =
-  "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/frontend/src/evaluation/summary/summary_4_weeks_ahead_states.csv";
+  "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/summary_4_weeks_ahead_states.csv";
 const summaryCSV = [summaryCSV_1, summaryCSV_2, summaryCSV_3, summaryCSV_4];
 const { Option } = Select;
 
@@ -25,14 +25,14 @@ class Evaluation extends Component {
     this.state = {
       models: this.props.models || [],
       modelList: [],
-      rmseSummary: [],
+      //rmseSummary: [],
       maeSummary: [],
       mainGraphData: {},
-      averageRmse: [],
+      //averageRmse: [],
       averageMae: [],
-      recentRmse: [],
+      //recentRmse: [],
       recentMae: [],
-      errorType: "rmse",
+      errorType: "mae",
       timeSpan: "4",
       lastDate: "",
     };
@@ -63,35 +63,34 @@ class Evaluation extends Component {
     });
 
     this.updateData(result, () => {
-      this.addModel("Baseline")
-      this.addModel("USC-SI_kJalpha");
+      this.addModel(" ");
+      this.addModel("USC_SI_kJalpha");
     });
   };
 
   updateData = (result, func) => {
-    const rmseSummary = result.data.map((csvRow, index) => {
-      const model = { id: "", data: [] };
-      for (const col in csvRow) {
-        if (col === "") {
-          model.id = csvRow[col];
-        } else if (col.indexOf("mean_sq_abs_error_") >= 0) {
-          model.data.push({
-            x: col.substring(18, col.length),
-            y: parseInt(csvRow[col]),
-          });
-        }
-      }
-      return model;
-    });
-
+    // const rmseSummary = result.data.map((csvRow, index) => {
+    //   const model = { id: "", data: [] };
+    //   for (const col in csvRow) {
+    //     if (col === "") {
+    //       model.id = csvRow[col];
+    //     } else if (col.indexOf("mean_sq_abs_error_") >= 0) {
+    //       model.data.push({
+    //         x: col.substring(18, col.length),
+    //         y: parseInt(csvRow[col]),
+    //       });
+    //     }
+    //   }
+    //   return model;
+    // });
     const maeSummary = result.data.map((csvRow, index) => {
       const model = { id: "", data: [] };
       for (const col in csvRow) {
         if (col === "") {
           model.id = csvRow[col];
-        } else if (col.indexOf("mean_abs_error_") >= 0) {
+        } else {
           model.data.push({
-            x: col.substring(15, col.length),
+            x: col,
             y: parseInt(csvRow[col]),
           });
         }
@@ -99,26 +98,28 @@ class Evaluation extends Component {
       return model;
     });
 
-    const averageRmse = rmseSummary.map((data, idx) => {
-      const model = { name: "", value: "" };
-      model.name = data.id;
-      let filtered_data = data.data.filter(function (element) {
-        return !isNaN(element.y) && element.y !== "";
-      });
-      filtered_data = filtered_data.map((element, idx) => {
-        return element.y;
-      });
-      model.value =
-        filtered_data.reduce(function (a, b) {
-          return a + b;
-        }) / filtered_data.length;
+    console.log(maeSummary);
 
-      return model;
-    });
+    // const averageRmse = rmseSummary.map((data, idx) => {
+    //   const model = { name: "", value: "" };
+    //   model.name = data.id;
+    //   let filtered_data = data.data.filter(function (element) {
+    //     return !isNaN(element.y) && element.y !== "";
+    //   });
+    //   filtered_data = filtered_data.map((element, idx) => {
+    //     return element.y;
+    //   });
+    //   model.value =
+    //     filtered_data.reduce(function (a, b) {
+    //       return a + b;
+    //     }) / filtered_data.length;
 
-    averageRmse.sort(function (first, second) {
-      return first.value - second.value;
-    });
+    //   return model;
+    // });
+
+    // averageRmse.sort(function (first, second) {
+    //   return first.value - second.value;
+    // });
 
     const averageMae = maeSummary.map((data, idx) => {
       const model = { name: "", value: "" };
@@ -129,11 +130,17 @@ class Evaluation extends Component {
       filtered_data = filtered_data.map((element, idx) => {
         return element.y;
       });
-      model.value =
+      if (filtered_data.length === 0 || filtered_data === undefined)
+      {
+        model.value = NaN;
+      }
+      else
+      {
+        model.value = 
         filtered_data.reduce(function (a, b) {
           return a + b;
         }) / filtered_data.length;
-
+      }
       return model;
     });
 
@@ -141,24 +148,24 @@ class Evaluation extends Component {
       return first.value - second.value;
     });
 
-    const lastDate = rmseSummary[0].data[rmseSummary[0].data.length - 1].x;
+    const lastDate = maeSummary[0].data[maeSummary[0].data.length - 1].x;
 
-    let recentRmse = rmseSummary.map((data, idx) => {
-      const model = { name: "", value: "" };
-      model.name = data.id;
-      let recent = data.data.filter(element => {
-        return element.x === lastDate;
-      });
-      model.value = recent[0].y;
-      return model;
-    });
-    recentRmse = recentRmse.filter(element => {
-      return !isNaN(element.value) && element.value !== "";
-    });
+    // let recentRmse = rmseSummary.map((data, idx) => {
+    //   const model = { name: "", value: "" };
+    //   model.name = data.id;
+    //   let recent = data.data.filter(element => {
+    //     return element.x === lastDate;
+    //   });
+    //   model.value = recent[0].y;
+    //   return model;
+    // });
+    // recentRmse = recentRmse.filter(element => {
+    //   return !isNaN(element.value) && element.value !== "";
+    // });
 
-    recentRmse.sort((first, second) => {
-      return first.value - second.value;
-    });
+    // recentRmse.sort((first, second) => {
+    //   return first.value - second.value;
+    // });
 
     let recentMae = maeSummary.map((data, idx) => {
       const model = { name: "", value: "" };
@@ -179,12 +186,12 @@ class Evaluation extends Component {
 
     this.setState(
       {
-        rmseSummary: rmseSummary,
+        //rmseSummary: rmseSummary,
         maeSummary: maeSummary,
-        averageRmse: averageRmse,
+        //averageRmse: averageRmse,
         averageMae: averageMae,
         lastDate: lastDate,
-        recentRmse: recentRmse,
+        //recentRmse: recentRmse,
         recentMae: recentMae,
       },
       () => {
@@ -204,11 +211,11 @@ class Evaluation extends Component {
   };
 
   addModel = model => {
-    const rmseData = this.state.rmseSummary.filter(data => data.id === model)[0]
-      .data;
+    // const rmseData = this.state.rmseSummary.filter(data => data.id === model)[0]
+    //   .data;
     const maeData = this.state.maeSummary.filter(data => data.id === model)[0]
       .data;
-    const allData = { rmseData: rmseData, maeData: maeData };
+    const allData = {maeData: maeData };
     this.setState(
       prevState => ({
         models: [...prevState.models, model],
@@ -315,17 +322,15 @@ class Evaluation extends Component {
 
   render() {
     const {
-      rmseSummary,
-      maeSummary,
       models,
       modelList,
       errorType,
       timeSpan,
       mainGraphData,
       lastDate,
-      averageRmse,
+      //averageRmse,
       averageMae,
-      recentRmse,
+      //recentRmse,
       recentMae,
     } = this.state;
     const modelOptions = modelList
@@ -337,21 +342,34 @@ class Evaluation extends Component {
     //const chartData = this.parseData(mainGraphData, errorType);
     let runningAvgRankings = [];
     let recentRankings = [];
-    if (errorType === "rmse") {
-      runningAvgRankings = averageRmse.map((ele, idx) => {
-        const model = { model: {}, RMSE: "" };
-        model.model.name = ele.name;
-        model.RMSE = ele.value;
-        return model;
-      });
-      recentRankings = recentRmse.map((ele, idx) => {
-        const model = { model: {}, RMSE: "" };
-        model.model.name = ele.name;
-        model.RMSE = ele.value;
-        return model;
-      });
-    } else {
-      runningAvgRankings = averageMae.map((ele, idx) => {
+    // if (errorType === "rmse") {
+    //   runningAvgRankings = averageRmse.map((ele, idx) => {
+    //     const model = { model: {}, RMSE: "" };
+    //     model.model.name = ele.name;
+    //     model.RMSE = ele.value;
+    //     return model;
+    //   });
+    //   recentRankings = recentRmse.map((ele, idx) => {
+    //     const model = { model: {}, RMSE: "" };
+    //     model.model.name = ele.name;
+    //     model.RMSE = ele.value;
+    //     return model;
+    //   });
+    // } else {
+    //   runningAvgRankings = averageMae.map((ele, idx) => {
+    //     const model = { model: {}, MAE: "" };
+    //     model.model.name = ele.name;
+    //     model.MAE = ele.value;
+    //     return model;
+    //   });
+    //   recentRankings = recentMae.map((ele, idx) => {
+    //     const model = { model: {}, MAE: "" };
+    //     model.model.name = ele.name;
+    //     model.MAE = ele.value;
+    //     return model;
+    //   });
+    // }
+    runningAvgRankings = averageMae.map((ele, idx) => {
         const model = { model: {}, MAE: "" };
         model.model.name = ele.name;
         model.MAE = ele.value;
@@ -362,8 +380,7 @@ class Evaluation extends Component {
         model.model.name = ele.name;
         model.MAE = ele.value;
         return model;
-      });
-    }
+    });
     runningAvgRankings = runningAvgRankings.slice(0, 9);
     recentRankings = recentRankings.slice(0, 9);
 
@@ -440,7 +457,7 @@ class Evaluation extends Component {
                   </Select>
                 </Form.Item>
               </Form>
-              <div className="radio-group">
+              {/* <div className="radio-group">
                 Error Type:&nbsp;&nbsp;
                 <Radio.Group
                   value={errorType}
@@ -449,7 +466,7 @@ class Evaluation extends Component {
                   <Radio value="rmse">Root Mean Square Error</Radio>
                   <Radio value="mae">Mean Absolute Error</Radio>
                 </Radio.Group>
-              </div>
+              </div> */}
               <div className="radio-group">
                 Prediction Time Span:&nbsp;&nbsp;
                 <Radio.Group

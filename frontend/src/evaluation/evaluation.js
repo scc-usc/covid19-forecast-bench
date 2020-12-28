@@ -51,7 +51,7 @@ class Evaluation extends Component {
   initialize = result => {
     result.data.map((csvRow, index) => {
       for (const col in csvRow) {
-        if (col === "") {
+        if (col === "" && csvRow[col] !== " ") {
           this.setState(state => {
             const modelList = state.modelList.concat(csvRow[col]);
             return {
@@ -63,7 +63,6 @@ class Evaluation extends Component {
     });
 
     this.updateData(result, () => {
-      this.addModel(" ");
       this.addModel("USC_SI_kJalpha");
     });
   };
@@ -231,7 +230,6 @@ class Evaluation extends Component {
   };
 
   removeModel = targetModel => {
-    console.log(targetModel);
     if (targetModel === " ")
     {
       return;

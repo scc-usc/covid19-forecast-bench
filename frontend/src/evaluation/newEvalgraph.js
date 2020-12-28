@@ -76,6 +76,7 @@ class NewEvalgraph extends Component {
           if (!isNaN(value.y) && value.y !== "") {
             dataSet[Object.keys(data)[0]] = value.y;
           }
+          dataSet[" "] = 0;
           for (let i = 1; i < Object.keys(data).length; ++i) {
             let error = data[Object.keys(data)[i]].maeData[idx].y;
             if (!isNaN(error) && error !== "") {
@@ -84,6 +85,7 @@ class NewEvalgraph extends Component {
           }
           return dataSet;
         });
+        console.log(chartData);
         callback(chartData);
       }
     }
@@ -112,6 +114,14 @@ class NewEvalgraph extends Component {
     };
 
     let lines = [];
+    lines.push(
+      <LineSeries
+          key={"empty"}
+          valueField={" "}
+          argumentField="name"
+          name={""}
+        />
+    )
     for (let i = 0; i < models.length; ++i) {
       lines.push(
         <LineSeries

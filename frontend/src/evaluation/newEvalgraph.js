@@ -6,10 +6,15 @@ import {
   ValueAxis,
   Chart,
   LineSeries,
+  ScatterSeries,
   Tooltip,
   Legend,
   ZoomAndPan,
 } from "@devexpress/dx-react-chart-material-ui";
+import {
+  line,
+  curveStep,
+} from 'd3-shape';
 import { EventTracker } from "@devexpress/dx-react-chart";
 
 const testData = [
@@ -18,6 +23,29 @@ const testData = [
   { argument: 3, value: 30 },
 ];
 
+const pointOptions = { point: { size: 10 } };
+const Point = (props) => {
+  const { value } = props;
+  if (value) {
+    return (
+      <ScatterSeries.Point {...props} {...pointOptions} />
+    );
+  }
+  return null;
+};
+
+const LineWithPoint = props => (
+  <React.Fragment>
+    <LineSeries.Path
+      {...props}
+      path={line()
+        .defined(d => d.value)
+        .x(({ arg }) => arg)
+        .y(({ val }) => val)}
+    />
+    <ScatterSeries.Path {...props} pointComponent={Point} />
+  </React.Fragment>
+);
 class NewEvalgraph extends Component {
   constructor(props) {
     super(props);
@@ -96,17 +124,18 @@ class NewEvalgraph extends Component {
     const { errorType } = this.props;
     const TooltipContent = ({ targetItem }) => {
       const item = chartData[targetItem.point];
+      const modelName = <p>{`${targetItem.series}`}</p>;
+      const dateRow = <tr><td>{`Date: ${item.name.substring(0, 10)}`}</td></tr>;
+      const maeRow = item[targetItem.series] != undefined?
+            <tr><td>{`MAE: ${item[targetItem.series]}`}</td></tr> :
+            null;
       return (
         <div>
-          <p>{`${targetItem.series}`}</p>
+          {modelName}
           <table>
             <tbody>
-              <tr>
-                <td>{`Date: ${item.name}`}</td>
-              </tr>
-              <tr>
-                <td>{`Error: ${item[targetItem.series]}`}</td>
-              </tr>
+              {dateRow}
+              {maeRow}
             </tbody>
           </table>
         </div>
@@ -120,6 +149,7 @@ class NewEvalgraph extends Component {
           valueField={" "}
           argumentField="name"
           name={""}
+          color="#ffffff"
         />
     )
     for (let i = 0; i < models.length; ++i) {
@@ -129,6 +159,7 @@ class NewEvalgraph extends Component {
           valueField={models[i]}
           argumentField="name"
           name={models[i]}
+          seriesComponent={LineWithPoint}
         />
       );
     }

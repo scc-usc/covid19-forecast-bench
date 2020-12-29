@@ -127,16 +127,13 @@ class Evaluation extends Component {
       filtered_data = filtered_data.map((element, idx) => {
         return element.y;
       });
-      if (filtered_data.length === 0 || filtered_data === undefined)
-      {
+      if (filtered_data.length === 0 || filtered_data === undefined) {
         model.value = NaN;
-      }
-      else
-      {
-        model.value = 
-        filtered_data.reduce(function (a, b) {
-          return a + b;
-        }) / filtered_data.length;
+      } else {
+        model.value =
+          filtered_data.reduce(function (a, b) {
+            return a + b;
+          }) / filtered_data.length;
       }
       return model;
     });
@@ -212,7 +209,7 @@ class Evaluation extends Component {
     //   .data;
     const maeData = this.state.maeSummary.filter(data => data.id === model)[0]
       .data;
-    const allData = {maeData: maeData };
+    const allData = { maeData: maeData };
     this.setState(
       prevState => ({
         models: [...prevState.models, model],
@@ -230,8 +227,7 @@ class Evaluation extends Component {
   };
 
   removeModel = targetModel => {
-    if (targetModel === " ")
-    {
+    if (targetModel === " ") {
       return;
     }
     this.setState(prevState => {
@@ -371,16 +367,16 @@ class Evaluation extends Component {
     //   });
     // }
     runningAvgRankings = averageMae.map((ele, idx) => {
-        const model = { model: {}, MAE: "" };
-        model.model.name = ele.name;
-        model.MAE = ele.value;
-        return model;
-      });
-      recentRankings = recentMae.map((ele, idx) => {
-        const model = { model: {}, MAE: "" };
-        model.model.name = ele.name;
-        model.MAE = ele.value;
-        return model;
+      const model = { model: {}, MAE: "" };
+      model.model.name = ele.name;
+      model.MAE = ele.value;
+      return model;
+    });
+    recentRankings = recentMae.map((ele, idx) => {
+      const model = { model: {}, MAE: "" };
+      model.model.name = ele.name;
+      model.MAE = ele.value;
+      return model;
     });
     runningAvgRankings = runningAvgRankings.slice(0, 9);
     recentRankings = recentRankings.slice(0, 9);
@@ -394,7 +390,6 @@ class Evaluation extends Component {
     return (
       <div className="leader-page-wrapper">
         {/* <Row>
-                        
                         <Col span={12}>
                             <h2 className="title">Running Average Performance</h2>
                             <List className="leaderboard"
@@ -407,7 +402,7 @@ class Evaluation extends Component {
                                             title = {item.model.name}
                                         />
                                         <div className="content">
-                                            {errorType === "rmse" ? 
+                                            {errorType === "rmse" ?
                                             <span>RMSE: <span className="score">{item.RMSE}</span></span>
                                             :
                                             <span>MAE: <span className="score">{item.MAE}</span></span>
@@ -429,7 +424,7 @@ class Evaluation extends Component {
                                             title = {item.model.name}
                                         />
                                         <div className="content">
-                                            {errorType === "rmse" ? 
+                                            {errorType === "rmse" ?
                                             <span>RMSE: <span className="score">{item.RMSE}</span></span>
                                             :
                                             <span>MAE: <span className="score">{item.MAE}</span></span>

@@ -23,6 +23,7 @@ class Evaluation extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      region: "states",
       models: this.props.models || [],
       modelList: [],
       //rmseSummary: [],
@@ -40,12 +41,15 @@ class Evaluation extends Component {
 
   componentWillMount = () => {
     this.formRef = React.createRef();
-    Papa.parse(summaryCSV[3], {
-      download: true,
-      header: true,
-      skipEmptyLines: true,
-      complete: this.initialize,
-    });
+    Papa.parse(
+      `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/summary_${this.state.timeSpan}_weeks_ahead_${this.state.region}.csv`,
+      {
+        download: true,
+        header: true,
+        skipEmptyLines: true,
+        complete: this.initialize,
+      }
+    );
   };
 
   initialize = result => {
@@ -53,7 +57,9 @@ class Evaluation extends Component {
       for (const col in csvRow) {
         if (col === "" && csvRow[col] !== " ") {
           this.setState(state => {
-            const modelList = state.modelList.concat(csvRow[col]);
+            const modelList = state.modelList.concat(csvRow[col]).filter(
+              model => model != "reich_AIpert_pwllnod"
+            );
             return {
               modelList,
             };
@@ -247,7 +253,9 @@ class Evaluation extends Component {
 
   onValuesChange = (changedValues, allValues) => {
     const prevModels = this.state.models;
+    const prevRegion = this.state.region;
     const newModels = allValues.models;
+    const newRegion = allValues.region;
     if (newModels && prevModels) {
       const modelsToAdd = newModels.filter(
         model => !prevModels.includes(model)
@@ -258,6 +266,9 @@ class Evaluation extends Component {
 
       modelsToAdd.forEach(this.addModel);
       modelsToRemove.forEach(this.removeModel);
+      if (prevRegion !== newRegion) {
+        this.setState({ region: newRegion });
+      }
     }
   };
 
@@ -284,12 +295,30 @@ class Evaluation extends Component {
     this.setState({
       timeSpan: e.target.value,
     });
-    Papa.parse(summaryCSV[e.target.value - 1], {
-      download: true,
-      header: true,
-      skipEmptyLines: true,
-      complete: this.updateData,
+    Papa.parse(
+      `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/summary_${e.target.value}_weeks_ahead_${this.state.region}.csv`,
+      {
+        download: true,
+        header: true,
+        skipEmptyLines: true,
+        complete: this.updateData,
+      }
+    );
+  };
+
+  handleRegionChange = newRegion => {
+    this.setState({
+      region: newRegion,
     });
+    Papa.parse(
+      `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/summary_${this.state.timeSpan}_weeks_ahead_${newRegion}.csv`,
+      {
+        download: true,
+        header: true,
+        skipEmptyLines: true,
+        complete: this.updateData,
+      }
+    );
   };
 
   getAvatar(number) {
@@ -387,6 +416,80 @@ class Evaluation extends Component {
         recentRankings: recentRankings,
       },
     };
+
+    const US_states = [
+      "Washington",
+      "Illinois",
+      "California",
+      "Arizona",
+      "Massachusetts",
+      "Wisconsin",
+      "Texas",
+      "Nebraska",
+      "Utah",
+      "Oregon",
+      "Florida",
+      "New York",
+      "Rhode Island",
+      "Georgia",
+      "New Hampshire",
+      "North Carolina",
+      "New Jersey",
+      "Colorado",
+      "Maryland",
+      "Nevada",
+      "Tennessee",
+      "Hawai",
+      "Indiana",
+      "Kentucky",
+      "Minnesota",
+      "Oklahoma",
+      "Pennsylvania",
+      "South Carolina",
+      "District of Columbia",
+      "Kansas",
+      "Missouri",
+      "Vermont",
+      "Virginia",
+      "Connecticut",
+      "Iowa",
+      "Louisiana",
+      "Ohio",
+      "Michigan",
+      "South Dakota",
+      "Arkansas",
+      "Delaware",
+      "Mississippi",
+      "New Mexico",
+      "North Dakota",
+      "Wyoming",
+      "Alaska",
+      "Maine",
+      "Alabama",
+      "Idaho",
+      "Montana",
+      "Puerto Rico",
+      "Virgin Islands",
+      "Guam",
+      "West Virginia",
+      "Northern Mariana Islands",
+      "American Samoa",
+    ];
+
+    const regionOptions = [];
+    regionOptions.push(
+      <Option value="states" key="0">
+        US Average
+      </Option>
+    );
+    US_states.forEach((state, index) => {
+      regionOptions.push(
+        <Option value={state.replace(" ", "%20")} key={index + 1}>
+          {state}
+        </Option>
+      );
+    });
+
     return (
       <div className="leader-page-wrapper">
         {/* <Row>
@@ -439,6 +542,24 @@ class Evaluation extends Component {
           <Row type="flex" justify="space-around">
             <Col span={12}>
               <Form ref={this.formRef} onValuesChange={this.onValuesChange}>
+                <Form.Item
+                  label="Region"
+                  name="region"
+                  rules={[
+                    { required: true, message: "Please select a region!" },
+                  ]}
+                >
+                  <Select
+                    showSearch
+                    style={{ width: 200 }}
+                    placeholder="Select a region"
+                    optionFilterProp="children"
+                    defaultValue="states"
+                    onChange={this.handleRegionChange}
+                  >
+                    {regionOptions}
+                  </Select>
+                </Form.Item>
                 <Form.Item
                   label="Models"
                   name="models"

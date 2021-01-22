@@ -601,10 +601,9 @@ class Evaluation extends Component {
           <Row>
             <Col span={24}>
               <div className="evalgraph-container">
-                <NewEvalgraph
+                <Evalgraph
                   className="graph"
                   data={mainGraphData}
-                  errorType={errorType}
                   models={models}
                 />
               </div>

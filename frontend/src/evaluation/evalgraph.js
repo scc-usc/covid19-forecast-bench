@@ -111,7 +111,8 @@ const Evalgraph = props => {
       <VictoryChart
         containerComponent={<VictoryZoomContainer />}
         theme={VictoryTheme.material}
-        height={200}
+        padding={{top: 2, bottom: 40, left: 40, right: 60}}
+        height={150}
       >
         {lines}
         {scatters}
@@ -136,7 +137,7 @@ const Evalgraph = props => {
           data={legends}
           style={{labels: {fontSize: 4}}}
           x={290}
-          y={30}
+          y={0}
         />
       </VictoryChart>
     </div>

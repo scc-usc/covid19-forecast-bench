@@ -10,6 +10,13 @@
     height: 100vh;
 }
 
+.control-container {
+    padding-top: 18px;
+    padding-bottom: 18px;
+    background-color: #DADADA;
+    margin-right: 4%;
+}
+
 .evalgraph-container {
     /* margin-left: 5vw; */
     margin-top: 5vh;

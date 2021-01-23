@@ -536,37 +536,35 @@ class Evaluation extends Component {
                         </Col>
                     </Row>  */}
         <div className="evaluation-container">
-          <Row type="flex" justify="space-around">
-            <Col span={12}>
-              <div className="region-select-group">
-                Region:&nbsp;&nbsp;&nbsp;
-                <Select
-                  showSearch
-                  style={{ width: 200 }}
-                  placeholder="Select a region"
-                  optionFilterProp="children"
-                  defaultValue="states"
-                  value={region}
-                  onChange={this.handleRegionChange}
-                >
-                  {regionOptions}
-                </Select>
-              </div>
-              <Form ref={this.formRef} onValuesChange={this.onValuesChange}>
-                <Form.Item
-                  label="Models"
-                  name="models"
-                >
+          <div className="control-container">
+            <Row type="flex" justify="space-around">
+              <Col span={12}>
+                <div className="region-select-group">
+                  Region:&nbsp;&nbsp;&nbsp;
                   <Select
-                    mode="multiple"
-                    style={{ width: "100%" }}
-                    placeholder="Select models"
+                    showSearch
+                    style={{ width: 200 }}
+                    placeholder="Select a region"
+                    optionFilterProp="children"
+                    defaultValue="states"
+                    value={region}
+                    onChange={this.handleRegionChange}
                   >
-                    {modelOptions}
+                    {regionOptions}
                   </Select>
-                </Form.Item>
-              </Form>
-              {/* <div className="radio-group">
+                </div>
+                <Form ref={this.formRef} onValuesChange={this.onValuesChange}>
+                  <Form.Item label="Models" name="models">
+                    <Select
+                      mode="multiple"
+                      style={{ width: "100%" }}
+                      placeholder="Select models"
+                    >
+                      {modelOptions}
+                    </Select>
+                  </Form.Item>
+                </Form>
+                {/* <div className="radio-group">
                 Error Type:&nbsp;&nbsp;
                 <Radio.Group
                   value={errorType}
@@ -576,24 +574,28 @@ class Evaluation extends Component {
                   <Radio value="mae">Mean Absolute Error</Radio>
                 </Radio.Group>
               </div> */}
-              <div className="radio-group">
-                Prediction Time Span:&nbsp;&nbsp;
-                <Radio.Group
-                  value={timeSpan}
-                  onChange={this.handleTimeSpanSelect}
-                >
-                  <Radio value="1">1-week-ahead</Radio>
-                  <Radio value="2">2-week-ahead</Radio>
-                  <Radio value="3">3-week-ahead</Radio>
-                  <Radio value="4">4-week-ahead</Radio>
-                </Radio.Group>
-              </div>
-            </Col>
-          </Row>
+                <div className="radio-group">
+                  Prediction Time Span:&nbsp;&nbsp;
+                  <Radio.Group
+                    value={timeSpan}
+                    onChange={this.handleTimeSpanSelect}
+                  >
+                    <Radio value="1">1-week-ahead</Radio>
+                    <Radio value="2">2-week-ahead</Radio>
+                    <Radio value="3">3-week-ahead</Radio>
+                    <Radio value="4">4-week-ahead</Radio>
+                  </Radio.Group>
+                </div>
+              </Col>
+            </Row>
+          </div>
           <Row>
             <Col span={8}>
               <div className="evalmap-container">
-                <Evalmap clickHandler={this.handleRegionChange} region={region}/>
+                <Evalmap
+                  clickHandler={this.handleRegionChange}
+                  region={region}
+                />
               </div>
             </Col>
             <Col span={16}>

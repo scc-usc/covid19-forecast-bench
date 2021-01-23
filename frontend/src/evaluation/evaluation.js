@@ -253,9 +253,7 @@ class Evaluation extends Component {
 
   onValuesChange = (changedValues, allValues) => {
     const prevModels = this.state.models;
-    const prevRegion = this.state.region;
     const newModels = allValues.models;
-    const newRegion = allValues.region;
     if (newModels && prevModels) {
       const modelsToAdd = newModels.filter(
         model => !prevModels.includes(model)
@@ -266,9 +264,6 @@ class Evaluation extends Component {
 
       modelsToAdd.forEach(this.addModel);
       modelsToRemove.forEach(this.removeModel);
-      if (prevRegion !== newRegion) {
-        this.setState({ region: newRegion });
-      }
     }
   };
 
@@ -295,6 +290,7 @@ class Evaluation extends Component {
     this.setState({
       timeSpan: e.target.value,
     });
+    console.log(this.state);
     Papa.parse(
       `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/summary_${e.target.value}_weeks_ahead_${this.state.region}.csv`,
       {

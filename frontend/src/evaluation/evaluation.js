@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Papa from "papaparse";
 import { readRemoteFile } from "react-papaparse";
 import Evalgraph from "./evalgraph";
-import NewEvalgraph from "./newEvalgraph";
+import Evalmap from "./evalmap";
 //import "../covid19app.css";
 import "./evaluation.css";
 import { Form, Select, Row, Col, Radio, List, Avatar } from "antd";
@@ -57,9 +57,9 @@ class Evaluation extends Component {
       for (const col in csvRow) {
         if (col === "" && csvRow[col] !== " ") {
           this.setState(state => {
-            const modelList = state.modelList.concat(csvRow[col]).filter(
-              model => model != "reich_AIpert_pwllnod"
-            );
+            const modelList = state.modelList
+              .concat(csvRow[col])
+              .filter(model => model != "reich_AIpert_pwllnod");
             return {
               modelList,
             };
@@ -253,9 +253,7 @@ class Evaluation extends Component {
 
   onValuesChange = (changedValues, allValues) => {
     const prevModels = this.state.models;
-    const prevRegion = this.state.region;
     const newModels = allValues.models;
-    const newRegion = allValues.region;
     if (newModels && prevModels) {
       const modelsToAdd = newModels.filter(
         model => !prevModels.includes(model)
@@ -266,9 +264,6 @@ class Evaluation extends Component {
 
       modelsToAdd.forEach(this.addModel);
       modelsToRemove.forEach(this.removeModel);
-      if (prevRegion !== newRegion) {
-        this.setState({ region: newRegion });
-      }
     }
   };
 
@@ -295,6 +290,7 @@ class Evaluation extends Component {
     this.setState({
       timeSpan: e.target.value,
     });
+    console.log(this.state);
     Papa.parse(
       `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/summary_${e.target.value}_weeks_ahead_${this.state.region}.csv`,
       {
@@ -350,6 +346,7 @@ class Evaluation extends Component {
     const {
       models,
       modelList,
+      region,
       errorType,
       timeSpan,
       mainGraphData,
@@ -541,29 +538,24 @@ class Evaluation extends Component {
         <div className="evaluation-container">
           <Row type="flex" justify="space-around">
             <Col span={12}>
-              <Form ref={this.formRef} onValuesChange={this.onValuesChange}>
-                <Form.Item
-                  label="Region"
-                  name="region"
-                  rules={[
-                    { required: true, message: "Please select a region!" },
-                  ]}
+              <div className="region-select-group">
+                Region:&nbsp;&nbsp;&nbsp;
+                <Select
+                  showSearch
+                  style={{ width: 200 }}
+                  placeholder="Select a region"
+                  optionFilterProp="children"
+                  defaultValue="states"
+                  value={region}
+                  onChange={this.handleRegionChange}
                 >
-                  <Select
-                    showSearch
-                    style={{ width: 200 }}
-                    placeholder="Select a region"
-                    optionFilterProp="children"
-                    defaultValue="states"
-                    onChange={this.handleRegionChange}
-                  >
-                    {regionOptions}
-                  </Select>
-                </Form.Item>
+                  {regionOptions}
+                </Select>
+              </div>
+              <Form ref={this.formRef} onValuesChange={this.onValuesChange}>
                 <Form.Item
                   label="Models"
                   name="models"
-                  rules={[{ required: true, message: "Please select models!" }]}
                 >
                   <Select
                     mode="multiple"
@@ -599,12 +591,16 @@ class Evaluation extends Component {
             </Col>
           </Row>
           <Row>
-            <Col span={24}>
+            <Col span={8}>
+              <div className="evalmap-container">
+                <Evalmap clickHandler={this.handleRegionChange} region={region}/>
+              </div>
+            </Col>
+            <Col span={16}>
               <div className="evalgraph-container">
-                <NewEvalgraph
+                <Evalgraph
                   className="graph"
                   data={mainGraphData}
-                  errorType={errorType}
                   models={models}
                 />
               </div>

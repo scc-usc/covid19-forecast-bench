@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Papa from "papaparse";
 import { readRemoteFile } from "react-papaparse";
 import Evalgraph from "./evalgraph";
-import NewEvalgraph from "./newEvalgraph";
+import Evalmap from "./evalmap";
 //import "../covid19app.css";
 import "./evaluation.css";
 import { Form, Select, Row, Col, Radio, List, Avatar } from "antd";
@@ -57,9 +57,9 @@ class Evaluation extends Component {
       for (const col in csvRow) {
         if (col === "" && csvRow[col] !== " ") {
           this.setState(state => {
-            const modelList = state.modelList.concat(csvRow[col]).filter(
-              model => model != "reich_AIpert_pwllnod"
-            );
+            const modelList = state.modelList
+              .concat(csvRow[col])
+              .filter(model => model != "reich_AIpert_pwllnod");
             return {
               modelList,
             };
@@ -346,6 +346,7 @@ class Evaluation extends Component {
     const {
       models,
       modelList,
+      region,
       errorType,
       timeSpan,
       mainGraphData,
@@ -537,29 +538,24 @@ class Evaluation extends Component {
         <div className="evaluation-container">
           <Row type="flex" justify="space-around">
             <Col span={12}>
-              <Form ref={this.formRef} onValuesChange={this.onValuesChange}>
-                <Form.Item
-                  label="Region"
-                  name="region"
-                  rules={[
-                    { required: true, message: "Please select a region!" },
-                  ]}
+              <div className="region-select-group">
+                Region:&nbsp;&nbsp;&nbsp;
+                <Select
+                  showSearch
+                  style={{ width: 200 }}
+                  placeholder="Select a region"
+                  optionFilterProp="children"
+                  defaultValue="states"
+                  value={region}
+                  onChange={this.handleRegionChange}
                 >
-                  <Select
-                    showSearch
-                    style={{ width: 200 }}
-                    placeholder="Select a region"
-                    optionFilterProp="children"
-                    defaultValue="states"
-                    onChange={this.handleRegionChange}
-                  >
-                    {regionOptions}
-                  </Select>
-                </Form.Item>
+                  {regionOptions}
+                </Select>
+              </div>
+              <Form ref={this.formRef} onValuesChange={this.onValuesChange}>
                 <Form.Item
                   label="Models"
                   name="models"
-                  rules={[{ required: true, message: "Please select models!" }]}
                 >
                   <Select
                     mode="multiple"
@@ -595,7 +591,12 @@ class Evaluation extends Component {
             </Col>
           </Row>
           <Row>
-            <Col span={24}>
+            <Col span={8}>
+              <div className="evalmap-container">
+                <Evalmap clickHandler={this.handleRegionChange} region={region}/>
+              </div>
+            </Col>
+            <Col span={16}>
               <div className="evalgraph-container">
                 <Evalgraph
                   className="graph"

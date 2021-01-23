@@ -34,7 +34,7 @@ const colorSchemes = [
   "#f37121",
 ];
 
-const Evalgraph = props => {
+export const evalgraph = props => {
   const { data, models } = props;
 
   const lineAnimation = {
@@ -74,7 +74,7 @@ const Evalgraph = props => {
 
     lines.push(
       <VictoryLine
-        id={idx}
+        key={idx}
         data={lineData}
         // animate={lineAnimation}
         style={lineStyle}
@@ -83,7 +83,7 @@ const Evalgraph = props => {
     );
     scatters.push(
       <VictoryScatter
-        id={idx}
+        key={idx}
         data={lineData}
         style={scatterStyle}
         size={1.5}
@@ -112,7 +112,7 @@ const Evalgraph = props => {
         containerComponent={<VictoryZoomContainer />}
         theme={VictoryTheme.material}
         padding={{top: 2, bottom: 40, left: 40, right: 60}}
-        height={150}
+        height={170}
       >
         {lines}
         {scatters}
@@ -144,4 +144,4 @@ const Evalgraph = props => {
   );
 };
 
-export default Evalgraph;
+export default evalgraph;

@@ -3,11 +3,9 @@ import Papa from "papaparse";
 import { readRemoteFile } from "react-papaparse";
 import Evalgraph from "./evalgraph";
 import Evalmap from "./evalmap";
-//import "../covid19app.css";
 import "./evaluation.css";
 import { Form, Select, Row, Col, Radio, List, Avatar } from "antd";
 
-//const fs = require('fs');
 const summaryCSV_1 =
   "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/summary_1_weeks_ahead_states.csv";
 const summaryCSV_2 =
@@ -29,10 +27,6 @@ class Evaluation extends Component {
       //rmseSummary: [],
       maeSummary: [],
       mainGraphData: {},
-      //averageRmse: [],
-      averageMae: [],
-      //recentRmse: [],
-      recentMae: [],
       errorType: "mae",
       timeSpan: "4",
       lastDate: "",
@@ -74,20 +68,6 @@ class Evaluation extends Component {
   };
 
   updateData = (result, func) => {
-    // const rmseSummary = result.data.map((csvRow, index) => {
-    //   const model = { id: "", data: [] };
-    //   for (const col in csvRow) {
-    //     if (col === "") {
-    //       model.id = csvRow[col];
-    //     } else if (col.indexOf("mean_sq_abs_error_") >= 0) {
-    //       model.data.push({
-    //         x: col.substring(18, col.length),
-    //         y: parseInt(csvRow[col]),
-    //       });
-    //     }
-    //   }
-    //   return model;
-    // });
     const maeSummary = result.data.map((csvRow, index) => {
       const model = { id: "", data: [] };
       for (const col in csvRow) {
@@ -103,96 +83,9 @@ class Evaluation extends Component {
       return model;
     });
 
-    // const averageRmse = rmseSummary.map((data, idx) => {
-    //   const model = { name: "", value: "" };
-    //   model.name = data.id;
-    //   let filtered_data = data.data.filter(function (element) {
-    //     return !isNaN(element.y) && element.y !== "";
-    //   });
-    //   filtered_data = filtered_data.map((element, idx) => {
-    //     return element.y;
-    //   });
-    //   model.value =
-    //     filtered_data.reduce(function (a, b) {
-    //       return a + b;
-    //     }) / filtered_data.length;
-
-    //   return model;
-    // });
-
-    // averageRmse.sort(function (first, second) {
-    //   return first.value - second.value;
-    // });
-
-    const averageMae = maeSummary.map((data, idx) => {
-      const model = { name: "", value: "" };
-      model.name = data.id;
-      let filtered_data = data.data.filter(function (element) {
-        return !isNaN(element.y) && element.y !== "";
-      });
-      filtered_data = filtered_data.map((element, idx) => {
-        return element.y;
-      });
-      if (filtered_data.length === 0 || filtered_data === undefined) {
-        model.value = NaN;
-      } else {
-        model.value =
-          filtered_data.reduce(function (a, b) {
-            return a + b;
-          }) / filtered_data.length;
-      }
-      return model;
-    });
-
-    averageMae.sort(function (first, second) {
-      return first.value - second.value;
-    });
-
-    const lastDate = maeSummary[0].data[maeSummary[0].data.length - 1].x;
-
-    // let recentRmse = rmseSummary.map((data, idx) => {
-    //   const model = { name: "", value: "" };
-    //   model.name = data.id;
-    //   let recent = data.data.filter(element => {
-    //     return element.x === lastDate;
-    //   });
-    //   model.value = recent[0].y;
-    //   return model;
-    // });
-    // recentRmse = recentRmse.filter(element => {
-    //   return !isNaN(element.value) && element.value !== "";
-    // });
-
-    // recentRmse.sort((first, second) => {
-    //   return first.value - second.value;
-    // });
-
-    let recentMae = maeSummary.map((data, idx) => {
-      const model = { name: "", value: "" };
-      model.name = data.id;
-      let recent = data.data.filter(element => {
-        return element.x === lastDate;
-      });
-      model.value = recent[0].y;
-      return model;
-    });
-    recentMae = recentMae.filter(element => {
-      return !isNaN(element.value) && element.value !== "";
-    });
-
-    recentMae.sort((first, second) => {
-      return first.value - second.value;
-    });
-
     this.setState(
       {
-        //rmseSummary: rmseSummary,
         maeSummary: maeSummary,
-        //averageRmse: averageRmse,
-        averageMae: averageMae,
-        lastDate: lastDate,
-        //recentRmse: recentRmse,
-        recentMae: recentMae,
       },
       () => {
         this.reloadAll();
@@ -211,8 +104,6 @@ class Evaluation extends Component {
   };
 
   addModel = model => {
-    // const rmseData = this.state.rmseSummary.filter(data => data.id === model)[0]
-    //   .data;
     const maeData = this.state.maeSummary.filter(data => data.id === model)[0]
       .data;
     const allData = { maeData: maeData };
@@ -317,44 +208,14 @@ class Evaluation extends Component {
     );
   };
 
-  getAvatar(number) {
-    let icon_src = "";
-    switch (number) {
-      case 1:
-        icon_src = "https://img.icons8.com/officel/80/000000/medal2.png";
-        break;
-      case 2:
-        icon_src =
-          "https://img.icons8.com/officel/80/000000/medal-second-place.png";
-        break;
-      case 3:
-        icon_src =
-          "https://img.icons8.com/officel/80/000000/medal2-third-place.png";
-        break;
-      default:
-        icon_src =
-          "https://img.icons8.com/carbon-copy/100/000000/" +
-          number +
-          "-circle.png";
-        break;
-    }
-
-    return <Avatar className="rank-number" src={icon_src} alt="" />;
-  }
-
   render() {
     const {
       models,
       modelList,
       region,
-      errorType,
+      // errorType,
       timeSpan,
       mainGraphData,
-      lastDate,
-      //averageRmse,
-      averageMae,
-      //recentRmse,
-      recentMae,
     } = this.state;
     const modelOptions = modelList
       .filter(model => !this.modelIsSelected(model))
@@ -362,57 +223,6 @@ class Evaluation extends Component {
       .map(s => {
         return <Option key={s}> {s} </Option>;
       });
-    //const chartData = this.parseData(mainGraphData, errorType);
-    let runningAvgRankings = [];
-    let recentRankings = [];
-    // if (errorType === "rmse") {
-    //   runningAvgRankings = averageRmse.map((ele, idx) => {
-    //     const model = { model: {}, RMSE: "" };
-    //     model.model.name = ele.name;
-    //     model.RMSE = ele.value;
-    //     return model;
-    //   });
-    //   recentRankings = recentRmse.map((ele, idx) => {
-    //     const model = { model: {}, RMSE: "" };
-    //     model.model.name = ele.name;
-    //     model.RMSE = ele.value;
-    //     return model;
-    //   });
-    // } else {
-    //   runningAvgRankings = averageMae.map((ele, idx) => {
-    //     const model = { model: {}, MAE: "" };
-    //     model.model.name = ele.name;
-    //     model.MAE = ele.value;
-    //     return model;
-    //   });
-    //   recentRankings = recentMae.map((ele, idx) => {
-    //     const model = { model: {}, MAE: "" };
-    //     model.model.name = ele.name;
-    //     model.MAE = ele.value;
-    //     return model;
-    //   });
-    // }
-    runningAvgRankings = averageMae.map((ele, idx) => {
-      const model = { model: {}, MAE: "" };
-      model.model.name = ele.name;
-      model.MAE = ele.value;
-      return model;
-    });
-    recentRankings = recentMae.map((ele, idx) => {
-      const model = { model: {}, MAE: "" };
-      model.model.name = ele.name;
-      model.MAE = ele.value;
-      return model;
-    });
-    runningAvgRankings = runningAvgRankings.slice(0, 9);
-    recentRankings = recentRankings.slice(0, 9);
-
-    const data = {
-      jhu: {
-        runningAvgRankings: runningAvgRankings,
-        recentRankings: recentRankings,
-      },
-    };
 
     const US_states = [
       "Washington",
@@ -489,52 +299,6 @@ class Evaluation extends Component {
 
     return (
       <div className="leader-page-wrapper">
-        {/* <Row>
-                        <Col span={12}>
-                            <h2 className="title">Running Average Performance</h2>
-                            <List className="leaderboard"
-                                itemLayout="horizontal"
-                                dataSource={data.jhu.runningAvgRankings}
-                                renderItem={item => (
-                                    <List.Item>
-                                        <List.Item.Meta
-                                            avatar={this.getAvatar(data.jhu.runningAvgRankings.indexOf(item) + 1)}
-                                            title = {item.model.name}
-                                        />
-                                        <div className="content">
-                                            {errorType === "rmse" ?
-                                            <span>RMSE: <span className="score">{item.RMSE}</span></span>
-                                            :
-                                            <span>MAE: <span className="score">{item.MAE}</span></span>
-                                            }
-                                        </div>
-                                    </List.Item>
-                                )}
-                            />
-                        </Col>
-                        <Col span={12}>
-                            <h2 className="title">Recent Performance (from {`${lastDate.split("_")[0]} to ${lastDate.split("_")[1]}`})</h2>
-                            <List className="leaderboard"
-                                itemLayout="horizontal"
-                                dataSource={data.jhu.recentRankings}
-                                renderItem={item => (
-                                    <List.Item>
-                                        <List.Item.Meta
-                                            avatar={this.getAvatar(data.jhu.recentRankings.indexOf(item) + 1)}
-                                            title = {item.model.name}
-                                        />
-                                        <div className="content">
-                                            {errorType === "rmse" ?
-                                            <span>RMSE: <span className="score">{item.RMSE}</span></span>
-                                            :
-                                            <span>MAE: <span className="score">{item.MAE}</span></span>
-                                            }
-                                        </div>
-                                    </List.Item>
-                                )}
-                            />
-                        </Col>
-                    </Row>  */}
         <div className="evaluation-container">
           <div className="control-container">
             <Row type="flex" justify="space-around">
@@ -606,7 +370,6 @@ class Evaluation extends Component {
                   models={models}
                 />
               </div>
-              {/* <Evalgraph className='graph' data={mainGraphData} errorType={errorType}/> */}
             </Col>
           </Row>
         </div>

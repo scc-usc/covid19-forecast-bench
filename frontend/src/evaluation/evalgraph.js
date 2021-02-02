@@ -50,6 +50,17 @@ export const evalgraph = props => {
   let scatters = [];
   let legends = [];
 
+  // An invisible anchor point to prevent the chart from being cut off.
+  scatters.push(<VictoryLine
+    style={{
+      data: { stroke: "#ffffff" },
+    }}
+    size={0}
+    data={[
+      { x: "2020-07-01", y: 0 },
+    ]}
+  />);
+
   models.forEach((model, idx) => {
     const color = colorSchemes[idx % colorSchemes.length];
 
@@ -106,18 +117,29 @@ export const evalgraph = props => {
     );
   });
 
+  // An invisible datapoint to prevent the chart from being cut off.
+  scatters.push(<VictoryScatter
+    style={{
+      data: { fill: "#ffffff" },
+    }}
+    size={0}
+    data={[
+      { x: "x", y: 200 },
+    ]}
+  />);
+
   return (
     <div>
       <VictoryChart
         containerComponent={<VictoryZoomContainer />}
         theme={VictoryTheme.material}
         padding={{top: 2, bottom: 40, left: 40, right: 60}}
-        height={170}
+        height={180}
       >
-        {lines}
         {scatters}
+        {lines}
         <VictoryAxis
-          tickCount={6}
+          tickCount={8}
           tickFormat={t => (typeof t === "string" ? t.substring(11, 21) : t)}
           label="Forecast End Date"
           style={{

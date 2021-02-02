@@ -54,7 +54,7 @@ const darkColorScheme = [
 // Add a method in the chart.
 const addChart = (methods, lines, scatters, legends, data, colorScheme) => {
   methods.forEach((method, idx) => {
-    let color = colorScheme[idx % colorScheme.length];
+    if (data[method]) {let color = colorScheme[idx % colorScheme.length];
 
     const lineAnimation = {
       duration: 2000,
@@ -119,7 +119,7 @@ const addChart = (methods, lines, scatters, legends, data, colorScheme) => {
         }
       />
     );
-  });
+  }});
 };
 
 export const evalgraph = props => {
@@ -131,18 +131,18 @@ export const evalgraph = props => {
 
   // Add an invisible anchor line to the chart to prevent the chart from being cut off.
   if (data["anchorDatapoints"]) {
-    console.log(data["anchorDatapoints"]);
     lines.push(
       <VictoryLine
         style={{
-          data: { stroke: "#" },
+          data: { stroke: "#ffffff" },
         }}
-        data={data.anchorDatapoints.data}
+        data={data.anchorDatapoints.maeData}
       />
     );
   }
 
   // Cascade human methods on top of ml methods.
+  if (data) {
   if (filter === "human") {
     addChart(mlMethods, lines, scatters, legends, data, lightColorScheme);
     addChart(humanMethods, lines, scatters, legends, data, darkColorScheme);
@@ -155,7 +155,7 @@ export const evalgraph = props => {
     // If no filter specified, foreground all methods.
   } else {
     addChart(allMethods, lines, scatters, legends, data, darkColorScheme);
-  }
+  }}
 
   // An invisible anchor point to prevent the chart from being cut off.
   scatters.push(

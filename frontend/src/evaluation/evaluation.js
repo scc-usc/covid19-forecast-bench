@@ -69,7 +69,7 @@ class Evaluation extends Component {
   };
 
   updateData = (result, func) => {
-    let anchorDatapoints = { id: "", data: [] };
+    let anchorDatapoints = { maeData: [] };
     const maeSummary = result.data.map((csvRow, index) => {
       const method = { id: "", data: [] };
       for (const col in csvRow) {
@@ -85,7 +85,7 @@ class Evaluation extends Component {
 
       // If method id is an empty space, the data are empty anchor datapoints.
       if (method.id == " ") {
-        anchorDatapoints = method;
+        anchorDatapoints.maeData = method.data;
       }
       return method;
     });
@@ -93,7 +93,7 @@ class Evaluation extends Component {
     this.setState(
       {
         maeSummary: maeSummary,
-        mainGraphData: { anchorDatapoints }
+        mainGraphData: { anchorDatapoints },
       },
       () => {
         this.reloadAll();
@@ -122,33 +122,27 @@ class Evaluation extends Component {
       return method.substring(0, 6) === "reich_";
     }
     return true;
-  }
+  };
 
   isMLMethod = method => {
     return this.doesMethodFitFilter(method, "ml");
-  }
+  };
 
   addMethod = method => {
     const maeData = this.state.maeSummary.filter(data => data.id === method)[0]
       .data;
     const allData = { maeData: maeData };
-    let humanMethods = this.state.humanMethods;
-    let mlMethods = this.state.mlMethods;
-    let allMethods = this.state.allMethods;
-
-    if (!this.isMLMethod(method)) {
-      humanMethods = [...humanMethods, method];
-    } else {
-      mlMethods = [...mlMethods, method];
-    }
-    allMethods = [...allMethods, method];
 
     this.setState(
       prevState => {
         return {
-          humanMethods: humanMethods,
-          mlMethods: mlMethods,
-          allMethods: allMethods,
+          humanMethods: this.isMLMethod(method)
+            ? prevState.humanMethods
+            : [...prevState.humanMethods, method],
+          mlMethods: !this.isMLMethod(method)
+            ? prevState.mlMethods
+            : [...prevState.mlMethods, method],
+          allMethods: [...prevState.allMethods, method],
           mainGraphData: {
             ...prevState.mainGraphData,
             [method]: allData,
@@ -157,7 +151,7 @@ class Evaluation extends Component {
       },
       () => {
         this.formRef.current.setFieldsValue({
-          methods: allMethods,
+          methods: this.state.allMethods,
         });
       }
     );
@@ -235,7 +229,6 @@ class Evaluation extends Component {
     this.setState({
       timeSpan: e.target.value,
     });
-    console.log(this.state);
     Papa.parse(
       `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/summary_${e.target.value}_weeks_ahead_${this.state.region}.csv`,
       {
@@ -264,9 +257,9 @@ class Evaluation extends Component {
 
   handleFilterChange = e => {
     this.setState({
-      filter: e.target.value
+      filter: e.target.value,
     });
-  }
+  };
 
   render() {
     const {
@@ -287,7 +280,7 @@ class Evaluation extends Component {
       .sort()
       .map(s => {
         return <Option key={s}> {s} </Option>;
-    });
+      });
 
     const US_states = [
       "Washington",
@@ -372,7 +365,10 @@ class Evaluation extends Component {
                 into the form structure.  */}
                 <div className="control-component">
                   Filter: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  <Radio.Group defaultValue="all" onChange={this.handleFilterChange}>
+                  <Radio.Group
+                    defaultValue="all"
+                    onChange={this.handleFilterChange}
+                  >
                     <Radio.Button value="all">All Methods</Radio.Button>
                     <Radio.Button value="ml">ML/AI Methods</Radio.Button>
                     <Radio.Button value="human">

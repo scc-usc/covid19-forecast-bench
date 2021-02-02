@@ -54,72 +54,74 @@ const darkColorScheme = [
 // Add a method in the chart.
 const addChart = (methods, lines, scatters, legends, data, colorScheme) => {
   methods.forEach((method, idx) => {
-    if (data[method]) {let color = colorScheme[idx % colorScheme.length];
+    if (data[method]) {
+      let color = colorScheme[idx % colorScheme.length];
 
-    const lineAnimation = {
-      duration: 2000,
-      onLoad: { duration: 1000 },
-    };
+      const lineAnimation = {
+        duration: 2000,
+        onLoad: { duration: 1000 },
+      };
 
-    const flyoutStyle = { fill: "white", stroke: "#ccc", strokeWidth: 0.5 };
+      const flyoutStyle = { fill: "white", stroke: "#ccc", strokeWidth: 0.5 };
 
-    const lineStyle = {
-      data: { stroke: color, strokeWidth: 1 },
-      parent: { border: "1px solid #ccc" },
-    };
+      const lineStyle = {
+        data: { stroke: color, strokeWidth: 1 },
+        parent: { border: "1px solid #ccc" },
+      };
 
-    const scatterStyle = {
-      data: { fill: color },
-      labels: { fill: color },
-    };
+      const scatterStyle = {
+        data: { fill: color },
+        labels: { fill: color },
+      };
 
-    const tooltipStyle = [
-      {
-        fill: color,
-        fontSize: 5,
-        fontFamily: "sans-serif",
-        fontWeight: "bold",
-      },
-      { fill: "#aaa", fontSize: 5, fontFamily: "sans-serif" },
-      { fill: "#aaa", fontSize: 5, fontFamily: "sans-serif" },
-    ];
+      const tooltipStyle = [
+        {
+          fill: color,
+          fontSize: 5,
+          fontFamily: "sans-serif",
+          fontWeight: "bold",
+        },
+        { fill: "#aaa", fontSize: 5, fontFamily: "sans-serif" },
+        { fill: "#aaa", fontSize: 5, fontFamily: "sans-serif" },
+      ];
 
-    const lineData = data[method]["maeData"].filter(datapoint => datapoint.y); // Filter out NaN values.
-    legends.push({ name: method, symbol: { fill: color } });
+      const lineData = data[method]["maeData"].filter(datapoint => datapoint.y); // Filter out NaN values.
+      legends.push({ name: method, symbol: { fill: color } });
 
-    lines.push(
-      <VictoryLine
-        key={idx}
-        data={lineData}
-        // animate={lineAnimation}
-        style={lineStyle}
-        interpolation="linear"
-      />
-    );
-    scatters.push(
-      <VictoryScatter
-        key={idx}
-        data={lineData}
-        style={scatterStyle}
-        size={1.5}
-        labels={({ datum }) => [
-          method,
-          `End date: ${datum.x.substring(11, 21)}`,
-          `MAE: ${datum.y}`,
-        ]}
-        labelComponent={
-          <VictoryTooltip
-            cornerRadius={0}
-            flyoutStyle={flyoutStyle}
-            flyoutHeight={20}
-            style={tooltipStyle}
-            dx={-36}
-            dy={20}
-          />
-        }
-      />
-    );
-  }});
+      lines.push(
+        <VictoryLine
+          key={idx}
+          data={lineData}
+          // animate={lineAnimation}
+          style={lineStyle}
+          interpolation="linear"
+        />
+      );
+      scatters.push(
+        <VictoryScatter
+          key={idx}
+          data={lineData}
+          style={scatterStyle}
+          size={1.5}
+          labels={({ datum }) => [
+            method,
+            `End date: ${datum.x.substring(11, 21)}`,
+            `MAE: ${datum.y}`,
+          ]}
+          labelComponent={
+            <VictoryTooltip
+              cornerRadius={0}
+              flyoutStyle={flyoutStyle}
+              flyoutHeight={20}
+              style={tooltipStyle}
+              dx={-36}
+              dy={20}
+            />
+          }
+        />
+      );
+    }
+  });
 };
 
 export const evalgraph = props => {
@@ -143,19 +145,20 @@ export const evalgraph = props => {
 
   // Cascade human methods on top of ml methods.
   if (data) {
-  if (filter === "human") {
-    addChart(mlMethods, lines, scatters, legends, data, lightColorScheme);
-    addChart(humanMethods, lines, scatters, legends, data, darkColorScheme);
+    if (filter === "human") {
+      addChart(mlMethods, lines, scatters, legends, data, lightColorScheme);
+      addChart(humanMethods, lines, scatters, legends, data, darkColorScheme);
 
-    // Cascade ml methods on top of human methods.
-  } else if (filter === "ml") {
-    addChart(humanMethods, lines, scatters, legends, data, lightColorScheme);
-    addChart(mlMethods, lines, scatters, legends, data, darkColorScheme);
+      // Cascade ml methods on top of human methods.
+    } else if (filter === "ml") {
+      addChart(humanMethods, lines, scatters, legends, data, lightColorScheme);
+      addChart(mlMethods, lines, scatters, legends, data, darkColorScheme);
 
-    // If no filter specified, foreground all methods.
-  } else {
-    addChart(allMethods, lines, scatters, legends, data, darkColorScheme);
-  }}
+      // If no filter specified, foreground all methods.
+    } else {
+      addChart(allMethods, lines, scatters, legends, data, darkColorScheme);
+    }
+  }
 
   // An invisible anchor point to prevent the chart from being cut off.
   scatters.push(

@@ -33,8 +33,8 @@
     height: 100vw;
 }
 
-.region-select-group {
-    padding-bottom: 10px;
+.control-component {
+    padding-bottom: 4px;
 }
 
 .leaderboard {

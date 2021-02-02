@@ -22,8 +22,11 @@ class Evaluation extends Component {
     super(props);
     this.state = {
       region: "states",
-      models: this.props.models || [],
-      modelList: [],
+      filter: "all",
+      humanMethods: [],
+      mlMethods: [],
+      methodList: [],
+      allMethods: [],
       //rmseSummary: [],
       maeSummary: [],
       mainGraphData: {},
@@ -51,11 +54,9 @@ class Evaluation extends Component {
       for (const col in csvRow) {
         if (col === "" && csvRow[col] !== " ") {
           this.setState(state => {
-            const modelList = state.modelList
-              .concat(csvRow[col])
-              .filter(model => model != "reich_AIpert_pwllnod");
+            const methodList = state.methodList.concat(csvRow[col]);
             return {
-              modelList,
+              methodList,
             };
           });
         }
@@ -63,29 +64,36 @@ class Evaluation extends Component {
     });
 
     this.updateData(result, () => {
-      this.addModel("USC_SI_kJalpha");
+      this.addMethod("USC_SI_kJalpha");
     });
   };
 
   updateData = (result, func) => {
+    let anchorDatapoints = { id: "", data: [] };
     const maeSummary = result.data.map((csvRow, index) => {
-      const model = { id: "", data: [] };
+      const method = { id: "", data: [] };
       for (const col in csvRow) {
         if (col === "") {
-          model.id = csvRow[col];
+          method.id = csvRow[col];
         } else {
-          model.data.push({
+          method.data.push({
             x: col,
             y: parseInt(csvRow[col]),
           });
         }
       }
-      return model;
+
+      // If method id is an empty space, the data are empty anchor datapoints.
+      if (method.id == " ") {
+        anchorDatapoints = method;
+      }
+      return method;
     });
 
     this.setState(
       {
         maeSummary: maeSummary,
+        mainGraphData: { anchorDatapoints }
       },
       () => {
         this.reloadAll();
@@ -96,46 +104,91 @@ class Evaluation extends Component {
     );
   };
 
-  modelIsSelected = model => {
-    if (this.state.models && model) {
-      return this.state.models.includes(model);
+  methodIsSelected = method => {
+    if (this.state.allMethods && method) {
+      return this.state.allMethods.includes(method);
     }
     return false;
   };
 
-  addModel = model => {
-    const maeData = this.state.maeSummary.filter(data => data.id === model)[0]
+  // Take methods staring with reich_ as human expert methods,
+  // others as ML/AI methods.
+  // filter will be either all/ml/human, and this function
+  // will check if the method fits the filter.
+  doesMethodFitFilter = (method, filter) => {
+    if (filter === "ml") {
+      return method.substring(0, 6) !== "reich_";
+    } else if (filter === "human") {
+      return method.substring(0, 6) === "reich_";
+    }
+    return true;
+  }
+
+  isMLMethod = method => {
+    return this.doesMethodFitFilter(method, "ml");
+  }
+
+  addMethod = method => {
+    const maeData = this.state.maeSummary.filter(data => data.id === method)[0]
       .data;
     const allData = { maeData: maeData };
+    let humanMethods = this.state.humanMethods;
+    let mlMethods = this.state.mlMethods;
+    let allMethods = this.state.allMethods;
+
+    if (!this.isMLMethod(method)) {
+      humanMethods = [...humanMethods, method];
+    } else {
+      mlMethods = [...mlMethods, method];
+    }
+    allMethods = [...allMethods, method];
+
     this.setState(
-      prevState => ({
-        models: [...prevState.models, model],
-        mainGraphData: {
-          ...prevState.mainGraphData,
-          [model]: allData,
-        },
-      }),
+      prevState => {
+        return {
+          humanMethods: humanMethods,
+          mlMethods: mlMethods,
+          allMethods: allMethods,
+          mainGraphData: {
+            ...prevState.mainGraphData,
+            [method]: allData,
+          },
+        };
+      },
       () => {
         this.formRef.current.setFieldsValue({
-          models: this.state.models,
+          methods: allMethods,
         });
       }
     );
   };
 
-  removeModel = targetModel => {
-    if (targetModel === " ") {
+  removeMethod = targetMethod => {
+    if (targetMethod === " ") {
       return;
     }
+    let humanMethods = this.state.humanMethods;
+    let mlMethods = this.state.mlMethods;
+    let allMethods = this.state.allMethods;
+
+    if (!this.isMLMethod(targetMethod)) {
+      humanMethods = humanMethods.filter(method => method !== targetMethod);
+    } else {
+      mlMethods = mlMethods.filter(method => method !== targetMethod);
+    }
+    allMethods = allMethods.filter(method => method != targetMethod);
+
     this.setState(prevState => {
       return {
-        models: prevState.models.filter(model => model !== targetModel),
+        humanMethods: humanMethods,
+        mlMethods: mlMethods,
+        allMethods: allMethods,
         mainGraphData: Object.keys(prevState.mainGraphData)
-          .filter(model => model !== targetModel)
-          .reduce((newMainGraphData, model) => {
+          .filter(method => method !== targetMethod)
+          .reduce((newMainGraphData, method) => {
             return {
               ...newMainGraphData,
-              [model]: prevState.mainGraphData[model],
+              [method]: prevState.mainGraphData[method],
             };
           }, {}),
       };
@@ -143,30 +196,31 @@ class Evaluation extends Component {
   };
 
   onValuesChange = (changedValues, allValues) => {
-    const prevModels = this.state.models;
-    const newModels = allValues.models;
-    if (newModels && prevModels) {
-      const modelsToAdd = newModels.filter(
-        model => !prevModels.includes(model)
+    const prevMethods = this.state.allMethods;
+    const newMethods = allValues.methods;
+    if (newMethods && prevMethods) {
+      const methodsToAdd = newMethods.filter(
+        method => !prevMethods.includes(method)
       );
-      const modelsToRemove = prevModels.filter(
-        model => !newModels.includes(model)
+      const methodsToRemove = prevMethods.filter(
+        method => !newMethods.includes(method)
       );
 
-      modelsToAdd.forEach(this.addModel);
-      modelsToRemove.forEach(this.removeModel);
+      methodsToAdd.forEach(this.addMethod);
+      methodsToRemove.forEach(this.removeMethod);
     }
   };
 
   reloadAll = () => {
-    const prevModels = this.state.models;
+    const prevMethods = this.state.allMethods;
     this.setState(
       {
-        models: [],
-        mainGraphData: {},
+        humanMethods: [],
+        mlMethods: [],
+        allMethods: [],
       },
       () => {
-        prevModels.forEach(this.addModel);
+        prevMethods.forEach(this.addMethod);
       }
     );
   };
@@ -208,21 +262,32 @@ class Evaluation extends Component {
     );
   };
 
+  handleFilterChange = e => {
+    this.setState({
+      filter: e.target.value
+    });
+  }
+
   render() {
     const {
-      models,
-      modelList,
+      filter,
+      humanMethods,
+      mlMethods,
+      allMethods,
+      methodList,
       region,
       // errorType,
       timeSpan,
       mainGraphData,
     } = this.state;
-    const modelOptions = modelList
-      .filter(model => !this.modelIsSelected(model))
+
+    const methodOptions = methodList
+      .filter(method => !this.methodIsSelected(method))
+      .filter(method => this.doesMethodFitFilter(method, filter))
       .sort()
       .map(s => {
         return <Option key={s}> {s} </Option>;
-      });
+    });
 
     const US_states = [
       "Washington",
@@ -303,8 +368,20 @@ class Evaluation extends Component {
           <div className="control-container">
             <Row type="flex" justify="space-around">
               <Col span={12}>
-                <div className="region-select-group">
-                  Region:&nbsp;&nbsp;&nbsp;
+                {/* TODO: Add filter component and region select component
+                into the form structure.  */}
+                <div className="control-component">
+                  Filter: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  <Radio.Group defaultValue="all" onChange={this.handleFilterChange}>
+                    <Radio.Button value="all">All Methods</Radio.Button>
+                    <Radio.Button value="ml">ML/AI Methods</Radio.Button>
+                    <Radio.Button value="human">
+                      Human Expert-Level Methods
+                    </Radio.Button>
+                  </Radio.Group>
+                </div>
+                <div className="control-component">
+                  Region:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                   <Select
                     showSearch
                     style={{ width: 200 }}
@@ -318,13 +395,13 @@ class Evaluation extends Component {
                   </Select>
                 </div>
                 <Form ref={this.formRef} onValuesChange={this.onValuesChange}>
-                  <Form.Item label="Models" name="models">
+                  <Form.Item label="Methods" name="methods">
                     <Select
                       mode="multiple"
                       style={{ width: "100%" }}
-                      placeholder="Select models"
+                      placeholder="Select Methods"
                     >
-                      {modelOptions}
+                      {methodOptions}
                     </Select>
                   </Form.Item>
                 </Form>
@@ -367,7 +444,10 @@ class Evaluation extends Component {
                 <Evalgraph
                   className="graph"
                   data={mainGraphData}
-                  models={models}
+                  mlMethods={mlMethods}
+                  humanMethods={humanMethods}
+                  allMethods={allMethods}
+                  filter={filter}
                 />
               </div>
             </Col>

@@ -6,6 +6,7 @@ import threading
 
 DAY_ZERO = datetime.datetime(2020,1,22)
 FORECASTS_NAMES = "forecasts_filenames.txt"
+MODEL_NAMES = "models.txt"
 US_DEATH_URL = "https://raw.githubusercontent.com/scc-usc/ReCOVER-COVID-19/master/results/forecasts/us_deaths.csv"
 
 def datetime_to_str(date):
@@ -40,14 +41,16 @@ def get_inc_truth(url):
     inc_truth.insert(0, "State", cum_truth["Country"])
     return inc_truth
 
-def get_model_reports_mapping(forecasts_names):
+def get_model_reports_mapping(model_names, forecasts_names):
     mapping = {}
+    with open(model_names) as f:
+        for model in f:
+            mapping[model.strip()] = []
+
     with open(forecasts_names) as f:
         for filename in f:
-            model = filename[:filename.find("_state_death")].strip()
-            if model not in mapping:
-                mapping[model] = [filename.strip()]
-            else:
+            model = filename[:-9].strip()
+            if model in mapping:
                 mapping[model].append(filename.strip())
     return mapping
 
@@ -66,8 +69,9 @@ def generate_evaluation_df(regions, models):
 
 def evaluate(inc_truth, model_name, reports, regions, model_evals):
     for report in reports:
+        print("Evaluating " + report)
         # Fetch report data.
-        pred = pd.read_csv("../../formatted-forecasts/state-death/" + report, index_col=0)
+        pred = pd.read_csv("../../formatted-forecasts/state-death/{}/{}".format(model_name, report), index_col=0)
         pred = pred.drop(columns=[pred.columns[1]])
 
         # Assign each column name to be week intervals.
@@ -88,7 +92,7 @@ def evaluate(inc_truth, model_name, reports, regions, model_evals):
                 observed_wks -= 1
         pred_num = pred_num.drop(columns=pred_num.columns[observed_wks:])  # Only look at first 4 observed weeks.
         mae_df = np.abs((pred_num - inc_truth[pred_num.columns]))
-        mae_df.insert(0, "State", pred["State"])
+        mae_df.insert(0, "State", state_col[:-1])
 
         # Calculate the mean MAE as the overall error.
         overall_mae = mae_df.mean()
@@ -99,13 +103,12 @@ def evaluate(inc_truth, model_name, reports, regions, model_evals):
             interval = mae_df.columns[i+1]
             if interval in model_evals["states"][i].columns:
                 for region in regions:
-                    model_evals[region][i][interval][model] = mae_df[interval][mae_df["State"] == region]
+                    model_evals[region][i][interval][model_name] = mae_df[interval][mae_df["State"] == region]
 
-        print("Evaluated " + model_name)
 
 if __name__ == "__main__":
     inc_truth = get_inc_truth(US_DEATH_URL)
-    model_reports_mapping = get_model_reports_mapping(FORECASTS_NAMES)
+    model_reports_mapping = get_model_reports_mapping(MODEL_NAMES, FORECASTS_NAMES)
 
     state_col = list(inc_truth["State"])
     state_col.append("states")

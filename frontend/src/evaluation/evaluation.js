@@ -5,17 +5,81 @@ import Evalgraph from "./evalgraph";
 import Evalmap from "./evalmap";
 import "./evaluation.css";
 import { Form, Select, Row, Col, Radio, List, Avatar } from "antd";
+import FormItem from "antd/lib/form/FormItem";
 
-const summaryCSV_1 =
-  "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/summary_1_weeks_ahead_states.csv";
-const summaryCSV_2 =
-  "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/summary_2_weeks_ahead_states.csv";
-const summaryCSV_3 =
-  "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/summary_3_weeks_ahead_states.csv";
-const summaryCSV_4 =
-  "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/summary_4_weeks_ahead_states.csv";
-const summaryCSV = [summaryCSV_1, summaryCSV_2, summaryCSV_3, summaryCSV_4];
 const { Option } = Select;
+
+const US_STATES = [
+  "Washington",
+  "Illinois",
+  "California",
+  "Arizona",
+  "Massachusetts",
+  "Wisconsin",
+  "Texas",
+  "Nebraska",
+  "Utah",
+  "Oregon",
+  "Florida",
+  "New York",
+  "Rhode Island",
+  "Georgia",
+  "New Hampshire",
+  "North Carolina",
+  "New Jersey",
+  "Colorado",
+  "Maryland",
+  "Nevada",
+  "Tennessee",
+  "Hawai",
+  "Indiana",
+  "Kentucky",
+  "Minnesota",
+  "Oklahoma",
+  "Pennsylvania",
+  "South Carolina",
+  "District of Columbia",
+  "Kansas",
+  "Missouri",
+  "Vermont",
+  "Virginia",
+  "Connecticut",
+  "Iowa",
+  "Louisiana",
+  "Ohio",
+  "Michigan",
+  "South Dakota",
+  "Arkansas",
+  "Delaware",
+  "Mississippi",
+  "New Mexico",
+  "North Dakota",
+  "Wyoming",
+  "Alaska",
+  "Maine",
+  "Alabama",
+  "Idaho",
+  "Montana",
+  "Puerto Rico",
+  "Virgin Islands",
+  "Guam",
+  "West Virginia",
+  "Northern Mariana Islands",
+  "American Samoa",
+];
+
+// TODO: Since we only have limited number of ML/AI methods, they are hardcoded here.
+// Later we got to fetch this file from a file/online source.
+const ML_MODELS = [
+  "UMich_RidgeTfReg",
+  "SIkJaun10_hyper7",
+  "ensemble_SIkJa_RF",
+  "SIkJaun1_window_noval",
+  "SIkJaun1_hyper7_smooth7",
+  "SIkJaun1_hyper7",
+  "SIkJaun10_window_noval",
+  "SIkJaun10_hyper7_smooth7",
+];
 
 class Evaluation extends Component {
   constructor(props) {
@@ -27,10 +91,11 @@ class Evaluation extends Component {
       mlMethods: [],
       methodList: [],
       allMethods: [],
-      //rmseSummary: [],
       maeSummary: [],
       mainGraphData: {},
-      errorType: "mae",
+      metrics: "MAE",
+      metricsList: ["MAE", "Percentage", "RMSE"],
+      forecastType: "incDeath",
       timeSpan: "4",
       lastDate: "",
     };
@@ -111,15 +176,11 @@ class Evaluation extends Component {
     return false;
   };
 
-  // Take methods staring with reich_ as human expert methods,
-  // others as ML/AI methods.
-  // filter will be either all/ml/human, and this function
-  // will check if the method fits the filter.
   doesMethodFitFilter = (method, filter) => {
     if (filter === "ml") {
-      return method.substring(0, 6) !== "reich_";
+      return ML_MODELS.includes(method);
     } else if (filter === "human") {
-      return method.substring(0, 6) === "reich_";
+      return ML_MODELS.includes(method);
     }
     return true;
   };
@@ -241,16 +302,24 @@ class Evaluation extends Component {
   };
 
   handleRegionChange = newRegion => {
-    this.setState({
-      region: newRegion,
-    });
-    Papa.parse(
-      `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/summary_${this.state.timeSpan}_weeks_ahead_${newRegion}.csv`,
+    this.setState(
       {
-        download: true,
-        header: true,
-        skipEmptyLines: true,
-        complete: this.updateData,
+        region: newRegion,
+      },
+      () => {
+        Papa.parse(
+          `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/summary_${this.state.timeSpan}_weeks_ahead_${this.state.region}.csv`,
+          {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: this.updateData,
+          }
+        );
+
+        this.formRef.current.setFieldsValue({
+          region: this.state.region,
+        });
       }
     );
   };
@@ -269,7 +338,8 @@ class Evaluation extends Component {
       allMethods,
       methodList,
       region,
-      // errorType,
+      metrics,
+      metricsList,
       timeSpan,
       mainGraphData,
     } = this.state;
@@ -282,64 +352,10 @@ class Evaluation extends Component {
         return <Option key={s}> {s} </Option>;
       });
 
-    const US_states = [
-      "Washington",
-      "Illinois",
-      "California",
-      "Arizona",
-      "Massachusetts",
-      "Wisconsin",
-      "Texas",
-      "Nebraska",
-      "Utah",
-      "Oregon",
-      "Florida",
-      "New York",
-      "Rhode Island",
-      "Georgia",
-      "New Hampshire",
-      "North Carolina",
-      "New Jersey",
-      "Colorado",
-      "Maryland",
-      "Nevada",
-      "Tennessee",
-      "Hawai",
-      "Indiana",
-      "Kentucky",
-      "Minnesota",
-      "Oklahoma",
-      "Pennsylvania",
-      "South Carolina",
-      "District of Columbia",
-      "Kansas",
-      "Missouri",
-      "Vermont",
-      "Virginia",
-      "Connecticut",
-      "Iowa",
-      "Louisiana",
-      "Ohio",
-      "Michigan",
-      "South Dakota",
-      "Arkansas",
-      "Delaware",
-      "Mississippi",
-      "New Mexico",
-      "North Dakota",
-      "Wyoming",
-      "Alaska",
-      "Maine",
-      "Alabama",
-      "Idaho",
-      "Montana",
-      "Puerto Rico",
-      "Virgin Islands",
-      "Guam",
-      "West Virginia",
-      "Northern Mariana Islands",
-      "American Samoa",
-    ];
+    const formLayout = {
+      labelCol: { span: 6 },
+      wrapperCol: { span: 18 },
+    };
 
     const regionOptions = [];
     regionOptions.push(
@@ -347,7 +363,7 @@ class Evaluation extends Component {
         US Average
       </Option>
     );
-    US_states.forEach((state, index) => {
+    US_STATES.forEach((state, index) => {
       regionOptions.push(
         <Option value={state.replace(" ", "%20")} key={index + 1}>
           {state}
@@ -361,68 +377,73 @@ class Evaluation extends Component {
           <div className="control-container">
             <Row type="flex" justify="space-around">
               <Col span={12}>
-                {/* TODO: Add filter component and region select component
-                into the form structure.  */}
-                <div className="control-component">
-                  Filter: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  <Radio.Group
-                    defaultValue="all"
-                    onChange={this.handleFilterChange}
-                  >
-                    <Radio.Button value="all">All Methods</Radio.Button>
-                    <Radio.Button value="ml">ML/AI Methods</Radio.Button>
-                    <Radio.Button value="human">
-                      Human Expert-Level Methods
-                    </Radio.Button>
-                  </Radio.Group>
-                </div>
-                <div className="control-component">
-                  Region:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  <Select
-                    showSearch
-                    style={{ width: 200 }}
-                    placeholder="Select a region"
-                    optionFilterProp="children"
-                    defaultValue="states"
-                    value={region}
-                    onChange={this.handleRegionChange}
-                  >
-                    {regionOptions}
-                  </Select>
-                </div>
-                <Form ref={this.formRef} onValuesChange={this.onValuesChange}>
-                  <Form.Item label="Methods" name="methods">
-                    <Select
-                      mode="multiple"
-                      style={{ width: "100%" }}
-                      placeholder="Select Methods"
+                <Form
+                  {...formLayout}
+                  ref={this.formRef}
+                  onValuesChange={this.onValuesChange}
+                >
+                  <Form.Item label="Filter" name="filter">
+                    <Radio.Group
+                      defaultValue="all"
+                      onChange={this.handleFilterChange}
                     >
+                      <Radio.Button value="all">All Methods</Radio.Button>
+                      <Radio.Button value="ml">ML/AI Methods</Radio.Button>
+                      <Radio.Button value="human">
+                        Human Expert-Level Methods
+                      </Radio.Button>
+                    </Radio.Group>
+                  </Form.Item>
+                  <Form.Item label="Region" name="region">
+                    <Select
+                      showSearch
+                      placeholder="Select a region"
+                      defaultValue="states"
+                      value={region}
+                      onChange={this.handleRegionChange}
+                    >
+                      {regionOptions}
+                    </Select>
+                  </Form.Item>
+                  <Form.Item label="Methods" name="methods">
+                    <Select mode="multiple" placeholder="Select Methods">
                       {methodOptions}
                     </Select>
                   </Form.Item>
+                  {/* TODO: The metrics options have not been implemented. */}
+                  <Form.Item label="Metrics" name="metrics">
+                    <Select showSearch defaultValue="MAE">
+                      {metricsList.map((m, idx) => (
+                        <Option value={m} key={idx}>
+                          {m}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                  {/* TODO: The metrics options have not been implemented. */}
+                  <Form.Item label="Forecast Type" name="forecastType">
+                    <Select showSearch defaultValue="incDeath">
+                      <Option value="incDeath">
+                        COVID-19 death US state-level death forecasts
+                      </Option>
+                      <Option value="incCase">
+                        COVID-19 death US state-level case forecasts
+                      </Option>
+                    </Select>
+                  </Form.Item>
+                  <Form.Item label="Prediction Time Span" name="timeSpan">
+                    <Radio.Group
+                      value={timeSpan}
+                      defaultValue={"4"}
+                      onChange={this.handleTimeSpanSelect}
+                    >
+                      <Radio value="1">1-week-ahead</Radio>
+                      <Radio value="2">2-week-ahead</Radio>
+                      <Radio value="3">3-week-ahead</Radio>
+                      <Radio value="4">4-week-ahead</Radio>
+                    </Radio.Group>
+                  </Form.Item>
                 </Form>
-                {/* <div className="radio-group">
-                Error Type:&nbsp;&nbsp;
-                <Radio.Group
-                  value={errorType}
-                  onChange={this.handleErrorTypeSelect}
-                >
-                  <Radio value="rmse">Root Mean Square Error</Radio>
-                  <Radio value="mae">Mean Absolute Error</Radio>
-                </Radio.Group>
-              </div> */}
-                <div className="radio-group">
-                  Prediction Time Span:&nbsp;&nbsp;
-                  <Radio.Group
-                    value={timeSpan}
-                    onChange={this.handleTimeSpanSelect}
-                  >
-                    <Radio value="1">1-week-ahead</Radio>
-                    <Radio value="2">2-week-ahead</Radio>
-                    <Radio value="3">3-week-ahead</Radio>
-                    <Radio value="4">4-week-ahead</Radio>
-                  </Radio.Group>
-                </div>
               </Col>
             </Row>
           </div>

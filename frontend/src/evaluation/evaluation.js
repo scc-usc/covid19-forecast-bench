@@ -6,6 +6,7 @@ import Evalmap from "./evalmap";
 import "./evaluation.css";
 import { Form, Select, Row, Col, Radio, List, Avatar } from "antd";
 import FormItem from "antd/lib/form/FormItem";
+import ReactGA from "react-ga";
 
 const { Option } = Select;
 
@@ -100,6 +101,12 @@ class Evaluation extends Component {
       lastDate: "",
     };
   }
+
+  componentDidMount() {    
+      ReactGA.initialize('UA-186385643-2');
+      ReactGA.pageview('/covid19-forecast-bench/evaluation');
+    }
+
 
   componentWillMount = () => {
     this.formRef = React.createRef();
@@ -394,7 +401,7 @@ class Evaluation extends Component {
                       <Radio.Button value="all">All Methods</Radio.Button>
                       <Radio.Button value="ml">ML/AI Methods</Radio.Button>
                       <Radio.Button value="human">
-                        Human Expert-Level Methods
+                        Human-Expert Methods
                       </Radio.Button>
                     </Radio.Group>
                   </Form.Item>
@@ -449,18 +456,18 @@ class Evaluation extends Component {
                   </Form.Item>
                 </Form>
               </Col>
+             
             </Row>
           </div>
-          <Row>
-            <Col span={8}>
+          <Row type="flex" justify="space-around">
+             
               <div className="evalmap-container">
                 <Evalmap
                   clickHandler={this.handleRegionChange}
                   region={region}
                 />
               </div>
-            </Col>
-            <Col span={16}>
+              
               <div className="evalgraph-container">
                 <Evalgraph
                   className="graph"
@@ -471,8 +478,10 @@ class Evaluation extends Component {
                   filter={filter}
                 />
               </div>
-            </Col>
+              
           </Row>
+           
+              
         </div>
       </div>
     );

@@ -1,10 +1,16 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom"; 
+import ReactGA from "react-ga";
 import "./homepage.css";
 import "../forecastbench.css";
 import "../w3.css";
 
 class HomePage extends Component {
+
+	componentDidMount() {    
+    	ReactGA.initialize('UA-186385643-2');
+    	ReactGA.pageview('/covid19-forecast-bench/home');
+  	}
 
 	render() {
 		return (
@@ -42,7 +48,7 @@ class HomePage extends Component {
 
 			<br/><br/>
 			<p class="w3-justify">
-			With the help of the AI/ML community, we wish to find the answers the following questions.
+			With the help of the AI/ML community, we wish to find the answers to the following questions.
 			</p>
 			<ul >
 			<li> Which epidemic forecasting methods perform the best? </li>
@@ -57,7 +63,10 @@ class HomePage extends Component {
 			</p>
 
 			</div>
-
+			<br/>
+			<p>
+			Contact: ajiteshs[AT]usc[DOT]edu
+			</p>
 			</div>
 			);
 		}

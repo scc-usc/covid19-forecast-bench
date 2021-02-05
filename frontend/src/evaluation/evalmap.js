@@ -35,12 +35,12 @@ const evalmap = props => {
     clickHandler(abbrStateMapping[event.target.dataset.name]);
   };
 
-  let map = <USAMap onClick={mapHandler} defaultFill="#c05555" width="30vw" height="50vh" />
+  let map = <USAMap onClick={mapHandler} defaultFill="#c05555" width="400" height="350"/>
   if (region !== "states") {
       const abbr = stateAbbrMapping[region];
       const customizeFill = {};
       customizeFill[abbr] = {fill: "#c05555"};
-      map = <USAMap onClick={mapHandler} customize={customizeFill} width="30vw" height="50vh" />
+      map = <USAMap onClick={mapHandler} customize={customizeFill} width="400" height="350"/>
   }
 
   return (

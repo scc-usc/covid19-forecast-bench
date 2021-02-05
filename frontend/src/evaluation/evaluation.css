@@ -1,11 +1,15 @@
+.ant-row.ant-form-item{
+	margin-bottom: 4px;
+}
+
 .leader-page-wrapper{
-    margin: 2%;
+    margin: 0%;
 }
 .leader-page-wrapper h2{
     text-align: center;
 }
 .evaluation-container {
-    margin-top: 2%;
+    margin-top: 0%;
     width: 100vw;
     height: 100vh;
 }
@@ -14,18 +18,25 @@
     padding-top: 18px;
     padding-bottom: 18px;
     background-color: #DADADA;
-    margin-right: 4%;
+    margin-right: 0%;
 }
 
 .evalgraph-container {
-    /* margin-left: 5vw; */
+    /* margin-left: 5vw;*/
     margin-top: 5vh;
     margin-right: 5vw;
+    width: 60vw;
+}
+
+@media only screen and (max-width: 600px) {
+.evalgraph-container {
+    width: 95vw;
+}
 }
 
 .evalmap-container {
-    margin-top: 5vh;
-    margin-left: 5vw;
+    margin-top: 0vh;
+    margin-left: 0vw;
 }
 
 .class {

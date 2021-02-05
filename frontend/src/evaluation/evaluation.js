@@ -107,6 +107,7 @@ class Evaluation extends Component {
       `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/summary_${this.state.timeSpan}_weeks_ahead_${this.state.region}.csv`,
       {
         download: true,
+        worker: true,
         header: true,
         skipEmptyLines: true,
         complete: this.initialize,
@@ -129,7 +130,8 @@ class Evaluation extends Component {
     });
 
     this.updateData(result, () => {
-      this.addMethod("USC_SI_kJalpha");
+      this.addMethod("ensemble_SIkJa_RF");
+      this.addMethod("reich_COVIDhub_ensemble");
     });
   };
 
@@ -294,6 +296,7 @@ class Evaluation extends Component {
       `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/summary_${e.target.value}_weeks_ahead_${this.state.region}.csv`,
       {
         download: true,
+        worker: true,
         header: true,
         skipEmptyLines: true,
         complete: this.updateData,
@@ -312,6 +315,7 @@ class Evaluation extends Component {
           {
             download: true,
             header: true,
+            worker: true,
             skipEmptyLines: true,
             complete: this.updateData,
           }

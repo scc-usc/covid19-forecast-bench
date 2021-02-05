@@ -4,7 +4,7 @@ import "./forecastbench.css";
 import {HashRouter, Route, Redirect, Switch} from 'react-router-dom'; 
 import Evaluation from "./evaluation/evaluation";
 import HomePage from "./homepage/homepage";
-import AboutUS from "./aboutus/aboutus";
+import Submit from "./submit/submit";
 import Navbar from "./navbar/navbar";
 
 class ForecastBench extends Component {
@@ -12,7 +12,7 @@ class ForecastBench extends Component {
     super(props);
     this.state = {
       redirectHome: false,
-      redirectAbout: false,
+      redirectSubmit: false,
       redirectEvaluation: false,
     }
   }
@@ -20,15 +20,15 @@ class ForecastBench extends Component {
   redirectHome = ()=>{
     this.setState({
       redirectHome: true,
-      redirectAbout: false,
+      redirectSubmit: false,
       redirectEvaluation: false,
     });
   }
 
-  redirectAbout = ()=>{
+  redirectSubmit = ()=>{
     this.setState({
       redirectHome: false,
-      redirectAbout: true,
+      redirectSubmit: true,
       redirectEvaluation: false,
     });
   }
@@ -36,27 +36,27 @@ class ForecastBench extends Component {
   redirectEvaluation = ()=>{
     this.setState({
       redirectHome: false,
-      redirectAbout: false,
+      redirectSubmit: false,
       redirectEvaluation: true,
     });
   }
 
   render() {
-    const {redirectHome, redirectAbout, redirectEvaluation} = this.state;
+    const {redirectHome, redirectSubmit, redirectEvaluation} = this.state;
     return (
       <HashRouter basename="/">
         {redirectHome?<Redirect to="/"/>:null}
-        {redirectAbout?<Redirect to="/about"/>:null}
+        {redirectSubmit?<Redirect to="/about"/>:null}
         {redirectEvaluation?<Redirect to="/evaluation"/>:null}
         <Navbar redirectHome = {this.redirectHome}
-                redirectAbout = {this.redirectAbout}
+                redirectSubmit = {this.redirectSubmit}
                 redirectEvaluation = {this.redirectEvaluation}
         />
         <Switch>
           <Route exact path='/'
             render={(props) => <HomePage {...props} />}/>
-          <Route exact path='/about'
-            render={(props) => <AboutUS {...props} />} />
+          <Route exact path='/submit'
+            render={(props) => <Submit {...props} />} />
           <Route exact path='/evaluation'
             render={(props) => <Evaluation {...props} />}/>
         </Switch>

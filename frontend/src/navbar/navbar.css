@@ -28,6 +28,12 @@
   color: white !important;
 }
 
+.navbar-link-highlight{
+  color: black !important; 
+	font-weight: 800 !important;
+	background: white !important;
+}
+
 .navbar-toggler{
     background-color: white !important;
 }

@@ -24,7 +24,8 @@ const NavBar = () => {
             <Nav className="mr-auto">
               <Nav.Link className="navbar-link" href="#/">Home</Nav.Link>
               <Nav.Link className="navbar-link" href="#evaluation">Evaluation</Nav.Link>
-              <Nav.Link className="navbar-link" href="#about">About Us</Nav.Link>
+              <Nav.Link className="navbar-link" href="#submit">Submit</Nav.Link>
+              <Nav.Link className="navbar-link-highlight" href="https://github.com/scc-usc/covid19-forecast-bench" target="_blank">Github</Nav.Link>
             </Nav>
             <Nav>
             </Nav>

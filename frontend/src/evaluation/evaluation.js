@@ -180,7 +180,7 @@ class Evaluation extends Component {
     if (filter === "ml") {
       return ML_MODELS.includes(method);
     } else if (filter === "human") {
-      return ML_MODELS.includes(method);
+      return !ML_MODELS.includes(method);
     }
     return true;
   };

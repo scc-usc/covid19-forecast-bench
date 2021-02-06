@@ -1,4 +1,9 @@
 #!/bin/bash
-cd output
-for i in `ls`; do mv -f $i `echo "reich_"$i`; done
-cd ..
+for method in `ls ./output/`
+do
+    for file in `ls ./output/$method`
+    do
+        mv -f ./output/$method/$file ./output/$method/`echo "reich_"$file`
+    done
+    mv -f ./output/$method ./output/`echo "reich_"$method`
+ done

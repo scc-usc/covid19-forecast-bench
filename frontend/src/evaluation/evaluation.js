@@ -157,12 +157,10 @@ class Evaluation extends Component {
           } else {
             const val = parseInt(csvRow[col]);
             // Filter out datapoints that is NaN.
-            if (!isNaN(val)) {
-              method.data.push({
-                x: col,
-                y: val,
-              });
-            }
+            method.data.push({
+              x: col,
+              y: val,
+            });
           }
         }
         // If method id is an empty space, the data are empty anchor datapoints.
@@ -188,31 +186,30 @@ class Evaluation extends Component {
   };
 
   generateRanking = () => {
-    // First calculate the covid hub ensemble MAE average.
-    let ensembleAverageMAE = 1;
-    this.state.csvData.forEach(method => {
-      if (method.id === "reich_COVIDhub_ensemble") {
-        const forecastCount = method.data.length;
-        let totalMAE = 0;
-        method.data.forEach(dp => {
-          totalMAE += dp.y;
-        });
-        ensembleAverageMAE = totalMAE / forecastCount;
-      }
-    })
+    // First filter out the covid hub baseline MAE average.
+    let baselineAverageMAE = this.state.csvData.filter(method => method.id === "reich_COVIDhub_baseline")[0];
 
     const rankingTableData = this.state.csvData.map(method => {
       const methodName = method.id;
       const methodType = this.isMLMethod(methodName) ? "ML/AI" : "Human-Expert";
-      const forecastCount = method.data.length;
-      let totalMAE = 0;
-      method.data.forEach(dp => {
-        totalMAE += dp.y;
+      let forecastCount = 0;
+      let MAE_Sum = 0;
+      let relativeMAE_Sum = 0;  // Sum of method_MAE/baseline_MAE
+      method.data.forEach((dp, idx) =>
+      {
+        if (!isNaN(dp.y)) {
+          MAE_Sum += dp.y;
+          relativeMAE_Sum += dp.y / baselineAverageMAE.data[idx].y;
+          forecastCount++;
+        }
       });
-      const averageMAE = totalMAE / forecastCount;
-      const relativeMAE = (averageMAE / ensembleAverageMAE).toFixed(3);
-      return { methodName, methodType, relativeMAE, forecastCount };
-    });
+      if (forecastCount === 0) {
+        return null;
+      }
+      const averageMAE = (MAE_Sum / forecastCount).toFixed(2);
+      const relativeMAE = (relativeMAE_Sum / forecastCount).toFixed(3);
+      return { methodName, methodType, averageMAE, relativeMAE, forecastCount };
+    }).filter(entry => entry);  // Filter out methods without any forecasts.
 
     this.setState({
       rankingTableData: rankingTableData,

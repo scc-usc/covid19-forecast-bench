@@ -187,7 +187,20 @@ class Evaluation extends Component {
     );
   };
 
-  generateRanking = csvData => {
+  generateRanking = () => {
+    // First calculate the covid hub ensemble MAE average.
+    let ensembleAverageMAE = 1;
+    this.state.csvData.forEach(method => {
+      if (method.id === "reich_COVIDhub_ensemble") {
+        const forecastCount = method.data.length;
+        let totalMAE = 0;
+        method.data.forEach(dp => {
+          totalMAE += dp.y;
+        });
+        ensembleAverageMAE = totalMAE / forecastCount;
+      }
+    })
+
     const rankingTableData = this.state.csvData.map(method => {
       const methodName = method.id;
       const methodType = this.isMLMethod(methodName) ? "ML/AI" : "Human-Expert";
@@ -196,8 +209,9 @@ class Evaluation extends Component {
       method.data.forEach(dp => {
         totalMAE += dp.y;
       });
-      const averageMAE = (totalMAE / forecastCount).toFixed(2);
-      return { methodName, methodType, averageMAE, forecastCount };
+      const averageMAE = totalMAE / forecastCount;
+      const relativeMAE = (averageMAE / ensembleAverageMAE).toFixed(3);
+      return { methodName, methodType, relativeMAE, forecastCount };
     });
 
     this.setState({

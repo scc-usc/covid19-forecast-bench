@@ -44,9 +44,9 @@ const rankingTable = props => {
       },
     },
     {
-      title: "Average MAE",
-      dataIndex: "averageMAE",
-      sorter: (a, b) => a.averageMAE - b.averageMAE,
+      title: "Relative MAE",
+      dataIndex: "relativeMAE",
+      sorter: (a, b) => a.relativeMAE - b.relativeMAE,
       defaultSortOrder: "ascend",
       sortDirections: ["ascend", "descend"],
     },

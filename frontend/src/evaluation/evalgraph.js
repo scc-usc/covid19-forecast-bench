@@ -85,7 +85,7 @@ const addChart = (methods, lines, scatters, legends, data, colorScheme) => {
         { fill: "#aaa", fontSize: 5, fontFamily: "sans-serif" },
       ];
 
-      const lineData = data[method]["maeData"].filter(datapoint => datapoint.y); // Filter out NaN values.
+      const lineData = data[method]["dataSeries"].filter(datapoint => datapoint.y); // Filter out NaN values.
       legends.push({ name: method, symbol: { fill: color } });
 
       lines.push(
@@ -124,8 +124,8 @@ const addChart = (methods, lines, scatters, legends, data, colorScheme) => {
   });
 };
 
-export const evalgraph = props => {
-  const { data, mlMethods, humanMethods, allMethods, filter } = props;
+const evalgraph = props => {
+  const { data, mlMethods, humanMethods, allMethods, filter, metrics } = props;
 
   let lines = [];
   let scatters = [];
@@ -138,7 +138,7 @@ export const evalgraph = props => {
         style={{
           data: { stroke: "#ffffff" },
         }}
-        data={data.anchorDatapoints.maeData}
+        data={data.anchorDatapoints["dataSeries"]}
       />
     );
   }

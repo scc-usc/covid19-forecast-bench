@@ -3,6 +3,7 @@ import Papa from "papaparse";
 import { readRemoteFile } from "react-papaparse";
 import Evalgraph from "./evalgraph";
 import Evalmap from "./evalmap";
+import RankingTable from "./rankingTable";
 import "./evaluation.css";
 import { Form, Select, Row, Col, Radio, List, Avatar } from "antd";
 import FormItem from "antd/lib/form/FormItem";
@@ -92,8 +93,9 @@ class Evaluation extends Component {
       mlMethods: [],
       methodList: [],
       allMethods: [],
-      maeSummary: [],
+      csvData: [],
       mainGraphData: {},
+      rankingTableData: [],
       metrics: "MAE",
       metricsList: ["MAE", "Percentage", "RMSE"],
       forecastType: "incDeath",
@@ -102,11 +104,10 @@ class Evaluation extends Component {
     };
   }
 
-  componentDidMount() {    
-      ReactGA.initialize('UA-186385643-2');
-      ReactGA.pageview('/covid19-forecast-bench/evaluation');
-    }
-
+  componentDidMount() {
+    ReactGA.initialize("UA-186385643-2");
+    ReactGA.pageview("/covid19-forecast-bench/evaluation");
+  }
 
   componentWillMount = () => {
     this.formRef = React.createRef();
@@ -137,6 +138,8 @@ class Evaluation extends Component {
     });
 
     this.updateData(result, () => {
+      this.generateRanking();
+
       this.addMethod("ensemble_SIkJa_RF");
       this.addMethod("reich_COVIDhub_ensemble");
     });
@@ -144,29 +147,35 @@ class Evaluation extends Component {
 
   updateData = (result, func) => {
     let anchorDatapoints = { maeData: [] };
-    const maeSummary = result.data.map((csvRow, index) => {
-      const method = { id: "", data: [] };
-      for (const col in csvRow) {
-        if (col === "") {
-          method.id = csvRow[col];
-        } else {
-          method.data.push({
-            x: col,
-            y: parseInt(csvRow[col]),
-          });
-        }
-      }
 
-      // If method id is an empty space, the data are empty anchor datapoints.
-      if (method.id == " ") {
-        anchorDatapoints.maeData = method.data;
-      }
-      return method;
-    });
+    const csvData = result.data
+      .map((csvRow, index) => {
+        const method = { id: "", data: [] };
+        for (const col in csvRow) {
+          if (col === "") {
+            method.id = csvRow[col];
+          } else {
+            const val = parseInt(csvRow[col]);
+            // Filter out datapoints that is NaN.
+            if (!isNaN(val)) {
+              method.data.push({
+                x: col,
+                y: val,
+              });
+            }
+          }
+        }
+        // If method id is an empty space, the data are empty anchor datapoints.
+        if (method.id == " ") {
+          anchorDatapoints.dataSeries = method.data;
+        }
+        return method;
+      })
+      .filter(method => method.id !== " " && method.data.length !== 0); // Filter out anchor datapoints and methods which do not have any forecasts.
 
     this.setState(
       {
-        maeSummary: maeSummary,
+        csvData: csvData,
         mainGraphData: { anchorDatapoints },
       },
       () => {
@@ -176,6 +185,24 @@ class Evaluation extends Component {
         }
       }
     );
+  };
+
+  generateRanking = csvData => {
+    const rankingTableData = this.state.csvData.map(method => {
+      const methodName = method.id;
+      const methodType = this.isMLMethod(methodName) ? "ML/AI" : "Human-Expert";
+      const forecastCount = method.data.length;
+      let totalMAE = 0;
+      method.data.forEach(dp => {
+        totalMAE += dp.y;
+      });
+      const averageMAE = (totalMAE / forecastCount).toFixed(2);
+      return { methodName, methodType, averageMAE, forecastCount };
+    });
+
+    this.setState({
+      rankingTableData: rankingTableData,
+    });
   };
 
   methodIsSelected = method => {
@@ -199,9 +226,13 @@ class Evaluation extends Component {
   };
 
   addMethod = method => {
-    const maeData = this.state.maeSummary.filter(data => data.id === method)[0]
-      .data;
-    const allData = { maeData: maeData };
+    if (this.methodIsSelected(method)) {
+      return;
+    }
+    const methodDataSeries = this.state.csvData.filter(
+      data => data.id === method
+    )[0].data;
+    const methodGraphData = { dataSeries: methodDataSeries };
 
     this.setState(
       prevState => {
@@ -215,7 +246,7 @@ class Evaluation extends Component {
           allMethods: [...prevState.allMethods, method],
           mainGraphData: {
             ...prevState.mainGraphData,
-            [method]: allData,
+            [method]: methodGraphData,
           },
         };
       },
@@ -353,6 +384,7 @@ class Evaluation extends Component {
       metricsList,
       timeSpan,
       mainGraphData,
+      rankingTableData,
     } = this.state;
 
     const methodOptions = methodList
@@ -456,32 +488,33 @@ class Evaluation extends Component {
                   </Form.Item>
                 </Form>
               </Col>
-             
             </Row>
           </div>
           <Row type="flex" justify="space-around">
-             
-              <div className="evalmap-container">
-                <Evalmap
-                  clickHandler={this.handleRegionChange}
-                  region={region}
-                />
-              </div>
-              
-              <div className="evalgraph-container">
-                <Evalgraph
-                  className="graph"
-                  data={mainGraphData}
-                  mlMethods={mlMethods}
-                  humanMethods={humanMethods}
-                  allMethods={allMethods}
-                  filter={filter}
-                />
-              </div>
-              
+            <div className="evalmap-container">
+              <Evalmap clickHandler={this.handleRegionChange} region={region} />
+            </div>
+
+            <div className="evalgraph-container">
+              <Evalgraph
+                className="graph"
+                data={mainGraphData}
+                mlMethods={mlMethods}
+                humanMethods={humanMethods}
+                allMethods={allMethods}
+                filter={filter}
+                metrics={metrics}
+              />
+            </div>
           </Row>
-           
-              
+          <Row type="flex" justify="space-around">
+            <div className="ranking-table-container">
+              <RankingTable
+                data={rankingTableData}
+                addMethod={this.addMethod}
+              />
+            </div>
+          </Row>
         </div>
       </div>
     );

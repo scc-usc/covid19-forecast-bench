@@ -95,7 +95,7 @@ class Evaluation extends Component {
       maeSummary: [],
       mainGraphData: {},
       metrics: "MAE",
-      metricsList: ["MAE", "Percentage", "RMSE"],
+      metricsList: ["MAE", "MAPE (coming soon)", "RMSE (coming soon)"],
       forecastType: "incDeath",
       timeSpan: "4",
       lastDate: "",
@@ -393,7 +393,33 @@ class Evaluation extends Component {
                   ref={this.formRef}
                   onValuesChange={this.onValuesChange}
                 >
-                  <Form.Item label="Filter" name="filter">
+                  
+                  
+                  {/* TODO: The metrics options have not been implemented. */}
+                  <Form.Item label="Forecast Type" name="forecastType">
+                    <Select showSearch defaultValue="incDeath">
+                      <Option value="incDeath">
+                        COVID-19 US state-level death forecasts
+                      </Option>
+                      <Option value="incCase">
+                        COVID-19 US state-level case forecasts (coming soon)
+                      </Option>
+                    </Select>
+                  </Form.Item>
+
+                  <Form.Item label="Region" name="region">
+                    <Select
+                      showSearch
+                      placeholder="Select a region"
+                      defaultValue="states"
+                      value={region}
+                      onChange={this.handleRegionChange}
+                    >
+                      {regionOptions}
+                    </Select>
+                    </Form.Item>
+
+                    <Form.Item label="Highlight" name="filter">
                     <Radio.Group
                       defaultValue="all"
                       onChange={this.handleFilterChange}
@@ -405,17 +431,8 @@ class Evaluation extends Component {
                       </Radio.Button>
                     </Radio.Group>
                   </Form.Item>
-                  <Form.Item label="Region" name="region">
-                    <Select
-                      showSearch
-                      placeholder="Select a region"
-                      defaultValue="states"
-                      value={region}
-                      onChange={this.handleRegionChange}
-                    >
-                      {regionOptions}
-                    </Select>
-                  </Form.Item>
+
+                  
                   <Form.Item label="Methods" name="methods">
                     <Select mode="multiple" placeholder="Select Methods">
                       {methodOptions}
@@ -431,17 +448,7 @@ class Evaluation extends Component {
                       ))}
                     </Select>
                   </Form.Item>
-                  {/* TODO: The metrics options have not been implemented. */}
-                  <Form.Item label="Forecast Type" name="forecastType">
-                    <Select showSearch defaultValue="incDeath">
-                      <Option value="incDeath">
-                        COVID-19 death US state-level death forecasts
-                      </Option>
-                      <Option value="incCase">
-                        COVID-19 death US state-level case forecasts
-                      </Option>
-                    </Select>
-                  </Form.Item>
+                  
                   <Form.Item label="Prediction Time Span" name="timeSpan">
                     <Radio.Group
                       value={timeSpan}

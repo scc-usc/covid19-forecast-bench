@@ -99,7 +99,7 @@ class Evaluation extends Component {
       metrics: "MAE",
       metricsList: ["MAE", "MAPE (coming soon)", "RMSE (coming soon)"],
       forecastType: "incDeath",
-      timeSpan: "4",
+      timeSpan: "avg",
       lastDate: "",
     };
   }
@@ -112,8 +112,7 @@ class Evaluation extends Component {
   componentWillMount = () => {
     this.formRef = React.createRef();
     Papa.parse(
-      `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/summary_${this.state.timeSpan}_weeks_ahead_${this.state.region}.csv`,
-      {
+      this.getUrl(), {
         download: true,
         worker: true,
         header: true,
@@ -122,6 +121,16 @@ class Evaluation extends Component {
       }
     );
   };
+
+  getUrl = () => {
+    let url = "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/mae_avg_states.csv";
+    if (this.state.timeSpan == "avg") {
+      url = `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/mae_avg_${this.state.region}.csv`;
+    } else {
+      url = `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/mae_${this.state.timeSpan}_weeks_ahead_${this.state.region}.csv`;
+    }
+    return url;
+  }
 
   initialize = result => {
     result.data.map((csvRow, index) => {
@@ -340,17 +349,17 @@ class Evaluation extends Component {
   handleTimeSpanSelect = e => {
     this.setState({
       timeSpan: e.target.value,
+    }, () => {
+      Papa.parse(
+        this.getUrl(), {
+          download: true,
+          worker: true,
+          header: true,
+          skipEmptyLines: true,
+          complete: this.updateData,
+        }
+      );
     });
-    Papa.parse(
-      `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/summary_${e.target.value}_weeks_ahead_${this.state.region}.csv`,
-      {
-        download: true,
-        worker: true,
-        header: true,
-        skipEmptyLines: true,
-        complete: this.updateData,
-      }
-    );
   };
 
   handleRegionChange = newRegion => {
@@ -360,8 +369,7 @@ class Evaluation extends Component {
       },
       () => {
         Papa.parse(
-          `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/summary_${this.state.timeSpan}_weeks_ahead_${this.state.region}.csv`,
-          {
+          this.getUrl(), {
             download: true,
             header: true,
             worker: true,
@@ -436,8 +444,8 @@ class Evaluation extends Component {
                   ref={this.formRef}
                   onValuesChange={this.onValuesChange}
                 >
-                  
-                  
+
+
                   {/* TODO: The metrics options have not been implemented. */}
                   <Form.Item label="Forecast Type" name="forecastType">
                     <Select showSearch defaultValue="incDeath">
@@ -475,7 +483,7 @@ class Evaluation extends Component {
                     </Radio.Group>
                   </Form.Item>
 
-                  
+
                   <Form.Item label="Methods" name="methods">
                     <Select mode="multiple" placeholder="Select Methods">
                       {methodOptions}
@@ -491,17 +499,18 @@ class Evaluation extends Component {
                       ))}
                     </Select>
                   </Form.Item>
-                  
+
                   <Form.Item label="Prediction Time Span" name="timeSpan">
                     <Radio.Group
                       value={timeSpan}
-                      defaultValue={"4"}
+                      defaultValue={"avg"}
                       onChange={this.handleTimeSpanSelect}
                     >
-                      <Radio value="1">1-week-ahead</Radio>
-                      <Radio value="2">2-week-ahead</Radio>
-                      <Radio value="3">3-week-ahead</Radio>
-                      <Radio value="4">4-week-ahead</Radio>
+                      <Radio value="avg">Average over 4 weeks</Radio>
+                      <Radio value="1">1 week ahead</Radio>
+                      <Radio value="2">2 week ahead</Radio>
+                      <Radio value="3">3 week ahead</Radio>
+                      <Radio value="4">4 week ahead</Radio>
                     </Radio.Group>
                   </Form.Item>
                 </Form>

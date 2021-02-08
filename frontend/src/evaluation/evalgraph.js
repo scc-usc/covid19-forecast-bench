@@ -105,7 +105,7 @@ const addChart = (methods, lines, scatters, legends, data, colorScheme) => {
           size={1.5}
           labels={({ datum }) => [
             method,
-            `End date: ${datum.x.substring(11, 21)}`,
+            `End date: ${datum.x}`,
             `MAE: ${datum.y}`,
           ]}
           labelComponent={
@@ -167,7 +167,7 @@ const evalgraph = props => {
         data: { fill: "#ffffff" },
       }}
       size={0}
-      data={[{ x: "x", y: 200 }]}
+      data={[{ x: " ", y: 200 }]}
     />
   );
 
@@ -183,7 +183,7 @@ const evalgraph = props => {
         {scatters}
         <VictoryAxis
           tickCount={8}
-          tickFormat={t => (typeof t === "string" ? t.substring(11, 21) : t)}
+          // tickFormat={t => (typeof t === "string" ? t.substring(11, 21) : t)}
           label="Forecast End Date"
           style={{
             tickLabels: { fontSize: 6, padding: 10, angle: 25 },

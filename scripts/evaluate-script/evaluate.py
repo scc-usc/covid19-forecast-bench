@@ -29,13 +29,11 @@ def get_inc_truth(url):
     date_col2 = list(inc_truth.columns)
     date_col2.pop(0)
 
-    wk_intervals = []
-    for i in range(len(date_col1)):
-        wk_intervals.append(date_col1[i] + '-' + date_col2[i])
+    end_date = date_col2
 
     # Assign new column names.
     inc_truth = inc_truth.drop(columns=["2020-01-25"])
-    inc_truth.columns = wk_intervals
+    inc_truth.columns = date_col2
 
     # Add region names.
     inc_truth.insert(0, "State", cum_truth["Country"])
@@ -78,9 +76,8 @@ def evaluate(inc_truth, model_name, reports, regions, model_evals):
         cols = list(pred.columns)
         for i in range(1, len(cols)):
             epi_day = int(cols[i])
-            wk = datetime_to_str(DAY_ZERO + datetime.timedelta(days=epi_day-7)) \
-            + '-' + datetime_to_str(DAY_ZERO + datetime.timedelta(days=epi_day))
-            cols[i] = wk
+            end_date = datetime_to_str(DAY_ZERO + datetime.timedelta(days=epi_day))
+            cols[i] = end_date
         pred.columns = cols
 
         # Calculate MAE for each state.
@@ -105,6 +102,27 @@ def evaluate(inc_truth, model_name, reports, regions, model_evals):
                 for region in regions:
                     model_evals[region][i][interval][model_name] = mae_df[interval][mae_df["State"] == region]
 
+def generate_average_evals(regions, model_evals):
+    average_evals = {}
+    for region in regions:
+        week_ahead_4 = model_evals[region][3]
+        week_ahead_3 = model_evals[region][2]
+        week_ahead_2 = model_evals[region][1]
+        week_ahead_1 = model_evals[region][0]
+
+        # Make sure the forecast made in the same forecast report are named under the same column.
+        week_ahead_4 = week_ahead_4[week_ahead_4.columns[3:]]
+        week_ahead_3 = week_ahead_3[week_ahead_3.columns[2:-1]]
+        week_ahead_2 = week_ahead_2[week_ahead_2.columns[1:-2]]
+        week_ahead_1 = week_ahead_1[week_ahead_1.columns[:-3]]
+
+        week_ahead_3.columns = week_ahead_4.columns
+        week_ahead_2.columns = week_ahead_4.columns
+        week_ahead_1.columns = week_ahead_4.columns
+
+        average = (week_ahead_4 + week_ahead_3 + week_ahead_2 + week_ahead_1) / 4
+        average_evals[region] = average
+    return average_evals
 
 if __name__ == "__main__":
     inc_truth = get_inc_truth(US_DEATH_URL)
@@ -121,4 +139,8 @@ if __name__ == "__main__":
     for state in model_evals:
         for i in range(len(model_evals[state])):
             model_evals[state][i].loc[" "] = 0
-            model_evals[state][i].to_csv("./output/summary_{0}_weeks_ahead_{1}.csv".format(i+1, state))
+            model_evals[state][i].to_csv("./output/mae_{0}_weeks_ahead_{1}.csv".format(i+1, state))
+
+    average_evals = generate_average_evals(state_col, model_evals)
+    for state in average_evals:
+        average_evals[state].to_csv("./output/mae_avg_{1}.csv".format(i+1, state))

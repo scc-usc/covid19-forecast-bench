@@ -208,7 +208,7 @@ class Evaluation extends Component {
       {
         if (!isNaN(dp.y)) {
           MAE_Sum += dp.y;
-          relativeMAE_Sum += dp.y / baselineAverageMAE.data[idx].y;
+          relativeMAE_Sum += dp.y / ((baselineAverageMAE.data[idx].y)? baselineAverageMAE.data[idx].y : 1);
           forecastCount++;
         }
       });
@@ -216,7 +216,12 @@ class Evaluation extends Component {
         return null;
       }
       const averageMAE = (MAE_Sum / forecastCount).toFixed(2);
-      const relativeMAE = (relativeMAE_Sum / forecastCount).toFixed(3);
+      let relativeMAE = (relativeMAE_Sum / forecastCount);
+      // Baseline model is the benchmark of relative MAE.
+      if (method.id === "reich_COVIDhub_baseline") {
+        relativeMAE = 1;
+      }
+      relativeMAE = relativeMAE.toFixed(3);
       return { methodName, methodType, averageMAE, relativeMAE, forecastCount };
     }).filter(entry => entry);  // Filter out methods without any forecasts.
 
@@ -356,7 +361,7 @@ class Evaluation extends Component {
           worker: true,
           header: true,
           skipEmptyLines: true,
-          complete: this.updateData,
+          complete: result => {this.updateData(result, this.generateRanking)},
         }
       );
     });
@@ -374,7 +379,7 @@ class Evaluation extends Component {
             header: true,
             worker: true,
             skipEmptyLines: true,
-            complete: this.updateData,
+            complete: result => {this.updateData(result, this.generateRanking)},
           }
         );
 

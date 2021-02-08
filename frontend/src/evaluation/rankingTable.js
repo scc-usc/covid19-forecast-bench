@@ -44,16 +44,16 @@ const rankingTable = props => {
       },
     },
     {
-      title: "MAE Running Average",
-      dataIndex: "averageMAE",
-      sorter: (a, b) => a.averageMAE - b.averageMAE,
-      sortDirections: ["ascend", "descend"],
-    },
-    {
       title: "Relative MAE",
       dataIndex: "relativeMAE",
       sorter: (a, b) => a.relativeMAE - b.relativeMAE,
       defaultSortOrder: "ascend",
+      sortDirections: ["ascend", "descend"],
+    },
+    {
+      title: "MAE",
+      dataIndex: "averageMAE",
+      sorter: (a, b) => a.averageMAE - b.averageMAE,
       sortDirections: ["ascend", "descend"],
     },
     {

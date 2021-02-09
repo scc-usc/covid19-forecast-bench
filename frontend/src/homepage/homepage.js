@@ -60,8 +60,7 @@ class HomePage extends Component {
 			<br/>
 			<p>
 			For details, please read our <a href="https://arxiv.org/pdf/2102.02842.pdf" target="_blank"> paper </a> accepted at The 5th International Workshop on Health Intelligence in conjunction with The Thirty-Fifth AAAI Conference on Artificial Intelligence (AAAI-21).
-			Here are the <a href=""https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/Srivastava_USC_covid-bench.pdf" target="_blank"> slides</a>.
-
+			Here are the <a href="https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/Srivastava_USC_covid-bench.pdf" target="_blank"> slides</a>.
 			</p>
 
 			</div>

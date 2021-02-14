@@ -5,7 +5,7 @@ import Evalgraph from "./evalgraph";
 import Evalmap from "./evalmap";
 import RankingTable from "./rankingTable";
 import "./evaluation.css";
-import { Form, Select, Row, Col, Radio, List, Avatar } from "antd";
+import { Form, Select, Row, Col, Radio, Slider } from "antd";
 import FormItem from "antd/lib/form/FormItem";
 import ReactGA from "react-ga";
 
@@ -100,7 +100,8 @@ class Evaluation extends Component {
       metricsList: ["MAE", "MAPE (coming soon)", "RMSE (coming soon)"],
       forecastType: "incDeath",
       timeSpan: "avg",
-      lastDate: "",
+      maxDateRange: [],
+      selectedDateRange: []
     };
   }
 
@@ -147,15 +148,35 @@ class Evaluation extends Component {
     });
 
     this.updateData(result, () => {
-      this.generateRanking();
-
+      // Initialize data range.
+      this.setState({
+        selectedDateRange: this.state.maxDateRange
+      }, ()=> {
+        this.generateRanking();
+        this.formRef.current.setFieldsValue({
+          dateRange: [0, this.getTotalNumberOfWeeks()]
+        });
+      });
       this.addMethod("ensemble_SIkJa_RF");
       this.addMethod("reich_COVIDhub_ensemble");
     });
   };
 
   updateData = (result, func) => {
+    let maxDateRange = [undefined, undefined];
     let anchorDatapoints = { maeData: [] };
+
+    // Update the date range by reading the column names.
+    for (const date in result.data[0]) {
+      if (!maxDateRange[0]) { maxDateRange[0] = date; }
+      if (!maxDateRange[1]) { maxDateRange[1] = date; }
+      if (date < maxDateRange[0]) {
+        maxDateRange[0] = date;
+      }
+      if (date > maxDateRange[1]) {
+        maxDateRange[1] = date;
+      }
+    }
 
     const csvData = result.data
       .map((csvRow, index) => {
@@ -165,7 +186,6 @@ class Evaluation extends Component {
             method.id = csvRow[col];
           } else {
             const val = parseInt(csvRow[col]);
-            // Filter out datapoints that is NaN.
             method.data.push({
               x: col,
               y: val,
@@ -184,6 +204,7 @@ class Evaluation extends Component {
       {
         csvData: csvData,
         mainGraphData: { anchorDatapoints },
+        maxDateRange: maxDateRange,
       },
       () => {
         this.reloadAll();
@@ -195,6 +216,7 @@ class Evaluation extends Component {
   };
 
   generateRanking = () => {
+    const selectedDateRange = this.state.selectedDateRange;
     // First filter out the covid hub baseline MAE average.
     let baselineAverageMAE = this.state.csvData.filter(method => method.id === "reich_COVIDhub_baseline")[0];
 
@@ -206,7 +228,7 @@ class Evaluation extends Component {
       let relativeMAE_Sum = 0;  // Sum of method_MAE/baseline_MAE
       method.data.forEach((dp, idx) =>
       {
-        if (!isNaN(dp.y)) {
+        if (!isNaN(dp.y) && dp.x >= selectedDateRange[0] && dp.x <= selectedDateRange[1]) {
           MAE_Sum += dp.y;
           relativeMAE_Sum += dp.y / ((baselineAverageMAE.data[idx].y)? baselineAverageMAE.data[idx].y : 1);
           forecastCount++;
@@ -396,6 +418,33 @@ class Evaluation extends Component {
     });
   };
 
+  getTotalNumberOfWeeks = () => {
+    const MS_PER_WEEK = 1000 * 60 * 60 * 24 * 7;
+    const start = new Date(this.state.maxDateRange[0]);
+    const end = new Date(this.state.maxDateRange[1]);
+    return (end-start) / MS_PER_WEEK;
+  }
+
+  getDateFromWeekNumber = weekNum => { // WeekNum is the number of weeks since the maxDateRange[0].
+    if (this.state.maxDateRange[0]) {
+      const date = new Date(this.state.maxDateRange[0]);
+      date.setDate(date.getDate() + 7 * weekNum);
+      return date.toISOString().slice(0,10);
+    }
+    return null;
+  }
+
+  handleDateRangeChange = e => {
+    const start = this.getDateFromWeekNumber(e[0]);
+    const end = this.getDateFromWeekNumber(e[1]);
+    // console.log([start, end]);
+    this.setState({
+      selectedDateRange: [start, end]
+    }, ()=>{
+      this.generateRanking();
+    });
+  }
+
   render() {
     const {
       filter,
@@ -409,6 +458,8 @@ class Evaluation extends Component {
       timeSpan,
       mainGraphData,
       rankingTableData,
+      maxDateRange,
+      selectedDateRange
     } = this.state;
 
     const methodOptions = methodList
@@ -518,6 +569,16 @@ class Evaluation extends Component {
                       <Radio value="4">4 week ahead</Radio>
                     </Radio.Group>
                   </Form.Item>
+                  <Form.Item label="Prediction Date Range" name="dateRange">
+                    <Slider
+                     range
+                     tooltipVisible
+                     tooltipPlacement="bottom"
+                     max={this.getTotalNumberOfWeeks()}
+                     tipFormatter={this.getDateFromWeekNumber}
+                     onAfterChange={this.handleDateRangeChange}
+                     />
+                  </Form.Item>
                 </Form>
               </Col>
             </Row>
@@ -536,6 +597,7 @@ class Evaluation extends Component {
                 allMethods={allMethods}
                 filter={filter}
                 metrics={metrics}
+                dateRange={selectedDateRange}
               />
             </div>
           </Row>

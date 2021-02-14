@@ -52,7 +52,7 @@ const darkColorScheme = [
 ];
 
 // Add a method in the chart.
-const addChart = (methods, lines, scatters, legends, data, colorScheme) => {
+const addChart = (methods, lines, scatters, legends, data, dateRange, colorScheme) => {
   methods.forEach((method, idx) => {
     if (data[method]) {
       let color = colorScheme[idx % colorScheme.length];
@@ -85,7 +85,12 @@ const addChart = (methods, lines, scatters, legends, data, colorScheme) => {
         { fill: "#aaa", fontSize: 5, fontFamily: "sans-serif" },
       ];
 
-      const lineData = data[method]["dataSeries"].filter(datapoint => datapoint.y); // Filter out NaN values.
+      // Filter out NaN values, and datapoints out of selected date range.
+      const lineData = data[method]["dataSeries"]
+        .filter(datapoint => (
+          !isNaN(datapoint.y)
+          && datapoint.x >= dateRange[0]
+          && datapoint.x <= dateRange[1]));
       legends.push({ name: method, symbol: { fill: color } });
 
       lines.push(
@@ -125,7 +130,7 @@ const addChart = (methods, lines, scatters, legends, data, colorScheme) => {
 };
 
 const evalgraph = props => {
-  const { data, mlMethods, humanMethods, allMethods, filter, metrics } = props;
+  const { data, mlMethods, humanMethods, allMethods, filter, metrics, dateRange } = props;
 
   let lines = [];
   let scatters = [];
@@ -146,17 +151,17 @@ const evalgraph = props => {
   // Cascade human methods on top of ml methods.
   if (data) {
     if (filter === "human") {
-      addChart(mlMethods, lines, scatters, legends, data, lightColorScheme);
-      addChart(humanMethods, lines, scatters, legends, data, darkColorScheme);
+      addChart(mlMethods, lines, scatters, legends, data, dateRange, lightColorScheme);
+      addChart(humanMethods, lines, scatters, legends, data, dateRange, darkColorScheme);
 
       // Cascade ml methods on top of human methods.
     } else if (filter === "ml") {
-      addChart(humanMethods, lines, scatters, legends, data, lightColorScheme);
-      addChart(mlMethods, lines, scatters, legends, data, darkColorScheme);
+      addChart(humanMethods, lines, scatters, legends, data, dateRange, lightColorScheme);
+      addChart(mlMethods, lines, scatters, legends, data, dateRange, darkColorScheme);
 
       // If no filter specified, foreground all methods.
     } else {
-      addChart(allMethods, lines, scatters, legends, data, darkColorScheme);
+      addChart(allMethods, lines, scatters, legends, data, dateRange, darkColorScheme);
     }
   }
 

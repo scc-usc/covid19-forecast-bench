@@ -1,26 +1,26 @@
 {
   "files": {
-    "main.css": "/covid19-forecast-bench/static/css/main.0c28b35d.chunk.css",
-    "main.js": "/covid19-forecast-bench/static/js/main.047e0e29.chunk.js",
-    "main.js.map": "/covid19-forecast-bench/static/js/main.047e0e29.chunk.js.map",
-    "runtime-main.js": "/covid19-forecast-bench/static/js/runtime-main.c4eaa91f.js",
-    "runtime-main.js.map": "/covid19-forecast-bench/static/js/runtime-main.c4eaa91f.js.map",
+    "main.css": "/covid19-forecast-bench/static/css/main.80bf0319.chunk.css",
+    "main.js": "/covid19-forecast-bench/static/js/main.859d352e.chunk.js",
+    "main.js.map": "/covid19-forecast-bench/static/js/main.859d352e.chunk.js.map",
+    "runtime-main.js": "/covid19-forecast-bench/static/js/runtime-main.dcc3c362.js",
+    "runtime-main.js.map": "/covid19-forecast-bench/static/js/runtime-main.dcc3c362.js.map",
     "static/css/2.716ea8d6.chunk.css": "/covid19-forecast-bench/static/css/2.716ea8d6.chunk.css",
-    "static/js/2.bc4b78ad.chunk.js": "/covid19-forecast-bench/static/js/2.bc4b78ad.chunk.js",
-    "static/js/2.bc4b78ad.chunk.js.map": "/covid19-forecast-bench/static/js/2.bc4b78ad.chunk.js.map",
-    "static/js/3.1cfa1848.chunk.js": "/covid19-forecast-bench/static/js/3.1cfa1848.chunk.js",
-    "static/js/3.1cfa1848.chunk.js.map": "/covid19-forecast-bench/static/js/3.1cfa1848.chunk.js.map",
+    "static/js/2.13d43dd9.chunk.js": "/covid19-forecast-bench/static/js/2.13d43dd9.chunk.js",
+    "static/js/2.13d43dd9.chunk.js.map": "/covid19-forecast-bench/static/js/2.13d43dd9.chunk.js.map",
+    "static/js/3.ae5d4934.chunk.js": "/covid19-forecast-bench/static/js/3.ae5d4934.chunk.js",
+    "static/js/3.ae5d4934.chunk.js.map": "/covid19-forecast-bench/static/js/3.ae5d4934.chunk.js.map",
     "index.html": "/covid19-forecast-bench/index.html",
     "static/css/2.716ea8d6.chunk.css.map": "/covid19-forecast-bench/static/css/2.716ea8d6.chunk.css.map",
-    "static/css/main.0c28b35d.chunk.css.map": "/covid19-forecast-bench/static/css/main.0c28b35d.chunk.css.map",
-    "static/js/2.bc4b78ad.chunk.js.LICENSE.txt": "/covid19-forecast-bench/static/js/2.bc4b78ad.chunk.js.LICENSE.txt",
+    "static/css/main.80bf0319.chunk.css.map": "/covid19-forecast-bench/static/css/main.80bf0319.chunk.css.map",
+    "static/js/2.13d43dd9.chunk.js.LICENSE.txt": "/covid19-forecast-bench/static/js/2.13d43dd9.chunk.js.LICENSE.txt",
     "static/media/semantic.min.css": "/covid19-forecast-bench/static/media/outline-icons.ddae9b1b.woff"
   },
   "entrypoints": [
-    "static/js/runtime-main.c4eaa91f.js",
+    "static/js/runtime-main.dcc3c362.js",
     "static/css/2.716ea8d6.chunk.css",
-    "static/js/2.bc4b78ad.chunk.js",
-    "static/css/main.0c28b35d.chunk.css",
-    "static/js/main.047e0e29.chunk.js"
+    "static/js/2.13d43dd9.chunk.js",
+    "static/css/main.80bf0319.chunk.css",
+    "static/js/main.859d352e.chunk.js"
   ]
 }

@@ -228,9 +228,9 @@ class Evaluation extends Component {
       let relativeMAE_Sum = 0;  // Sum of method_MAE/baseline_MAE
       method.data.forEach((dp, idx) =>
       {
-        if (!isNaN(dp.y) && dp.x >= selectedDateRange[0] && dp.x <= selectedDateRange[1]) {
+        if (!isNaN(dp.y) && dp.x >= selectedDateRange[0] && dp.x <= selectedDateRange[1] && baselineAverageMAE.data[idx].y) {
           MAE_Sum += dp.y;
-          relativeMAE_Sum += dp.y / ((baselineAverageMAE.data[idx].y)? baselineAverageMAE.data[idx].y : 1);
+          relativeMAE_Sum += dp.y / baselineAverageMAE.data[idx].y;
           forecastCount++;
         }
       });

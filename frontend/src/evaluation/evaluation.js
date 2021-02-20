@@ -245,7 +245,7 @@ class Evaluation extends Component {
       }
       relativeMAE = relativeMAE.toFixed(3);
       return { methodName, methodType, averageMAE, relativeMAE, forecastCount };
-    }).filter(entry => entry);  // Filter out methods without any forecasts.
+    }).filter(entry => entry && entry.forecastCount);  // Filter out methods without any forecasts.
 
     this.setState({
       rankingTableData: rankingTableData,

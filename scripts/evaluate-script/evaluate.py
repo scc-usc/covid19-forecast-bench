@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import numpy as np
 import datetime
@@ -8,6 +9,9 @@ DAY_ZERO = datetime.datetime(2020,1,22)
 FORECASTS_NAMES = "forecasts_filenames.txt"
 MODEL_NAMES = "models.txt"
 US_DEATH_URL = "https://raw.githubusercontent.com/scc-usc/ReCOVER-COVID-19/master/results/forecasts/us_deaths.csv"
+US_DEATH_FORECASTS_DIR = "../../formatted-forecasts/state-death/"
+US_CASE_URL = "https://raw.githubusercontent.com/scc-usc/ReCOVER-COVID-19/master/results/forecasts/us_data.csv"
+US_CASE_FORECASTS_DIR = "../../formatted-forecasts/state-case/"
 
 def datetime_to_str(date):
     return date.strftime("%Y-%m-%d")
@@ -65,11 +69,15 @@ def generate_evaluation_df(regions, models):
 
     return model_evals
 
-def evaluate(inc_truth, model_name, reports, regions, model_evals):
+def evaluate(inc_truth, model_name, reports, regions, model_evals, forecasts_dir):
     for report in reports:
-        print("Evaluating " + report)
+        path = forecasts_dir + "{}/{}".format(model_name, report)
+        if not os.path.exists(path):
+            continue
+
         # Fetch report data.
-        pred = pd.read_csv("../../formatted-forecasts/state-death/{}/{}".format(model_name, report), index_col=0)
+        print("Evaluating " + report)
+        pred = pd.read_csv(path, index_col=0)
         pred = pred.drop(columns=[pred.columns[1]])
 
         # Assign each column name to be week intervals.
@@ -125,22 +133,46 @@ def generate_average_evals(regions, model_evals):
     return average_evals
 
 if __name__ == "__main__":
-    inc_truth = get_inc_truth(US_DEATH_URL)
     model_reports_mapping = get_model_reports_mapping(MODEL_NAMES, FORECASTS_NAMES)
 
+    # Death eval
+    output_dir = "./output/state_death_eval/"
+    os.mkdir(output_dir)
+    inc_truth = get_inc_truth(US_DEATH_URL)
     state_col = list(inc_truth["State"])
     state_col.append("states")
 
     model_evals = generate_evaluation_df(state_col, model_reports_mapping.keys())
     for model in model_reports_mapping:
         reports = model_reports_mapping[model]
-        evaluate(inc_truth, model, reports, state_col, model_evals)
+        evaluate(inc_truth, model, reports, state_col, model_evals, US_DEATH_FORECASTS_DIR)
 
     for state in model_evals:
         for i in range(len(model_evals[state])):
             model_evals[state][i].loc[" "] = 0
-            model_evals[state][i].to_csv("./output/mae_{0}_weeks_ahead_{1}.csv".format(i+1, state))
+            model_evals[state][i].to_csv(output_dir + "mae_{0}_weeks_ahead_{1}.csv".format(i+1, state))
 
     average_evals = generate_average_evals(state_col, model_evals)
     for state in average_evals:
-        average_evals[state].to_csv("./output/mae_avg_{1}.csv".format(i+1, state))
+        average_evals[state].to_csv(output_dir + "mae_avg_{1}.csv".format(i+1, state))
+
+    # Case eval
+    output_dir = "./output/state_case_eval/"
+    os.mkdir(output_dir)
+    inc_truth = get_inc_truth(US_CASE_URL)
+    state_col = list(inc_truth["State"])
+    state_col.append("states")
+
+    model_evals = generate_evaluation_df(state_col, model_reports_mapping.keys())
+    for model in model_reports_mapping:
+        reports = model_reports_mapping[model]
+        evaluate(inc_truth, model, reports, state_col, model_evals, US_CASE_FORECASTS_DIR)
+
+    for state in model_evals:
+        for i in range(len(model_evals[state])):
+            model_evals[state][i].loc[" "] = 0
+            model_evals[state][i].to_csv(output_dir + "mae_{0}_weeks_ahead_{1}.csv".format(i+1, state))
+
+    average_evals = generate_average_evals(state_col, model_evals)
+    for state in average_evals:
+        average_evals[state].to_csv(output_dir + "mae_avg_{1}.csv".format(i+1, state))

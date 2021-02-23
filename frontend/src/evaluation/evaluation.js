@@ -98,7 +98,7 @@ class Evaluation extends Component {
       rankingTableData: [],
       metrics: "MAE",
       metricsList: ["MAE", "MAPE (coming soon)", "RMSE (coming soon)"],
-      forecastType: "incDeath",
+      forecastType: "state_death_eval",
       timeSpan: "avg",
       maxDateRange: [],
       selectedDateRange: []
@@ -126,9 +126,9 @@ class Evaluation extends Component {
   getUrl = () => {
     let url = "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/mae_avg_states.csv";
     if (this.state.timeSpan == "avg") {
-      url = `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/mae_avg_${this.state.region}.csv`;
+      url = `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/${this.state.forecastType}/mae_avg_${this.state.region}.csv`;
     } else {
-      url = `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/mae_${this.state.timeSpan}_weeks_ahead_${this.state.region}.csv`;
+      url = `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/${this.state.forecastType}/mae_${this.state.timeSpan}_weeks_ahead_${this.state.region}.csv`;
     }
     return url;
   }
@@ -367,6 +367,23 @@ class Evaluation extends Component {
     );
   };
 
+  handleForecastTypeSelect = type => {
+    this.setState({
+      forecastType: type
+    }, () => {
+      Papa.parse(
+        this.getUrl(), {
+          download: true,
+          worker: true,
+          header: true,
+          skipEmptyLines: true,
+          complete: result => {this.updateData(result, this.generateRanking)},
+        }
+      );
+    });
+  }
+
+
   handleErrorTypeSelect = e => {
     this.setState({
       errorType: e.target.value,
@@ -501,15 +518,13 @@ class Evaluation extends Component {
                   onValuesChange={this.onValuesChange}
                 >
 
-
-                  {/* TODO: The metrics options have not been implemented. */}
                   <Form.Item label="Forecast Type" name="forecastType">
-                    <Select showSearch defaultValue="incDeath">
-                      <Option value="incDeath">
+                    <Select showSearch defaultValue="state_death_eval" onChange={this.handleForecastTypeSelect}>
+                      <Option value="state_death_eval">
                         COVID-19 US state-level death forecasts
                       </Option>
-                      <Option value="incCase">
-                        COVID-19 US state-level case forecasts (coming soon)
+                      <Option value="state_case_eval">
+                        COVID-19 US state-level case forecasts
                       </Option>
                     </Select>
                   </Form.Item>

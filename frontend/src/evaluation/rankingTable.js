@@ -60,8 +60,36 @@ const rankingTable = props => {
       title: "Number of Forecasts",
       dataIndex: "forecastCount",
       sorter: (a, b) => a.forecastCount - b.forecastCount,
+      filters: [
+        {
+          text: "Only show methods that fits selected date range.",
+          value: "1",
+        },
+      ],
+      onFilter: (value, entry) => entry.fitWithinDateRange == value,
+      defaultFilteredValue: ["1"],
       sortDirections: ["ascend", "descend"],
     },
+    {
+      title: "Status",
+      dataIndex: "upToSelectedEndDate",
+      filters: [
+        {
+          text: "Only show methods that are still updating on the selected end date.",
+          value: "1",
+        },
+      ],
+      onFilter: (value, entry) => entry.upToSelectedEndDate == value,
+      render: b => {
+        let color = b? "green" : "red";
+        let text = b? "Still Updating" : "Stop Updates";
+        return (
+          <Tag color={color} key={Math.random() * 10000}>
+            {text}
+          </Tag>
+        );
+      },
+    }
   ];
 
   return <Table columns={columns} dataSource={data} />;

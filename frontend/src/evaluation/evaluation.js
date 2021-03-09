@@ -168,9 +168,9 @@ class Evaluation extends Component {
 
     // Update the date range by reading the column names.
     for (const date in result.data[0]) {
-      if (!maxDateRange[0]) { maxDateRange[0] = date; }
+      if (result.data[0][date] && !maxDateRange[0]) { maxDateRange[0] = date; }
       if (!maxDateRange[1]) { maxDateRange[1] = date; }
-      if (date < maxDateRange[0]) {
+      if (result.data[0][date] && date < maxDateRange[0]) {
         maxDateRange[0] = date;
       }
       if (date > maxDateRange[1]) {
@@ -226,6 +226,8 @@ class Evaluation extends Component {
       let forecastCount = 0;
       let MAE_Sum = 0;
       let relativeMAE_Sum = 0;  // Sum of method_MAE/baseline_MAE
+      let fromSelectedStartDate = false;
+      let upToSelectedEndDate = false;
       method.data.forEach((dp, idx) =>
       {
         if (!isNaN(dp.y) && dp.x >= selectedDateRange[0] && dp.x <= selectedDateRange[1] && baselineAverageMAE.data[idx].y) {
@@ -233,10 +235,17 @@ class Evaluation extends Component {
           relativeMAE_Sum += dp.y / baselineAverageMAE.data[idx].y;
           forecastCount++;
         }
+        if (!isNaN(dp.y) && dp.x == selectedDateRange[0]) {
+          fromSelectedStartDate = true;
+        }
+        if (!isNaN(dp.y) && dp.x == selectedDateRange[1]) {
+          upToSelectedEndDate = true;
+        }
       });
       if (forecastCount === 0) {
         return null;
       }
+      const fitWithinDateRange = fromSelectedStartDate && upToSelectedEndDate;
       const averageMAE = (MAE_Sum / forecastCount).toFixed(2);
       let relativeMAE = (relativeMAE_Sum / forecastCount);
       // Baseline model is the benchmark of relative MAE.
@@ -244,7 +253,7 @@ class Evaluation extends Component {
         relativeMAE = 1;
       }
       relativeMAE = relativeMAE.toFixed(3);
-      return { methodName, methodType, averageMAE, relativeMAE, forecastCount };
+      return { methodName, methodType, averageMAE, relativeMAE, forecastCount, fitWithinDateRange, upToSelectedEndDate };
     }).filter(entry => entry && entry.forecastCount);  // Filter out methods without any forecasts.
 
     this.setState({

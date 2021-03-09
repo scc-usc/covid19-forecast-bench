@@ -75,7 +75,7 @@ const rankingTable = props => {
       dataIndex: "upToSelectedEndDate",
       filters: [
         {
-          text: "Only show methods that are still updating on the selected end date.",
+          text: "Only show methods that are still updating by the selected end date.",
           value: "1",
         },
       ],

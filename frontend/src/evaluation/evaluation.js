@@ -158,7 +158,7 @@ class Evaluation extends Component {
         });
       });
       this.addMethod("ensemble_SIkJa_RF");
-      this.addMethod("reich_COVIDhub_ensemble");
+      this.addMethod("FH_COVIDhub_ensemble");
     });
   };
 
@@ -218,7 +218,7 @@ class Evaluation extends Component {
   generateRanking = () => {
     const selectedDateRange = this.state.selectedDateRange;
     // First filter out the covid hub baseline MAE average.
-    let baselineAverageMAE = this.state.csvData.filter(method => method.id === "reich_COVIDhub_baseline")[0];
+    let baselineAverageMAE = this.state.csvData.filter(method => method.id === "FH_COVIDhub_baseline")[0];
 
     const rankingTableData = this.state.csvData.map(method => {
       const methodName = method.id;
@@ -249,7 +249,7 @@ class Evaluation extends Component {
       const averageMAE = (MAE_Sum / forecastCount).toFixed(2);
       let relativeMAE = (relativeMAE_Sum / forecastCount);
       // Baseline model is the benchmark of relative MAE.
-      if (method.id === "reich_COVIDhub_baseline") {
+      if (method.id === "FH_COVIDhub_baseline") {
         relativeMAE = 1;
       }
       relativeMAE = relativeMAE.toFixed(3);

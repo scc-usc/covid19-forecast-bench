@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/covid19-forecast-bench/static/css/main.80bf0319.chunk.css",
-    "main.js": "/covid19-forecast-bench/static/js/main.c3ac9fcb.chunk.js",
-    "main.js.map": "/covid19-forecast-bench/static/js/main.c3ac9fcb.chunk.js.map",
+    "main.js": "/covid19-forecast-bench/static/js/main.e0c0dcf5.chunk.js",
+    "main.js.map": "/covid19-forecast-bench/static/js/main.e0c0dcf5.chunk.js.map",
     "runtime-main.js": "/covid19-forecast-bench/static/js/runtime-main.dcc3c362.js",
     "runtime-main.js.map": "/covid19-forecast-bench/static/js/runtime-main.dcc3c362.js.map",
     "static/css/2.716ea8d6.chunk.css": "/covid19-forecast-bench/static/css/2.716ea8d6.chunk.css",
@@ -21,6 +21,6 @@
     "static/css/2.716ea8d6.chunk.css",
     "static/js/2.5d37e09c.chunk.js",
     "static/css/main.80bf0319.chunk.css",
-    "static/js/main.c3ac9fcb.chunk.js"
+    "static/js/main.e0c0dcf5.chunk.js"
   ]
 }

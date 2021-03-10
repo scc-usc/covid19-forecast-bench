@@ -72,14 +72,14 @@ const rankingTable = props => {
     },
     {
       title: "Status",
-      dataIndex: "upToSelectedEndDate",
+      dataIndex: "updating",
       filters: [
         {
-          text: "Only show methods that are still updating by the selected end date.",
+          text: "Only show methods that are still updating.",
           value: "1",
         },
       ],
-      onFilter: (value, entry) => entry.upToSelectedEndDate == value,
+      onFilter: (value, entry) => entry.updating == value,
       render: b => {
         let color = b? "green" : "red";
         let text = b? "Still Updating" : "Stop Updates";

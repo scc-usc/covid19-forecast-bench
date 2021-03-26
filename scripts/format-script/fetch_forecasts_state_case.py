@@ -165,7 +165,7 @@ class Job(object):
         for state in self.costant.STATES:
             new_row = {}
             new_row["State"] = state
-            if state in observed:
+            if state in observed and forecast_date.strftime("%Y-%m-%d") in observed[state]:
                 new_row[(forecast_date - self.costant.DAY_ZERO).days] = observed[state][forecast_date.strftime("%Y-%m-%d")]
             else:
                 new_row[(forecast_date - self.costant.DAY_ZERO).days] = "NaN"

@@ -144,7 +144,7 @@ class Job(object):
             new_row = {}
             new_row["County"] = county_id
             # Write the first column, observed cumulative deaths on the forecast date.
-            if county_id in observed:
+            if county_id in observed and forecast_date.strftime("%Y-%m-%d") in observed[county_id]:
                 new_row[(forecast_date - self.costant.DAY_ZERO).days] = observed[county_id][forecast_date.strftime("%Y-%m-%d")]
             else:
                 new_row[(forecast_date - self.costant.DAY_ZERO).days] = "NaN"

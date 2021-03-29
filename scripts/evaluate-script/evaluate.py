@@ -56,16 +56,15 @@ def get_model_reports_mapping(model_names, forecasts_names):
                 mapping[model].append(filename.strip())
     return mapping
 
-def generate_evaluation_df(regions, models):
+def get_evaluation_df(foreast_type, metric, inc_truth, regions, models):
     wk_intervals = list(inc_truth.columns)[22:]
     model_evals = {}
 
     for region in regions:
         model_evals[region] = []
         for i in range(0, 4):
-            empty_array = np.empty((len(models), len(wk_intervals)))
-            empty_array[:] = np.nan
-            model_evals[region].append(pd.DataFrame(empty_array, columns=wk_intervals, index=models))
+            df = pd.read_csv("../../evaluation/{0}_eval/{1}_{2}_weeks_ahead_{3}.csv".format(foreast_type, metric, i+1, region), index_col=0);
+            model_evals[region].append(pd.DataFrame(df, columns=wk_intervals))
 
     return model_evals
 
@@ -97,7 +96,7 @@ def evaluate(inc_truth, model_name, reports, regions, model_evals, forecasts_dir
                 observed_wks -= 1
         pred_num = pred_num.drop(columns=pred_num.columns[observed_wks:])  # Only look at first 4 observed weeks.
         mae_df = np.abs((pred_num - inc_truth[pred_num.columns]))
-        mae_df.insert(0, "State", state_col[:-1])
+        mae_df.insert(0, "State", regions[:-1])
 
         # Calculate the mean MAE as the overall error.
         overall_mae = mae_df.mean()
@@ -132,7 +131,7 @@ def generate_average_evals(regions, model_evals):
         average_evals[region] = average
     return average_evals
 
-if __name__ == "__main__":
+def run():
     model_reports_mapping = get_model_reports_mapping(MODEL_NAMES, FORECASTS_NAMES)
 
     # Death eval
@@ -142,7 +141,8 @@ if __name__ == "__main__":
     state_col = list(inc_truth["State"])
     state_col.append("states")
 
-    model_evals = generate_evaluation_df(state_col, model_reports_mapping.keys())
+    model_evals = get_evaluation_df("state_death", "mae", inc_truth, state_col, model_reports_mapping.keys())
+    # model_evals = generate_evaluation_df(state_col, model_reports_mapping.keys())
     for model in model_reports_mapping:
         reports = model_reports_mapping[model]
         evaluate(inc_truth, model, reports, state_col, model_evals, US_DEATH_FORECASTS_DIR)
@@ -163,7 +163,8 @@ if __name__ == "__main__":
     state_col = list(inc_truth["State"])
     state_col.append("states")
 
-    model_evals = generate_evaluation_df(state_col, model_reports_mapping.keys())
+    model_evals = get_evaluation_df("state_case", "mae", inc_truth, state_col, model_reports_mapping.keys())
+    # model_evals = generate_evaluation_df(state_col, model_reports_mapping.keys())
     for model in model_reports_mapping:
         reports = model_reports_mapping[model]
         evaluate(inc_truth, model, reports, state_col, model_evals, US_CASE_FORECASTS_DIR)

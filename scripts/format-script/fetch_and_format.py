@@ -35,16 +35,19 @@ for csv in os.listdir("./input/"):
     with open("county_case.txt", 'a') as f:
         f.write(csv + '\n')
 
+print("Fetch State Death Forecasts:")
 exec(open("./fetch_forecasts_state_death.py").read())
 for model in os.listdir("./output/"):
     merge("./output/"+model+'/', "../../formatted-forecasts/state-death/"+model+'/')
     shutil.rmtree("./output/"+model)
 
+print("Fetch State Case Forecasts:")
 exec(open("./fetch_forecasts_state_case.py").read())
 for model in os.listdir("./output/"):
     merge("./output/"+model+'/', "../../formatted-forecasts/state-case/"+model+'/')
     shutil.rmtree("./output/"+model)
 
+print("Fetch County Case Forecasts:")
 exec(open("./fetch_forecasts_county_case.py").read())
 for model in os.listdir("./output/"):
     merge("./output/"+model+'/', "../../formatted-forecasts/county-case/"+model+'/')
@@ -75,18 +78,21 @@ for csv in os.listdir("./input/"):
     with open("county_case.txt", 'a') as f:
         f.write(csv + '\n')
 
+print("Fetch State Death Forecasts:")
 exec(open("./fetch_forecasts_state_death.py").read())
 os.system("./add_FH_prefix.sh")
 for model in os.listdir("./output/"):
     merge("./output/"+model+'/', "../../formatted-forecasts/state-death/"+model+'/')
     shutil.rmtree("./output/"+model)
 
+print("Fetch State Case Forecasts:")
 exec(open("./fetch_forecasts_state_case.py").read())
 os.system("./add_FH_prefix.sh")
 for model in os.listdir("./output/"):
     merge("./output/"+model+'/', "../../formatted-forecasts/state-case/"+model+'/')
     shutil.rmtree("./output/"+model)
 
+print("Fetch County Case Forecasts:")
 exec(open("./fetch_forecasts_county_case.py").read())
 os.system("./add_FH_prefix.sh")
 for model in os.listdir("./output/"):

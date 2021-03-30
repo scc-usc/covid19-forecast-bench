@@ -177,3 +177,6 @@ def run():
     average_evals = generate_average_evals(state_col, model_evals)
     for state in average_evals:
         average_evals[state].to_csv(output_dir + "mae_avg_{1}.csv".format(i+1, state))
+
+if __name__ == "__main__":
+    run()

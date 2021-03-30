@@ -1,57 +1,57 @@
 ,State,425,430,437,444,451,458,465
-0,Washington,NaN,66,56,46,38,31,24
-1,Illinois,NaN,108,84,66,50,37,27
-2,California,NaN,1443,1265,1106,967,843,735
-3,Arizona,NaN,166,126,93,69,52,37
-4,Massachusetts,NaN,209,186,166,147,129,111
-5,Wisconsin,NaN,49,39,32,25,20,16
-6,Texas,NaN,626,484,369,276,204,150
-7,Nebraska,NaN,19,15,13,10,7,5
-8,Utah,NaN,33,29,23,20,16,13
-9,Oregon,NaN,25,15,8,4,1,1
-10,Florida,NaN,547,456,372,298,236,184
-11,New York,NaN,552,488,419,346,273,203
-12,Rhode Island,NaN,15,12,10,9,7,6
-13,Georgia,NaN,327,274,227,187,152,122
-14,New Hampshire,NaN,8,7,5,4,3,2
-15,North Carolina,NaN,124,91,66,46,32,23
-16,New Jersey,NaN,351,339,313,273,224,171
-17,Colorado,NaN,51,46,38,29,21,13
-18,Maryland,NaN,69,58,48,39,31,25
-19,Nevada,NaN,43,33,25,19,13,11
-20,Tennessee,NaN,81,60,44,32,23,17
-21,Hawaii,NaN,5,4,2,2,1,1
-22,Indiana,NaN,68,48,33,23,15,10
-23,Kentucky,NaN,149,129,112,96,82,71
-24,Minnesota,NaN,105,87,65,46,31,21
-25,Oklahoma,NaN,110,95,83,71,61,53
-26,Pennsylvania,NaN,138,107,83,64,49,39
-27,South Carolina,NaN,92,67,48,33,22,15
-28,District of Columbia,NaN,11,8,7,5,5,3
-29,Kansas,NaN,49,36,26,19,14,10
-30,Missouri,NaN,139,122,106,91,79,68
-31,Vermont,NaN,6,6,5,5,5,4
-32,Virginia,NaN,480,438,395,354,316,278
-33,Connecticut,NaN,49,40,33,27,22,18
-34,Iowa,NaN,44,30,19,13,8,5
-35,Louisiana,NaN,47,35,27,19,14,10
-36,Ohio,NaN,41,30,22,15,12,8
-37,Michigan,NaN,192,175,146,120,94,74
-38,South Dakota,NaN,10,8,5,4,3,2
-39,Arkansas,NaN,14,10,6,4,3,2
-40,Delaware,NaN,22,17,10,6,4,1
-41,Mississippi,NaN,47,36,29,22,16,13
-42,New Mexico,NaN,50,43,37,32,28,23
-43,North Dakota,NaN,2,2,1,1,1,1
-44,Wyoming,NaN,5,3,3,2,1,1
-45,Alaska,NaN,4,2,2,2,1,1
-46,Maine,NaN,16,11,7,4,2,1
-47,Alabama,NaN,107,76,53,37,25,18
-48,Idaho,NaN,28,29,27,26,22,19
-49,Montana,NaN,8,5,5,3,3,2
-50,Puerto Rico,NaN,NaN,NaN,NaN,NaN,NaN,NaN
-51,Virgin Islands,NaN,NaN,NaN,NaN,NaN,NaN,NaN
-52,Guam,NaN,NaN,NaN,NaN,NaN,NaN,NaN
-53,West Virginia,NaN,20,16,11,9,7,5
-54,Northern Mariana Islands,NaN,NaN,NaN,NaN,NaN,NaN,NaN
-55,American Samoa,NaN,NaN,NaN,NaN,NaN,NaN,NaN
+0,Washington,5183,66,56,46,38,31,24
+1,Illinois,23379,108,84,66,50,37,27
+2,California,57619,1443,1265,1106,967,843,735
+3,Arizona,16745,166,126,93,69,52,37
+4,Massachusetts,16894,209,186,166,147,129,111
+5,Wisconsin,7240,49,39,32,25,20,16
+6,Texas,47446,626,484,369,276,204,150
+7,Nebraska,2135,19,15,13,10,7,5
+8,Utah,2062,33,29,23,20,16,13
+9,Oregon,2365,25,15,8,4,1,1
+10,Florida,32779,547,456,372,298,236,184
+11,New York,49444,552,488,419,346,273,203
+12,Rhode Island,2604,15,12,10,9,7,6
+13,Georgia,18556,327,274,227,187,152,122
+14,New Hampshire,1217,8,7,5,4,3,2
+15,North Carolina,11836,124,91,66,46,32,23
+16,New Jersey,24181,351,339,313,273,224,171
+17,Colorado,6070,51,46,38,29,21,13
+18,Maryland,8184,69,58,48,39,31,25
+19,Nevada,5174,43,33,25,19,13,11
+20,Tennessee,11713,81,60,44,32,23,17
+21,Hawaii,453,5,4,2,2,1,1
+22,Indiana,12947,68,48,33,23,15,10
+23,Kentucky,5799,149,129,112,96,82,71
+24,Minnesota,6850,105,87,65,46,31,21
+25,Oklahoma,4788,110,95,83,71,61,53
+26,Pennsylvania,24774,138,107,83,64,49,39
+27,South Carolina,9027,92,67,48,33,22,15
+28,District of Columbia,1050,11,8,7,5,5,3
+29,Kansas,4806,49,36,26,19,14,10
+30,Missouri,8719,139,122,106,91,79,68
+31,Vermont,219,6,6,5,5,5,4
+32,Virginia,10127,480,438,395,354,316,278
+33,Connecticut,7841,49,40,33,27,22,18
+34,Iowa,5675,44,30,19,13,8,5
+35,Louisiana,10030,47,35,27,19,14,10
+36,Ohio,18526,41,30,22,15,12,8
+37,Michigan,16912,192,175,146,120,94,74
+38,South Dakota,1923,10,8,5,4,3,2
+39,Arkansas,5544,14,10,6,4,3,2
+40,Delaware,1531,22,17,10,6,4,1
+41,Mississippi,6956,47,36,29,22,16,13
+42,New Mexico,3892,50,43,37,32,28,23
+43,North Dakota,1492,2,2,1,1,1,1
+44,Wyoming,693,5,3,3,2,1,1
+45,Alaska,310,4,2,2,2,1,1
+46,Maine,729,16,11,7,4,2,1
+47,Alabama,10436,107,76,53,37,25,18
+48,Idaho,1946,28,29,27,26,22,19
+49,Montana,1414,8,5,5,3,3,2
+50,Puerto Rico,2098,NaN,NaN,NaN,NaN,NaN,NaN
+51,Virgin Islands,25,NaN,NaN,NaN,NaN,NaN,NaN
+52,Guam,134,NaN,NaN,NaN,NaN,NaN,NaN
+53,West Virginia,2612,20,16,11,9,7,5
+54,Northern Mariana Islands,2,NaN,NaN,NaN,NaN,NaN,NaN
+55,American Samoa,0,NaN,NaN,NaN,NaN,NaN,NaN

@@ -6,8 +6,9 @@ TIME_SPAN = 9
 TODAY = datetime.datetime.now()
 
 def merge(src, dst):
-    for f in os.listdir(src):
-        shutil.copyfile(src+f, dst+f)
+    if os.path.isdir(src) and os.path.isdir(dst):
+        for f in os.listdir(src):
+            shutil.copyfile(src+f, dst+f)
 
 # Copy USC_SI_kJalpha forecasts from covid-hub to raw forecasts.
 for i in range(TIME_SPAN):

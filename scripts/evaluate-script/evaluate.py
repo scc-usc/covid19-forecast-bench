@@ -9,9 +9,9 @@ DAY_ZERO = datetime.datetime(2020,1,22)
 FORECASTS_NAMES = "forecasts_filenames.txt"
 MODEL_NAMES = "models.txt"
 US_DEATH_URL = "https://raw.githubusercontent.com/scc-usc/ReCOVER-COVID-19/master/results/forecasts/us_deaths.csv"
-US_DEATH_FORECASTS_DIR = "../../formatted-forecasts/state-death/"
+US_DEATH_FORECASTS_DIR = "../../formatted-forecasts/US-COVID/state-death/"
 US_CASE_URL = "https://raw.githubusercontent.com/scc-usc/ReCOVER-COVID-19/master/results/forecasts/us_data.csv"
-US_CASE_FORECASTS_DIR = "../../formatted-forecasts/state-case/"
+US_CASE_FORECASTS_DIR = "../../formatted-forecasts/US-COVID/state-case/"
 
 def datetime_to_str(date):
     return date.strftime("%Y-%m-%d")
@@ -63,7 +63,7 @@ def get_evaluation_df(foreast_type, metric, inc_truth, regions, models):
     for region in regions:
         model_evals[region] = []
         for i in range(0, 4):
-            df = pd.read_csv("../../evaluation/{0}_eval/{1}_{2}_weeks_ahead_{3}.csv".format(foreast_type, metric, i+1, region), index_col=0);
+            df = pd.read_csv("../../evaluation/US-COVID/{0}_eval/{1}_{2}_weeks_ahead_{3}.csv".format(foreast_type, metric, i+1, region), index_col=0);
             model_evals[region].append(pd.DataFrame(df, columns=wk_intervals))
 
     return model_evals

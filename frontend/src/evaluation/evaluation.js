@@ -81,6 +81,7 @@ const ML_MODELS = [
   "SIkJaun1_hyper7",
   "SIkJaun10_window_noval",
   "SIkJaun10_hyper7_smooth7",
+  "SIkJaun_Ensemble_NN",
 ];
 
 class Evaluation extends Component {

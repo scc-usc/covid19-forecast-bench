@@ -151,12 +151,12 @@ class Evaluation extends Component {
       // Initialize data range.
       this.setState(
         {
-          selectedDateRange: this.state.maxDateRange,
+          selectedDateRange: ["2020-08-01", "2021-02-27"],
         },
         () => {
           this.generateRanking();
           this.formRef.current.setFieldsValue({
-            dateRange: [0, this.getTotalNumberOfWeeks()],
+            dateRange: [0, 30],
           });
         }
       );
@@ -166,21 +166,15 @@ class Evaluation extends Component {
   };
 
   updateData = (result, func) => {
-    let maxDateRange = [undefined, undefined];
+    let maxDateRange = ["2020-08-01", undefined];
     let anchorDatapoints = { maeData: [], dataSeries: [] };
 
     // Update the date range by reading the column names.
     for (const date in result.data[0]) {
-      if (result.data[0][date] && !maxDateRange[0]) {
-        maxDateRange[0] = date;
-      }
-      if (result.data[0][date] && !maxDateRange[1]) {
+      if (!maxDateRange[1]) {
         maxDateRange[1] = date;
       }
-      if (result.data[0][date] && date < maxDateRange[0]) {
-        maxDateRange[0] = date;
-      }
-      if (result.data[0][date] && date > maxDateRange[1]) {
+      if (date > maxDateRange[1]) {
         maxDateRange[1] = date;
       }
     }

@@ -101,7 +101,7 @@ class Evaluation extends Component {
       forecastType: "state_death_eval",
       timeSpan: "avg",
       maxDateRange: [],
-      selectedDateRange: []
+      selectedDateRange: [],
     };
   }
 
@@ -112,26 +112,25 @@ class Evaluation extends Component {
 
   componentWillMount = () => {
     this.formRef = React.createRef();
-    Papa.parse(
-      this.getUrl(), {
-        download: true,
-        worker: true,
-        header: true,
-        skipEmptyLines: true,
-        complete: this.initialize,
-      }
-    );
+    Papa.parse(this.getUrl(), {
+      download: true,
+      worker: true,
+      header: true,
+      skipEmptyLines: true,
+      complete: this.initialize,
+    });
   };
 
   getUrl = () => {
-    let url = "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/state_death_eval/mae_avg_states.csv";
+    let url =
+      "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/US-COVID/state_death_eval/mae_avg_states.csv";
     if (this.state.timeSpan == "avg") {
-      url = `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/${this.state.forecastType}/mae_avg_${this.state.region}.csv`;
+      url = `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/US-COVID/${this.state.forecastType}/mae_avg_${this.state.region}.csv`;
     } else {
-      url = `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/${this.state.forecastType}/mae_${this.state.timeSpan}_weeks_ahead_${this.state.region}.csv`;
+      url = `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/US-COVID/${this.state.forecastType}/mae_${this.state.timeSpan}_weeks_ahead_${this.state.region}.csv`;
     }
     return url;
-  }
+  };
 
   initialize = result => {
     result.data.map((csvRow, index) => {
@@ -149,14 +148,17 @@ class Evaluation extends Component {
 
     this.updateData(result, () => {
       // Initialize data range.
-      this.setState({
-        selectedDateRange: this.state.maxDateRange
-      }, ()=> {
-        this.generateRanking();
-        this.formRef.current.setFieldsValue({
-          dateRange: [0, this.getTotalNumberOfWeeks()]
-        });
-      });
+      this.setState(
+        {
+          selectedDateRange: this.state.maxDateRange,
+        },
+        () => {
+          this.generateRanking();
+          this.formRef.current.setFieldsValue({
+            dateRange: [0, this.getTotalNumberOfWeeks()],
+          });
+        }
+      );
       this.addMethod("ensemble_SIkJa_RF");
       this.addMethod("FH_COVIDhub_ensemble");
     });
@@ -164,12 +166,16 @@ class Evaluation extends Component {
 
   updateData = (result, func) => {
     let maxDateRange = [undefined, undefined];
-    let anchorDatapoints = { maeData: [] };
+    let anchorDatapoints = { maeData: [], dataSeries: [] };
 
     // Update the date range by reading the column names.
     for (const date in result.data[0]) {
-      if (result.data[0][date] && !maxDateRange[0]) { maxDateRange[0] = date; }
-      if (result.data[0][date] && !maxDateRange[1]) { maxDateRange[1] = date; }
+      if (result.data[0][date] && !maxDateRange[0]) {
+        maxDateRange[0] = date;
+      }
+      if (result.data[0][date] && !maxDateRange[1]) {
+        maxDateRange[1] = date;
+      }
       if (result.data[0][date] && date < maxDateRange[0]) {
         maxDateRange[0] = date;
       }
@@ -177,6 +183,17 @@ class Evaluation extends Component {
         maxDateRange[1] = date;
       }
     }
+
+    for (const d in result.data[0]) {
+      if (d != "") {
+        anchorDatapoints.dataSeries.push({
+          x: d,
+          y: 0,
+        });
+      }
+    }
+
+    console.log(anchorDatapoints);
 
     const csvData = result.data
       .map((csvRow, index) => {
@@ -192,10 +209,7 @@ class Evaluation extends Component {
             });
           }
         }
-        // If method id is an empty space, the data are empty anchor datapoints.
-        if (method.id == " ") {
-          anchorDatapoints.dataSeries = method.data;
-        }
+
         return method;
       })
       .filter(method => method.id !== " " && method.data.length !== 0); // Filter out anchor datapoints and methods which do not have any forecasts.
@@ -219,47 +233,65 @@ class Evaluation extends Component {
     const selectedDateRange = this.state.selectedDateRange;
     const maxDateRange = this.state.maxDateRange;
     // First filter out the covid hub baseline MAE average.
-    let baselineAverageMAE = this.state.csvData.filter(method => method.id === "FH_COVIDhub_baseline")[0];
+    let baselineAverageMAE = this.state.csvData.filter(
+      method => method.id === "FH_COVIDhub_baseline"
+    )[0];
 
-    const rankingTableData = this.state.csvData.map(method => {
-      const methodName = method.id;
-      const methodType = this.isMLMethod(methodName) ? "ML/AI" : "Human-Expert";
-      let forecastCount = 0;
-      let MAE_Sum = 0;
-      let relativeMAE_Sum = 0;  // Sum of method_MAE/baseline_MAE
-      let fromSelectedStartDate = false;
-      let upToSelectedEndDate = false;
-      let updating = false;
-      method.data.forEach((dp, idx) =>
-      {
-        if (!isNaN(dp.y) && dp.x >= selectedDateRange[0] && dp.x <= selectedDateRange[1] && baselineAverageMAE.data[idx].y) {
-          MAE_Sum += dp.y;
-          relativeMAE_Sum += dp.y / baselineAverageMAE.data[idx].y;
-          forecastCount++;
+    const rankingTableData = this.state.csvData
+      .map(method => {
+        const methodName = method.id;
+        const methodType = this.isMLMethod(methodName)
+          ? "ML/AI"
+          : "Human-Expert";
+        let forecastCount = 0;
+        let MAE_Sum = 0;
+        let relativeMAE_Sum = 0; // Sum of method_MAE/baseline_MAE
+        let fromSelectedStartDate = false;
+        let upToSelectedEndDate = false;
+        let updating = false;
+        method.data.forEach((dp, idx) => {
+          if (
+            !isNaN(dp.y) &&
+            dp.x >= selectedDateRange[0] &&
+            dp.x <= selectedDateRange[1] &&
+            baselineAverageMAE.data[idx].y
+          ) {
+            MAE_Sum += dp.y;
+            relativeMAE_Sum += dp.y / baselineAverageMAE.data[idx].y;
+            forecastCount++;
+          }
+          if (!isNaN(dp.y) && dp.x == selectedDateRange[0]) {
+            fromSelectedStartDate = true;
+          }
+          if (!isNaN(dp.y) && dp.x == selectedDateRange[1]) {
+            upToSelectedEndDate = true;
+          }
+          if (!isNaN(dp.y) && dp.x == maxDateRange[1]) {
+            updating = true;
+          }
+        });
+        if (forecastCount === 0) {
+          return null;
         }
-        if (!isNaN(dp.y) && dp.x == selectedDateRange[0]) {
-          fromSelectedStartDate = true;
+        const fitWithinDateRange = fromSelectedStartDate && upToSelectedEndDate;
+        const averageMAE = (MAE_Sum / forecastCount).toFixed(2);
+        let relativeMAE = relativeMAE_Sum / forecastCount;
+        // Baseline model is the benchmark of relative MAE.
+        if (method.id === "FH_COVIDhub_baseline") {
+          relativeMAE = 1;
         }
-        if (!isNaN(dp.y) && dp.x == selectedDateRange[1]) {
-          upToSelectedEndDate = true;
-        }
-        if (!isNaN(dp.y) && dp.x == maxDateRange[1]) {
-          updating = true;
-        }
-      });
-      if (forecastCount === 0) {
-        return null;
-      }
-      const fitWithinDateRange = fromSelectedStartDate && upToSelectedEndDate;
-      const averageMAE = (MAE_Sum / forecastCount).toFixed(2);
-      let relativeMAE = (relativeMAE_Sum / forecastCount);
-      // Baseline model is the benchmark of relative MAE.
-      if (method.id === "FH_COVIDhub_baseline") {
-        relativeMAE = 1;
-      }
-      relativeMAE = relativeMAE.toFixed(3);
-      return { methodName, methodType, averageMAE, relativeMAE, forecastCount, fitWithinDateRange, updating };
-    }).filter(entry => entry && entry.forecastCount);  // Filter out methods without any forecasts.
+        relativeMAE = relativeMAE.toFixed(3);
+        return {
+          methodName,
+          methodType,
+          averageMAE,
+          relativeMAE,
+          forecastCount,
+          fitWithinDateRange,
+          updating,
+        };
+      })
+      .filter(entry => entry && entry.forecastCount); // Filter out methods without any forecasts.
 
     this.setState({
       rankingTableData: rankingTableData,
@@ -382,21 +414,23 @@ class Evaluation extends Component {
   };
 
   handleForecastTypeSelect = type => {
-    this.setState({
-      forecastType: type
-    }, () => {
-      Papa.parse(
-        this.getUrl(), {
+    this.setState(
+      {
+        forecastType: type,
+      },
+      () => {
+        Papa.parse(this.getUrl(), {
           download: true,
           worker: true,
           header: true,
           skipEmptyLines: true,
-          complete: result => {this.updateData(result, this.generateRanking)},
-        }
-      );
-    });
-  }
-
+          complete: result => {
+            this.updateData(result, this.generateRanking);
+          },
+        });
+      }
+    );
+  };
 
   handleErrorTypeSelect = e => {
     this.setState({
@@ -405,19 +439,22 @@ class Evaluation extends Component {
   };
 
   handleTimeSpanSelect = e => {
-    this.setState({
-      timeSpan: e.target.value,
-    }, () => {
-      Papa.parse(
-        this.getUrl(), {
+    this.setState(
+      {
+        timeSpan: e.target.value,
+      },
+      () => {
+        Papa.parse(this.getUrl(), {
           download: true,
           worker: true,
           header: true,
           skipEmptyLines: true,
-          complete: result => {this.updateData(result, this.generateRanking)},
-        }
-      );
-    });
+          complete: result => {
+            this.updateData(result, this.generateRanking);
+          },
+        });
+      }
+    );
   };
 
   handleRegionChange = newRegion => {
@@ -426,15 +463,15 @@ class Evaluation extends Component {
         region: newRegion,
       },
       () => {
-        Papa.parse(
-          this.getUrl(), {
-            download: true,
-            header: true,
-            worker: true,
-            skipEmptyLines: true,
-            complete: result => {this.updateData(result, this.generateRanking)},
-          }
-        );
+        Papa.parse(this.getUrl(), {
+          download: true,
+          header: true,
+          worker: true,
+          skipEmptyLines: true,
+          complete: result => {
+            this.updateData(result, this.generateRanking);
+          },
+        });
 
         this.formRef.current.setFieldsValue({
           region: this.state.region,
@@ -453,28 +490,32 @@ class Evaluation extends Component {
     const MS_PER_WEEK = 1000 * 60 * 60 * 24 * 7;
     const start = new Date(this.state.maxDateRange[0]);
     const end = new Date(this.state.maxDateRange[1]);
-    return (end-start) / MS_PER_WEEK;
-  }
+    return (end - start) / MS_PER_WEEK;
+  };
 
-  getDateFromWeekNumber = weekNum => { // WeekNum is the number of weeks since the maxDateRange[0].
+  getDateFromWeekNumber = weekNum => {
+    // WeekNum is the number of weeks since the maxDateRange[0].
     if (this.state.maxDateRange[0]) {
       const date = new Date(this.state.maxDateRange[0]);
       date.setDate(date.getDate() + 7 * weekNum);
-      return date.toISOString().slice(0,10);
+      return date.toISOString().slice(0, 10);
     }
     return null;
-  }
+  };
 
   handleDateRangeChange = e => {
     const start = this.getDateFromWeekNumber(e[0]);
     const end = this.getDateFromWeekNumber(e[1]);
     // console.log([start, end]);
-    this.setState({
-      selectedDateRange: [start, end]
-    }, ()=>{
-      this.generateRanking();
-    });
-  }
+    this.setState(
+      {
+        selectedDateRange: [start, end],
+      },
+      () => {
+        this.generateRanking();
+      }
+    );
+  };
 
   render() {
     const {
@@ -490,7 +531,7 @@ class Evaluation extends Component {
       mainGraphData,
       rankingTableData,
       maxDateRange,
-      selectedDateRange
+      selectedDateRange,
     } = this.state;
 
     const methodOptions = methodList
@@ -531,9 +572,12 @@ class Evaluation extends Component {
                   ref={this.formRef}
                   onValuesChange={this.onValuesChange}
                 >
-
                   <Form.Item label="Forecast Type" name="forecastType">
-                    <Select showSearch defaultValue="state_death_eval" onChange={this.handleForecastTypeSelect}>
+                    <Select
+                      showSearch
+                      defaultValue="state_death_eval"
+                      onChange={this.handleForecastTypeSelect}
+                    >
                       <Option value="state_death_eval">
                         COVID-19 US state-level death forecasts
                       </Option>
@@ -553,9 +597,9 @@ class Evaluation extends Component {
                     >
                       {regionOptions}
                     </Select>
-                    </Form.Item>
+                  </Form.Item>
 
-                    <Form.Item label="Highlight" name="filter">
+                  <Form.Item label="Highlight" name="filter">
                     <Radio.Group
                       defaultValue="all"
                       onChange={this.handleFilterChange}
@@ -567,7 +611,6 @@ class Evaluation extends Component {
                       </Radio.Button>
                     </Radio.Group>
                   </Form.Item>
-
 
                   <Form.Item label="Methods" name="methods">
                     <Select mode="multiple" placeholder="Select Methods">
@@ -600,13 +643,13 @@ class Evaluation extends Component {
                   </Form.Item>
                   <Form.Item label="Prediction Date Range" name="dateRange">
                     <Slider
-                     range
-                     tooltipVisible
-                     tooltipPlacement="bottom"
-                     max={this.getTotalNumberOfWeeks()}
-                     tipFormatter={this.getDateFromWeekNumber}
-                     onAfterChange={this.handleDateRangeChange}
-                     />
+                      range
+                      tooltipVisible
+                      tooltipPlacement="bottom"
+                      max={this.getTotalNumberOfWeeks()}
+                      tipFormatter={this.getDateFromWeekNumber}
+                      onAfterChange={this.handleDateRangeChange}
+                    />
                   </Form.Item>
                 </Form>
               </Col>

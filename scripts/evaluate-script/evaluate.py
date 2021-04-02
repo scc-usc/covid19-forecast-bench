@@ -64,6 +64,7 @@ def get_evaluation_df(foreast_type, metric, inc_truth, regions, models):
         model_evals[region] = []
         for i in range(0, 4):
             df = pd.read_csv("../../evaluation/US-COVID/{0}_eval/{1}_{2}_weeks_ahead_{3}.csv".format(foreast_type, metric, i+1, region), index_col=0);
+            df.drop(df.tail(1).index,inplace=True)
             model_evals[region].append(pd.DataFrame(df, columns=wk_intervals))
 
     return model_evals
@@ -107,7 +108,7 @@ def evaluate(inc_truth, model_name, reports, regions, model_evals, forecasts_dir
             interval = mae_df.columns[i+1]
             if interval in model_evals["states"][i].columns:
                 for region in regions:
-                    model_evals[region][i][interval][model_name] = mae_df[interval][mae_df["State"] == region]
+                    model_evals[region][i].loc[model_name, interval] = mae_df[interval][mae_df["State"] == region].tolist()[0]
 
 def generate_average_evals(regions, model_evals):
     average_evals = {}
@@ -149,7 +150,6 @@ def run():
 
     for state in model_evals:
         for i in range(len(model_evals[state])):
-            model_evals[state][i].loc[" "] = 0
             model_evals[state][i].to_csv(output_dir + "mae_{0}_weeks_ahead_{1}.csv".format(i+1, state))
 
     average_evals = generate_average_evals(state_col, model_evals)
@@ -171,7 +171,6 @@ def run():
 
     for state in model_evals:
         for i in range(len(model_evals[state])):
-            model_evals[state][i].loc[" "] = 0
             model_evals[state][i].to_csv(output_dir + "mae_{0}_weeks_ahead_{1}.csv".format(i+1, state))
 
     average_evals = generate_average_evals(state_col, model_evals)

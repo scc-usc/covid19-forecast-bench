@@ -64,7 +64,6 @@ def get_evaluation_df(foreast_type, metric, inc_truth, regions, models):
         model_evals[region] = []
         for i in range(0, 4):
             df = pd.read_csv("../../evaluation/US-COVID/{0}_eval/{1}_{2}_weeks_ahead_{3}.csv".format(foreast_type, metric, i+1, region), index_col=0);
-            df.drop(df.tail(1).index,inplace=True)
             model_evals[region].append(pd.DataFrame(df, columns=wk_intervals))
 
     return model_evals

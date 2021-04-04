@@ -234,8 +234,8 @@ class Job(object):
                 if not os.path.exists(output_model_dir):
                     os.mkdir(output_model_dir)
                 self.write_report(model_name, forecast_date, observed, predicted, output_model_dir)
-            except:
-                print("fail to read file " + forecast_filename + ".")
+            # except:
+            #     print("fail to read file " + forecast_filename + ".")
 
 
 if __name__ == "__main__":

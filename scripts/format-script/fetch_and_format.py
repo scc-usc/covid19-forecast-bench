@@ -39,20 +39,23 @@ for csv in os.listdir("./input/"):
 print("Fetch US State Death Forecasts:")
 exec(open("./fetch_forecasts_state_death.py").read())
 for model in os.listdir("./output/"):
-    merge("./output/"+model+'/', "../../formatted-forecasts/US-COVID/state-death/"+model+'/')
-    shutil.rmtree("./output/"+model)
+    if (os.path.isdir("./output/"+model+'/')):
+        merge("./output/"+model+'/', "../../formatted-forecasts/US-COVID/state-death/"+model+'/')
+        shutil.rmtree("./output/"+model)
 
 print("Fetch State Case Forecasts:")
 exec(open("./fetch_forecasts_state_case.py").read())
 for model in os.listdir("./output/"):
-    merge("./output/"+model+'/', "../../formatted-forecasts/US-COVID/state-case/"+model+'/')
-    shutil.rmtree("./output/"+model)
+    if (os.path.isdir("./output/"+model+'/')):
+        merge("./output/"+model+'/', "../../formatted-forecasts/US-COVID/state-case/"+model+'/')
+        shutil.rmtree("./output/"+model)
 
 print("Fetch County Case Forecasts:")
 exec(open("./fetch_forecasts_county_case.py").read())
 for model in os.listdir("./output/"):
-    merge("./output/"+model+'/', "../../formatted-forecasts/US-COVID/county-case/"+model+'/')
-    shutil.rmtree("./output/"+model)
+    if (os.path.isdir("./output/"+model+'/')):
+        merge("./output/"+model+'/', "../../formatted-forecasts/US-COVID/county-case/"+model+'/')
+        shutil.rmtree("./output/"+model)
 
 # Clean text files and input.
 open("state_death.txt", 'w').close()
@@ -83,22 +86,25 @@ print("Fetch State Death Forecasts:")
 exec(open("./fetch_forecasts_state_death.py").read())
 os.system("./add_FH_prefix.sh")
 for model in os.listdir("./output/"):
-    merge("./output/"+model+'/', "../../formatted-forecasts/US-COVID/state-death/"+model+'/')
-    shutil.rmtree("./output/"+model)
+    if (os.path.isdir("./output/"+model+'/')):
+        merge("./output/"+model+'/', "../../formatted-forecasts/US-COVID/state-death/"+model+'/')
+        shutil.rmtree("./output/"+model)
 
 print("Fetch State Case Forecasts:")
 exec(open("./fetch_forecasts_state_case.py").read())
 os.system("./add_FH_prefix.sh")
 for model in os.listdir("./output/"):
-    merge("./output/"+model+'/', "../../formatted-forecasts/US-COVID/state-case/"+model+'/')
-    shutil.rmtree("./output/"+model)
+    if (os.path.isdir("./output/"+model+'/')):
+        merge("./output/"+model+'/', "../../formatted-forecasts/US-COVID/state-case/"+model+'/')
+        shutil.rmtree("./output/"+model)
 
 print("Fetch County Case Forecasts:")
 exec(open("./fetch_forecasts_county_case.py").read())
 os.system("./add_FH_prefix.sh")
 for model in os.listdir("./output/"):
-    merge("./output/"+model+'/', "../../formatted-forecasts/US-COVID/county-case/"+model+'/')
-    shutil.rmtree("./output/"+model)
+    if (os.path.isdir("./output/"+model+'/')):
+        merge("./output/"+model+'/', "../../formatted-forecasts/US-COVID/county-case/"+model+'/')
+        shutil.rmtree("./output/"+model)
 
 # Clean text files and input.
 open("state_death.txt", 'w').close()

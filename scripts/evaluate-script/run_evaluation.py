@@ -12,9 +12,9 @@ with open("models.txt", "w") as f:
 
 with open("forecasts_filenames.txt", "w") as f:
     for m in models:
-        if os.path.isdir(m):
+        if os.path.isdir("../../formatted-forecasts/US-COVID/state-death/" + m):
             for csv in os.listdir("../../formatted-forecasts/US-COVID/state-death/" + m):
-                date_num = (datetime.datetime.now() - datetime.datetime(2020, 1, 22)).days;
+                date_num = (datetime.datetime.now() - datetime.datetime(2020, 1, 22)).days
                 for i in range(32):
                     date_num -= 1
                     if "_{}.csv".format(date_num) in csv:

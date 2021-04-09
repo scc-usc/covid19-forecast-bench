@@ -6,4 +6,4 @@ do
         mv -f ./output/$method/$file ./output/$method/`echo "FH_"$file`
     done
     mv -f ./output/$method ./output/`echo "FH_"$method`
- done
+done

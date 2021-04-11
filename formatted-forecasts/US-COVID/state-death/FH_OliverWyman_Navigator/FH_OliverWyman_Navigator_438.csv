@@ -1,7 +1,7 @@
 ,State,438,444,451,458,465
 0,Washington,5278,69,71,73,70
 1,Illinois,23654,134,121,113,90
-2,California,59614,677,737,751,792
+2,California,59711,677,737,751,792
 3,Arizona,16990,79,86,86,86
 4,Massachusetts,17281,169,180,153,112
 5,Wisconsin,7340,72,72,72,71
@@ -35,7 +35,7 @@
 33,Connecticut,7904,40,37,33,25
 34,Iowa,5822,101,106,107,107
 35,Louisiana,10161,59,52,46,43
-36,Ohio,18643,NaN,NaN,NaN,NaN
+36,Ohio,18741,NaN,NaN,NaN,NaN
 37,Michigan,17259,282,320,327,287
 38,South Dakota,1938,4,4,4,3
 39,Arkansas,5643,41,40,33,28

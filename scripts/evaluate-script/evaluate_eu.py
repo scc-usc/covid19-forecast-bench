@@ -61,7 +61,7 @@ def get_model_reports_mapping(model_names, forecasts_names):
     return mapping
 
 def get_evaluation_df(foreast_type, metric, inc_truth, regions, models):
-    wk_intervals = list(inc_truth.columns)[22:]
+    wk_intervals = list(inc_truth.columns)[49:]
     model_evals = {}
 
     for region in regions:
@@ -147,8 +147,7 @@ def run():
     region_col = list(inc_truth.index)
     region_col.append("EU")
 
-    model_evals = get_evaluation_df("state_death", "mae", inc_truth, region_col, model_reports_mapping.keys())
-    # model_evals = generate_evaluation_df(state_col, model_reports_mapping.keys())
+    model_evals = get_evaluation_df("eu_death", "mae", inc_truth, region_col, model_reports_mapping.keys())
     for model in model_reports_mapping:
         reports = model_reports_mapping[model]
         evaluate(inc_truth, model, reports, region_col, model_evals, EU_DEATH_FORECASTS_DIR)
@@ -162,25 +161,24 @@ def run():
         average_evals[region].to_csv(output_dir + "mae_avg_{1}.csv".format(i+1, region))
 
     # Case eval
-    # output_dir = "./output/state_case_eval/"
-    # os.mkdir(output_dir)
-    # inc_truth = get_inc_truth(US_CASE_URL)
-    # state_col = list(inc_truth["State"])
-    # state_col.append("states")
+    output_dir = "./output/eu_case_eval/"
+    os.mkdir(output_dir)
+    inc_truth = get_inc_truth(EU_INC_CASE_URL)
+    region_col = list(inc_truth.index)
+    region_col.append("EU")
 
-    # model_evals = get_evaluation_df("state_case", "mae", inc_truth, state_col, model_reports_mapping.keys())
-    # # model_evals = generate_evaluation_df(state_col, model_reports_mapping.keys())
-    # for model in model_reports_mapping:
-    #     reports = model_reports_mapping[model]
-    #     evaluate(inc_truth, model, reports, state_col, model_evals, US_CASE_FORECASTS_DIR)
+    model_evals = get_evaluation_df("eu_case", "mae", inc_truth, region_col, model_reports_mapping.keys())
+    for model in model_reports_mapping:
+        reports = model_reports_mapping[model]
+        evaluate(inc_truth, model, reports, region_col, model_evals, EU_CASE_FORECASTS_DIR)
 
-    # for state in model_evals:
-    #     for i in range(len(model_evals[state])):
-    #         model_evals[state][i].to_csv(output_dir + "mae_{0}_weeks_ahead_{1}.csv".format(i+1, state))
+    for region in model_evals:
+        for i in range(len(model_evals[region])):
+            model_evals[region][i].to_csv(output_dir + "mae_{0}_weeks_ahead_{1}.csv".format(i+1, region))
 
-    # average_evals = generate_average_evals(state_col, model_evals)
-    # for state in average_evals:
-    #     average_evals[state].to_csv(output_dir + "mae_avg_{1}.csv".format(i+1, state))
+    average_evals = generate_average_evals(region_col, model_evals)
+    for region in average_evals:
+        average_evals[region].to_csv(output_dir + "mae_avg_{1}.csv".format(i+1, region))
 
 if __name__ == "__main__":
     run()

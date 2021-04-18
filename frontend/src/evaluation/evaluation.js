@@ -162,11 +162,11 @@ class Evaluation extends Component {
 
   getUrl = () => {
     let url =
-      "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/eu-eval/evaluation/US-COVID/state_death_eval/mae_avg_states.csv";
+      "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/US-COVID/state_death_eval/mae_avg_states.csv";
     if (this.state.timeSpan == "avg") {
-      url = `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/eu-eval/evaluation/${this.state.scope}/${this.state.forecastType}/mae_avg_${this.state.region}.csv`;
+      url = `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/${this.state.scope}/${this.state.forecastType}/mae_avg_${this.state.region}.csv`;
     } else {
-      url = `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/eu-eval/evaluation/${this.state.scope}/${this.state.forecastType}/mae_${this.state.timeSpan}_weeks_ahead_${this.state.region}.csv`;
+      url = `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/${this.state.scope}/${this.state.forecastType}/mae_${this.state.timeSpan}_weeks_ahead_${this.state.region}.csv`;
     }
     return url;
   };

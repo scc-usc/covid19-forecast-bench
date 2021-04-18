@@ -11,6 +11,8 @@ import ReactGA from "react-ga";
 
 const { Option } = Select;
 
+const FORECAST_BENCH_SCOPE = ["US-COVID", "EU-COVID"];
+
 const US_STATES = [
   "Washington",
   "Illinois",
@@ -70,6 +72,41 @@ const US_STATES = [
   "American Samoa",
 ];
 
+const EU_REGIONS = [
+  "Belgium",
+  "Bulgaria",
+  "Czechia",
+  "Denmark",
+  "Germany",
+  "Estonia",
+  "Ireland",
+  "Greece",
+  "Spain",
+  "France",
+  "Croatia",
+  "Italy",
+  "Cyprus",
+  "Latvia",
+  "Lithuania",
+  "Luxembourg",
+  "Hungary",
+  "Malta",
+  "Netherlands",
+  "Austria",
+  "Poland",
+  "Portugal",
+  "Romania",
+  "Slovenia",
+  "Slovakia",
+  "Finland",
+  "Sweden",
+  "United Kingdom",
+  "Iceland",
+  "Liechtenstein",
+  "Norway",
+  "Switzerland",
+];
+
 // TODO: Since we only have limited number of ML/AI methods, they are hardcoded here.
 // Later we got to fetch this file from a file/online source.
 const ML_MODELS = [
@@ -88,6 +125,7 @@ class Evaluation extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      scope: "US-COVID",
       region: "states",
       filter: "all",
       humanMethods: [],
@@ -126,9 +164,9 @@ class Evaluation extends Component {
     let url =
       "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/US-COVID/state_death_eval/mae_avg_states.csv";
     if (this.state.timeSpan == "avg") {
-      url = `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/US-COVID/${this.state.forecastType}/mae_avg_${this.state.region}.csv`;
+      url = `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/${this.state.scope}/${this.state.forecastType}/mae_avg_${this.state.region}.csv`;
     } else {
-      url = `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/US-COVID/${this.state.forecastType}/mae_${this.state.timeSpan}_weeks_ahead_${this.state.region}.csv`;
+      url = `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/${this.state.scope}/${this.state.forecastType}/mae_${this.state.timeSpan}_weeks_ahead_${this.state.region}.csv`;
     }
     return url;
   };
@@ -166,7 +204,13 @@ class Evaluation extends Component {
   };
 
   updateData = (result, func) => {
+    if (!result) {
+      return;
+    }
     let maxDateRange = ["2020-08-01", undefined];
+    if (this.state.scope === "EU-COVID") {
+      maxDateRange[0] = "2021-03-13";
+    }
     let anchorDatapoints = { maeData: [], dataSeries: [] };
 
     // Update the date range by reading the column names.
@@ -188,32 +232,36 @@ class Evaluation extends Component {
       }
     }
 
-    console.log(anchorDatapoints);
-
     const csvData = result.data
       .map((csvRow, index) => {
         const method = { id: "", data: [] };
+        let allNaN = true;
         for (const col in csvRow) {
           if (col === "") {
             method.id = csvRow[col];
           } else {
             const val = parseInt(csvRow[col]);
+            if (!isNaN(val)) {
+              allNaN = false;
+            }
             method.data.push({
               x: col,
               y: val,
             });
           }
         }
-
-        return method;
+        if (!allNaN) {
+          return method;
+        }
       })
-      .filter(method => method.id !== " " && method.data.length !== 0); // Filter out anchor datapoints and methods which do not have any forecasts.
+      .filter(method => method); // Filter out methods that are all NaN.
 
     this.setState(
       {
         csvData: csvData,
         mainGraphData: { anchorDatapoints },
         maxDateRange: maxDateRange,
+        methodList: csvData.map(method => method.id),
       },
       () => {
         this.reloadAll();
@@ -228,9 +276,16 @@ class Evaluation extends Component {
     const selectedDateRange = this.state.selectedDateRange;
     const maxDateRange = this.state.maxDateRange;
     // First filter out the covid hub baseline MAE average.
-    let baselineAverageMAE = this.state.csvData.filter(
-      method => method.id === "FH_COVIDhub_baseline"
-    )[0];
+    let baselineAverageMAE;
+    if (this.state.scope === "US-COVID") {
+      baselineAverageMAE = this.state.csvData.filter(
+        method => method.id === "FH_COVIDhub_baseline"
+      )[0];
+    } else {
+      baselineAverageMAE = this.state.csvData.filter(
+        method => method.id === "EUFH_LANL_GrowthRate"
+      )[0];
+    }
 
     const rankingTableData = this.state.csvData
       .map(method => {
@@ -409,22 +464,66 @@ class Evaluation extends Component {
   };
 
   handleForecastTypeSelect = type => {
-    this.setState(
-      {
-        forecastType: type,
-      },
-      () => {
-        Papa.parse(this.getUrl(), {
-          download: true,
-          worker: true,
-          header: true,
-          skipEmptyLines: true,
-          complete: result => {
-            this.updateData(result, this.generateRanking);
-          },
-        });
-      }
-    );
+    const prevScope = this.state.scope;
+    const scope = type.substring(0, 2) === "eu" ? "EU-COVID" : "US-COVID";
+
+    if (scope != prevScope) {
+      const defaultRegion = type.substring(0, 2) === "eu" ? "EU" : "states";
+      this.setState(
+        {
+          scope: scope,
+          forecastType: type,
+          region: defaultRegion,
+          humanMethods: [],
+          mlMethods: [],
+          allMethods: [],
+        },
+        () => {
+          this.formRef.current.setFieldsValue({
+            region: defaultRegion,
+            methods: [],
+            dateRange: [0, 100],
+          });
+          Papa.parse(this.getUrl(), {
+            download: true,
+            worker: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: result => {
+              this.updateData(result, () => {
+                if (this.state.scope === "US-COVID") {
+                  this.addMethod("ensemble_SIkJa_RF");
+                  this.addMethod("FH_COVIDhub_ensemble");
+                } else {
+                  this.addMethod("EUFH_LANL_GrowthRate");
+                  this.addMethod("USC_SIkJalpha");
+                }
+              });
+              this.setState({ selectedDateRange: this.state.maxDateRange });
+              this.generateRanking();
+            },
+          });
+        }
+      );
+    } else {
+      this.setState(
+        {
+          scope: scope,
+          forecastType: type,
+        },
+        () => {
+          Papa.parse(this.getUrl(), {
+            download: true,
+            worker: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: result => {
+              this.updateData(result, this.generateRanking);
+            },
+          });
+        }
+      );
+    }
   };
 
   handleErrorTypeSelect = e => {
@@ -493,6 +592,7 @@ class Evaluation extends Component {
     if (this.state.maxDateRange[0]) {
       const date = new Date(this.state.maxDateRange[0]);
       date.setDate(date.getDate() + 7 * weekNum);
+      date.setTime(date.getTime() + 4 * 60 * 60 * 1000);
       return date.toISOString().slice(0, 10);
     }
     return null;
@@ -501,7 +601,6 @@ class Evaluation extends Component {
   handleDateRangeChange = e => {
     const start = this.getDateFromWeekNumber(e[0]);
     const end = this.getDateFromWeekNumber(e[1]);
-    // console.log([start, end]);
     this.setState(
       {
         selectedDateRange: [start, end],
@@ -514,6 +613,7 @@ class Evaluation extends Component {
 
   render() {
     const {
+      scope,
       filter,
       humanMethods,
       mlMethods,
@@ -542,19 +642,41 @@ class Evaluation extends Component {
       wrapperCol: { span: 18 },
     };
 
+    const evalMap =
+      scope === "US-COVID" ? (
+        <div className="evalmap-container">
+          <Evalmap clickHandler={this.handleRegionChange} region={region} />
+        </div>
+      ) : null;
+
     const regionOptions = [];
-    regionOptions.push(
-      <Option value="states" key="0">
-        US Average
-      </Option>
-    );
-    US_STATES.forEach((state, index) => {
+    if (scope === "US-COVID") {
       regionOptions.push(
-        <Option value={state.replace(" ", "%20")} key={index + 1}>
-          {state}
+        <Option value="states" key="0">
+          US Average
         </Option>
       );
-    });
+      US_STATES.forEach((state, index) => {
+        regionOptions.push(
+          <Option value={state.replace(" ", "%20")} key={index + 1}>
+            {state}
+          </Option>
+        );
+      });
+    } else {
+      regionOptions.push(
+        <Option value="EU" key="0">
+          EU Average
+        </Option>
+      );
+      EU_REGIONS.forEach((region, index) => {
+        regionOptions.push(
+          <Option value={region.replace(" ", "%20")} key={index + 1}>
+            {region}
+          </Option>
+        );
+      });
+    }
 
     return (
       <div className="leader-page-wrapper">
@@ -578,6 +700,12 @@ class Evaluation extends Component {
                       </Option>
                       <Option value="state_case_eval">
                         COVID-19 US state-level case forecasts
+                      </Option>
+                      <Option value="eu_death_eval">
+                        COVID-19 Europe country-level death forecasts
+                      </Option>
+                      <Option value="eu_case_eval">
+                        COVID-19 Europe country-level case forecasts
                       </Option>
                     </Select>
                   </Form.Item>
@@ -651,10 +779,7 @@ class Evaluation extends Component {
             </Row>
           </div>
           <Row type="flex" justify="space-around">
-            <div className="evalmap-container">
-              <Evalmap clickHandler={this.handleRegionChange} region={region} />
-            </div>
-
+            {evalMap}
             <div className="evalgraph-container">
               <Evalgraph
                 className="graph"

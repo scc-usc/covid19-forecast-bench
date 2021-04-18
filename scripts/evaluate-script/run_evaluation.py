@@ -24,7 +24,10 @@ run();
 shutil.rmtree("../../evaluation/US-COVID/")
 shutil.copytree("./output/", "../../evaluation/US-COVID/")
 for directory in os.listdir("./output/"):
-    shutil.rmtree("./output/{}".format(directory))
+    if os.path.isdir("./output/{}".format(directory)):
+        shutil.rmtree("./output/{}".format(directory))
+    else:
+        os.remove("./output/{}".format(directory))
 
 # Clear txt files.
 open("models.txt", 'w').close()

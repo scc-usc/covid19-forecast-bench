@@ -209,7 +209,7 @@ class Evaluation extends Component {
     }
     let maxDateRange = ["2020-08-01", undefined];
     if (this.state.scope === "EU-COVID") {
-      maxDateRange[0] = "2021-03-06"
+      maxDateRange[0] = "2021-03-13";
     }
     let anchorDatapoints = { maeData: [], dataSeries: [] };
 
@@ -232,25 +232,29 @@ class Evaluation extends Component {
       }
     }
 
-    const csvData = result.data.map((csvRow, index) => {
-      const method = { id: "", data: [] };
-      let allNaN = true;
-      for (const col in csvRow) {
-        if (col === "") {
-          method.id = csvRow[col];
-        } else {
-          const val = parseInt(csvRow[col]);
-          if (!isNaN(val)) { allNaN = false; }
-          method.data.push({
-            x: col,
-            y: val,
-          });
+    const csvData = result.data
+      .map((csvRow, index) => {
+        const method = { id: "", data: [] };
+        let allNaN = true;
+        for (const col in csvRow) {
+          if (col === "") {
+            method.id = csvRow[col];
+          } else {
+            const val = parseInt(csvRow[col]);
+            if (!isNaN(val)) {
+              allNaN = false;
+            }
+            method.data.push({
+              x: col,
+              y: val,
+            });
+          }
         }
-      }
-      if (!allNaN) {
-        return method;
-      }
-    }).filter(method => method); // Filter out methods that are all NaN.
+        if (!allNaN) {
+          return method;
+        }
+      })
+      .filter(method => method); // Filter out methods that are all NaN.
 
     this.setState(
       {
@@ -459,8 +463,6 @@ class Evaluation extends Component {
     );
   };
 
-
-
   handleForecastTypeSelect = type => {
     const prevScope = this.state.scope;
     const scope = type.substring(0, 2) === "eu" ? "EU-COVID" : "US-COVID";
@@ -480,7 +482,7 @@ class Evaluation extends Component {
           this.formRef.current.setFieldsValue({
             region: defaultRegion,
             methods: [],
-            dateRange: [0, 100]
+            dateRange: [0, 100],
           });
           Papa.parse(this.getUrl(), {
             download: true,
@@ -488,7 +490,7 @@ class Evaluation extends Component {
             header: true,
             skipEmptyLines: true,
             complete: result => {
-              this.updateData(result, ()=>{
+              this.updateData(result, () => {
                 if (this.state.scope === "US-COVID") {
                   this.addMethod("ensemble_SIkJa_RF");
                   this.addMethod("FH_COVIDhub_ensemble");
@@ -497,7 +499,7 @@ class Evaluation extends Component {
                   this.addMethod("USC_SIkJalpha");
                 }
               });
-              this.setState({selectedDateRange: this.state.maxDateRange});
+              this.setState({ selectedDateRange: this.state.maxDateRange });
               this.generateRanking();
             },
           });
@@ -590,7 +592,7 @@ class Evaluation extends Component {
     if (this.state.maxDateRange[0]) {
       const date = new Date(this.state.maxDateRange[0]);
       date.setDate(date.getDate() + 7 * weekNum);
-      date.setTime(date.getTime() + 4*60*60*1000);
+      date.setTime(date.getTime() + 4 * 60 * 60 * 1000);
       return date.toISOString().slice(0, 10);
     }
     return null;
@@ -639,6 +641,13 @@ class Evaluation extends Component {
       labelCol: { span: 6 },
       wrapperCol: { span: 18 },
     };
+
+    const evalMap =
+      scope === "US-COVID" ? (
+        <div className="evalmap-container">
+          <Evalmap clickHandler={this.handleRegionChange} region={region} />
+        </div>
+      ) : null;
 
     const regionOptions = [];
     if (scope === "US-COVID") {
@@ -770,10 +779,7 @@ class Evaluation extends Component {
             </Row>
           </div>
           <Row type="flex" justify="space-around">
-            <div className="evalmap-container">
-              <Evalmap clickHandler={this.handleRegionChange} region={region} />
-            </div>
-
+            {evalMap}
             <div className="evalgraph-container">
               <Evalgraph
                 className="graph"

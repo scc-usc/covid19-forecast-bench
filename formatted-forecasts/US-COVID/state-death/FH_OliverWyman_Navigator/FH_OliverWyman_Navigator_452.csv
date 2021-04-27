@@ -1,57 +1,57 @@
 ,State,452,458,465,472,479
-0,Washington,NaN,66,66,63,65
-1,Illinois,NaN,171,176,175,180
-2,California,NaN,565,503,445,394
-3,Arizona,NaN,67,56,57,58
-4,Massachusetts,NaN,68,52,36,24
-5,Wisconsin,NaN,42,43,42,43
-6,Texas,NaN,337,279,253,255
-7,Nebraska,NaN,41,40,37,39
-8,Utah,NaN,4,4,3,3
-9,Oregon,NaN,23,24,24,23
-10,Florida,NaN,438,402,393,407
-11,New York,NaN,451,423,374,351
-12,Rhode Island,NaN,9,8,8,8
-13,Georgia,NaN,287,276,264,276
-14,New Hampshire,NaN,20,17,17,18
-15,North Carolina,NaN,147,143,146,161
-16,New Jersey,NaN,251,216,167,131
-17,Colorado,NaN,42,35,36,41
-18,Maryland,NaN,109,109,114,131
-19,Nevada,NaN,33,26,22,18
-20,Tennessee,NaN,47,43,40,40
-21,Hawaii,NaN,2,2,2,2
-22,Indiana,NaN,87,92,91,94
-23,Kentucky,NaN,91,90,87,93
-24,Minnesota,NaN,67,65,65,67
-25,Oklahoma,NaN,28,27,26,25
-26,Pennsylvania,NaN,288,274,267,270
-27,South Carolina,NaN,58,42,37,36
-28,District of Columbia,NaN,13,13,12,12
-29,Kansas,NaN,14,13,13,13
-30,Missouri,NaN,2,4,51,16
-31,Vermont,NaN,9,7,6,5
-32,Virginia,NaN,110,107,112,133
-33,Connecticut,NaN,44,36,29,23
-34,Iowa,NaN,23,21,19,18
-35,Louisiana,NaN,69,66,69,79
-36,Ohio,NaN,0,0,0,0
-37,Michigan,NaN,359,392,405,436
-38,South Dakota,NaN,7,7,7,7
-39,Arkansas,NaN,36,35,35,38
-40,Delaware,NaN,25,26,25,24
-41,Mississippi,NaN,61,61,60,67
-42,New Mexico,NaN,24,23,23,24
-43,North Dakota,NaN,6,7,7,7
-44,Wyoming,NaN,2,2,2,2
-45,Alaska,NaN,0,1,1,1
-46,Maine,NaN,17,17,16,13
-47,Alabama,NaN,88,88,87,88
-48,Idaho,NaN,22,20,19,18
-49,Montana,NaN,23,22,21,23
-50,Puerto Rico,NaN,NaN,NaN,NaN,NaN
-51,Virgin Islands,NaN,NaN,NaN,NaN,NaN
-52,Guam,NaN,NaN,NaN,NaN,NaN
-53,West Virginia,NaN,39,35,32,32
-54,Northern Mariana Islands,NaN,NaN,NaN,NaN,NaN
-55,American Samoa,NaN,NaN,NaN,NaN,NaN
+0,Washington,5380,66,66,63,65
+1,Illinois,23955,171,176,175,180
+2,California,61038,565,503,445,394
+3,Arizona,17153,67,56,57,58
+4,Massachusetts,17462,68,52,36,24
+5,Wisconsin,7420,42,43,42,43
+6,Texas,49595,337,279,253,255
+7,Nebraska,2213,41,40,37,39
+8,Utah,2164,4,4,3,3
+9,Oregon,2460,23,24,24,23
+10,Florida,34439,438,402,393,407
+11,New York,51579,451,423,374,351
+12,Rhode Island,2647,9,8,8,8
+13,Georgia,19758,287,276,264,276
+14,New Hampshire,1270,20,17,17,18
+15,North Carolina,12387,147,143,146,161
+16,New Jersey,25143,251,216,167,131
+17,Colorado,6199,42,35,36,41
+18,Maryland,8562,109,109,114,131
+19,Nevada,5365,33,26,22,18
+20,Tennessee,12049,47,43,40,40
+21,Hawaii,474,2,2,2,2
+22,Indiana,13224,87,92,91,94
+23,Kentucky,6338,91,90,87,93
+24,Minnesota,7098,67,65,65,67
+25,Oklahoma,6697,28,27,26,25
+26,Pennsylvania,25665,288,274,267,270
+27,South Carolina,9336,58,42,37,36
+28,District of Columbia,1096,13,13,12,12
+29,Kansas,4909,14,13,13,13
+30,Missouri,9009,2,4,51,16
+31,Vermont,242,9,7,6,5
+32,Virginia,10581,110,107,112,133
+33,Connecticut,7995,44,36,29,23
+34,Iowa,5881,23,21,19,18
+35,Louisiana,10282,69,66,69,79
+36,Ohio,19033,0,0,0,0
+37,Michigan,17934,359,392,405,436
+38,South Dakota,1953,7,7,7,7
+39,Arkansas,5694,36,35,35,38
+40,Delaware,1602,25,26,25,24
+41,Mississippi,7153,61,61,60,67
+42,New Mexico,4001,24,23,23,24
+43,North Dakota,1510,6,7,7,7
+44,Wyoming,703,2,2,2,2
+45,Alaska,334,0,1,1,1
+46,Maine,765,17,17,16,13
+47,Alabama,10790,88,88,87,88
+48,Idaho,2017,22,20,19,18
+49,Montana,1546,23,22,21,23
+50,Puerto Rico,2207,NaN,NaN,NaN,NaN
+51,Virgin Islands,26,NaN,NaN,NaN,NaN
+52,Guam,136,NaN,NaN,NaN,NaN
+53,West Virginia,2785,39,35,32,32
+54,Northern Mariana Islands,2,NaN,NaN,NaN,NaN
+55,American Samoa,0,NaN,NaN,NaN,NaN

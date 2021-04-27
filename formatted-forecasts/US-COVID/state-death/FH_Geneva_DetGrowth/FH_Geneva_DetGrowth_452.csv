@@ -1,57 +1,57 @@
 ,State,452,458
-0,Washington,NaN,58
-1,Illinois,NaN,210
-2,California,NaN,422
-3,Arizona,NaN,148
-4,Massachusetts,NaN,29
-5,Wisconsin,NaN,71
-6,Texas,NaN,247
-7,Nebraska,NaN,177
-8,Utah,NaN,0
-9,Oregon,NaN,31
-10,Florida,NaN,340
-11,New York,NaN,544
-12,Rhode Island,NaN,0
-13,Georgia,NaN,229
-14,New Hampshire,NaN,18
-15,North Carolina,NaN,139
-16,New Jersey,NaN,344
-17,Colorado,NaN,29
-18,Maryland,NaN,95
-19,Nevada,NaN,50
-20,Tennessee,NaN,46
-21,Hawaii,NaN,1
-22,Indiana,NaN,81
-23,Kentucky,NaN,45
-24,Minnesota,NaN,48
-25,Oklahoma,NaN,0
-26,Pennsylvania,NaN,244
-27,South Carolina,NaN,42
-28,District of Columbia,NaN,17
-29,Kansas,NaN,31
-30,Missouri,NaN,71
-31,Vermont,NaN,14
-32,Virginia,NaN,105
-33,Connecticut,NaN,39
-34,Iowa,NaN,25
-35,Louisiana,NaN,65
-36,Ohio,NaN,72
-37,Michigan,NaN,381
-38,South Dakota,NaN,13
-39,Arkansas,NaN,28
-40,Delaware,NaN,36
-41,Mississippi,NaN,96
-42,New Mexico,NaN,28
-43,North Dakota,NaN,9
-44,Wyoming,NaN,0
-45,Alaska,NaN,15
-46,Maine,NaN,21
-47,Alabama,NaN,79
-48,Idaho,NaN,15
-49,Montana,NaN,75
-50,Puerto Rico,NaN,49
-51,Virgin Islands,NaN,0
-52,Guam,NaN,0
-53,West Virginia,NaN,60
-54,Northern Mariana Islands,NaN,0
-55,American Samoa,NaN,0
+0,Washington,5380,58
+1,Illinois,23955,210
+2,California,61038,422
+3,Arizona,17153,148
+4,Massachusetts,17462,29
+5,Wisconsin,7420,71
+6,Texas,49595,247
+7,Nebraska,2213,177
+8,Utah,2164,0
+9,Oregon,2460,31
+10,Florida,34439,340
+11,New York,51579,544
+12,Rhode Island,2647,0
+13,Georgia,19758,229
+14,New Hampshire,1270,18
+15,North Carolina,12387,139
+16,New Jersey,25143,344
+17,Colorado,6199,29
+18,Maryland,8562,95
+19,Nevada,5365,50
+20,Tennessee,12049,46
+21,Hawaii,474,1
+22,Indiana,13224,81
+23,Kentucky,6338,45
+24,Minnesota,7098,48
+25,Oklahoma,6697,0
+26,Pennsylvania,25665,244
+27,South Carolina,9336,42
+28,District of Columbia,1096,17
+29,Kansas,4909,31
+30,Missouri,9009,71
+31,Vermont,242,14
+32,Virginia,10581,105
+33,Connecticut,7995,39
+34,Iowa,5881,25
+35,Louisiana,10282,65
+36,Ohio,19033,72
+37,Michigan,17934,381
+38,South Dakota,1953,13
+39,Arkansas,5694,28
+40,Delaware,1602,36
+41,Mississippi,7153,96
+42,New Mexico,4001,28
+43,North Dakota,1510,9
+44,Wyoming,703,0
+45,Alaska,334,15
+46,Maine,765,21
+47,Alabama,10790,79
+48,Idaho,2017,15
+49,Montana,1546,75
+50,Puerto Rico,2207,49
+51,Virgin Islands,26,0
+52,Guam,136,0
+53,West Virginia,2785,60
+54,Northern Mariana Islands,2,0
+55,American Samoa,0,0

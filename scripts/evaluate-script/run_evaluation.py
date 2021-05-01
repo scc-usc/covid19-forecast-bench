@@ -5,7 +5,6 @@ import evaluate
 import evaluate_eu
 
 models = []
-"""
 # Evaluate US
 with open("models.txt", "w") as f:
     for directory in os.listdir("../../formatted-forecasts/US-COVID/state-death/"):
@@ -35,7 +34,6 @@ for directory in os.listdir("./output/"):
 # Clear txt files.
 open("models.txt", 'w').close()
 open("forecasts_filenames.txt", 'w').close()
-"""
 
 # Evaluate EU
 models.clear()
@@ -50,7 +48,7 @@ with open("forecasts_filenames.txt", "w") as f:
         if os.path.isdir("../../formatted-forecasts/EU-COVID/eu-death/" + m):
             for csv in os.listdir("../../formatted-forecasts/EU-COVID/eu-death/" + m):
                 date_num = (datetime.datetime.now() - datetime.datetime(2020, 1, 22)).days
-                for i in range(120):
+                for i in range(32):
                     date_num -= 1
                     if "_{}.csv".format(date_num) in csv:
                         f.write(csv + '\n')

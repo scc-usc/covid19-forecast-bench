@@ -67,15 +67,18 @@ def get_evaluation_df(foreast_type, metric, inc_truth, regions, models):
     for region in regions:
         model_evals[region] = []
         for i in range(0, 4):
-            # df = pd.read_csv("../../evaluation/US-COVID/{0}_eval/{1}_{2}_weeks_ahead_{3}.csv".format(foreast_type, metric, i+1, region), index_col=0);
-            # model_evals[region].append(pd.DataFrame(df, columns=wk_intervals))
-            empty_array = np.empty((len(models), len(wk_intervals)))
-            empty_array[:] = np.nan
-            model_evals[region].append(pd.DataFrame(empty_array, columns=wk_intervals, index=models))
+            path = "../../evaluation/EU-COVID/{0}_eval/{1}_{2}_weeks_ahead_{3}.csv".format(foreast_type, metric, i+1, region)
+            if os.path.exists(path):
+                df = pd.read_csv(path, index_col=0);
+                model_evals[region].append(pd.DataFrame(df, columns=wk_intervals))
+            else:
+                empty_array = np.empty((len(models), len(wk_intervals)))
+                empty_array[:] = np.nan
+                model_evals[region].append(pd.DataFrame(empty_array, columns=wk_intervals, index=models))
 
     return model_evals
 
-def evaluate(inc_truth, model_name, reports, regions, model_evals, forecasts_dir):
+def evaluate(inc_truth, model_name, metric, reports, regions, model_evals, forecasts_dir):
     for report in reports:
         path = forecasts_dir + "{}/{}".format(model_name, report)
         if not os.path.exists(path):
@@ -93,27 +96,50 @@ def evaluate(inc_truth, model_name, reports, regions, model_evals, forecasts_dir
             cols[i] = end_date
         pred.columns = cols
 
-        # Calculate MAE for each state.
-        pred_num = pred
-        pred_num = pred_num[sorted(pred_num.columns)]
-        observed_wks = 4;
-        for i in range(0, 4):
-            if i >= len(pred_num.columns) or pred_num.columns[i] > inc_truth.columns[-1]:
-                observed_wks -= 1
-        pred_num = pred_num.drop(columns=pred_num.columns[observed_wks:])  # Only look at first 4 observed weeks.
-        mae_df = np.abs((pred_num - inc_truth[pred_num.columns]))
+        if metric == "mae":
+            # Calculate MAE for each state.
+            pred_num = pred
+            pred_num = pred_num[sorted(pred_num.columns)]
+            observed_wks = 4;
+            for i in range(0, 4):
+                if i >= len(pred_num.columns) or pred_num.columns[i] > inc_truth.columns[-1]:
+                    observed_wks -= 1
+            pred_num = pred_num.drop(columns=pred_num.columns[observed_wks:])  # Only look at first 4 observed weeks.
+            mae_df = np.abs((pred_num - inc_truth[pred_num.columns]))
 
-        # Calculate the mean MAE as the overall error.
-        overall_mae = mae_df.mean()
-        overall_mae.name = "EU"
+            # Calculate the mean MAE as the overall error.
+            overall_mae = mae_df.mean()
+            overall_mae.name = "EU"
 
-        mae_df = mae_df.append(overall_mae,)
+            mae_df = mae_df.append(overall_mae,)
 
-        for i in range(0, observed_wks):
-            interval = mae_df.columns[i]
-            if interval in model_evals["EU"][i].columns:
-                for region in regions:
-                    model_evals[region][i].loc[model_name, interval] = mae_df.loc[region, interval]
+            for i in range(0, observed_wks):
+                interval = mae_df.columns[i]
+                if interval in model_evals["EU"][i].columns:
+                    for region in regions:
+                        model_evals[region][i].loc[model_name, interval] = mae_df.loc[region, interval]
+
+        elif metric == "mape":
+            pred_num = pred
+            pred_num = pred_num[sorted(pred_num.columns)]
+            observed_wks = 4;
+            for i in range(0, 4):
+                if i >= len(pred_num.columns) or pred_num.columns[i] > inc_truth.columns[-1]:
+                    observed_wks -= 1
+            pred_num = pred_num.drop(columns=pred_num.columns[observed_wks:])
+            mape_df = np.abs((pred_num - inc_truth[pred_num.columns])) / inc_truth[pred_num.columns]
+            mape_df.replace([np.inf, -np.inf], np.nan, inplace=True)
+            mape_df.fillna(0)
+
+            overall_mape = mape_df.mean()
+            overall_mape.name = "EU"
+
+            mape_df = mape_df.append(overall_mape)
+            for i in range(0, observed_wks):
+                interval = mape_df.columns[i]
+                if interval in model_evals["EU"][i].columns:
+                    for region in regions:
+                        model_evals[region][i].loc[model_name, interval] = mape_df.loc[region, interval]
 
 def generate_average_evals(regions, model_evals):
     average_evals = {}
@@ -140,7 +166,7 @@ def generate_average_evals(regions, model_evals):
 def run():
     model_reports_mapping = get_model_reports_mapping(MODEL_NAMES, FORECASTS_NAMES)
 
-    # Death eval
+    # Death eval - MAE
     output_dir = "./output/eu_death_eval/"
     os.mkdir(output_dir)
     inc_truth = get_inc_truth(EU_INC_DEATH_URL)
@@ -150,7 +176,7 @@ def run():
     model_evals = get_evaluation_df("eu_death", "mae", inc_truth, region_col, model_reports_mapping.keys())
     for model in model_reports_mapping:
         reports = model_reports_mapping[model]
-        evaluate(inc_truth, model, reports, region_col, model_evals, EU_DEATH_FORECASTS_DIR)
+        evaluate(inc_truth, model, "mae", reports, region_col, model_evals, EU_DEATH_FORECASTS_DIR)
 
     for region in model_evals:
         for i in range(len(model_evals[region])):
@@ -160,7 +186,21 @@ def run():
     for region in average_evals:
         average_evals[region].to_csv(output_dir + "mae_avg_{1}.csv".format(i+1, region))
 
-    # Case eval
+    # Death eval - MAPE
+    model_evals = get_evaluation_df("eu_death", "mape", inc_truth, region_col, model_reports_mapping.keys())
+    for model in model_reports_mapping:
+        reports = model_reports_mapping[model]
+        evaluate(inc_truth, model, "mape", reports, region_col, model_evals, EU_DEATH_FORECASTS_DIR)
+
+    for region in model_evals:
+        for i in range(len(model_evals[region])):
+            model_evals[region][i].to_csv(output_dir + "mape_{0}_weeks_ahead_{1}.csv".format(i+1, region))
+
+    average_evals = generate_average_evals(region_col, model_evals)
+    for region in average_evals:
+        average_evals[region].to_csv(output_dir + "mape_avg_{1}.csv".format(i+1, region))
+
+    # Case eval - MAE
     output_dir = "./output/eu_case_eval/"
     os.mkdir(output_dir)
     inc_truth = get_inc_truth(EU_INC_CASE_URL)
@@ -170,7 +210,7 @@ def run():
     model_evals = get_evaluation_df("eu_case", "mae", inc_truth, region_col, model_reports_mapping.keys())
     for model in model_reports_mapping:
         reports = model_reports_mapping[model]
-        evaluate(inc_truth, model, reports, region_col, model_evals, EU_CASE_FORECASTS_DIR)
+        evaluate(inc_truth, model, "mae", reports, region_col, model_evals, EU_CASE_FORECASTS_DIR)
 
     for region in model_evals:
         for i in range(len(model_evals[region])):
@@ -179,6 +219,20 @@ def run():
     average_evals = generate_average_evals(region_col, model_evals)
     for region in average_evals:
         average_evals[region].to_csv(output_dir + "mae_avg_{1}.csv".format(i+1, region))
+
+    # Case eval - MAPE
+    model_evals = get_evaluation_df("eu_case", "mape", inc_truth, region_col, model_reports_mapping.keys())
+    for model in model_reports_mapping:
+        reports = model_reports_mapping[model]
+        evaluate(inc_truth, model, "mape", reports, region_col, model_evals, EU_CASE_FORECASTS_DIR)
+
+    for region in model_evals:
+        for i in range(len(model_evals[region])):
+            model_evals[region][i].to_csv(output_dir + "mape_{0}_weeks_ahead_{1}.csv".format(i+1, region))
+
+    average_evals = generate_average_evals(region_col, model_evals)
+    for region in average_evals:
+        average_evals[region].to_csv(output_dir + "mape_avg_{1}.csv".format(i+1, region))
 
 if __name__ == "__main__":
     run()

@@ -52,7 +52,7 @@ const darkColorScheme = [
 ];
 
 // Add a method in the chart.
-const addChart = (methods, lines, scatters, legends, data, dateRange, colorScheme) => {
+const addChart = (methods, lines, scatters, legends, data, dateRange, metrics, colorScheme) => {
   methods.forEach((method, idx) => {
     if (data[method]) {
       let color = colorScheme[idx % colorScheme.length];
@@ -111,7 +111,7 @@ const addChart = (methods, lines, scatters, legends, data, dateRange, colorSchem
           labels={({ datum }) => [
             method,
             `End date: ${datum.x}`,
-            `MAE: ${datum.y}`,
+            `${metrics.toUpperCase()}: ${datum.y.toFixed(3)}`,
           ]}
           labelComponent={
             <VictoryTooltip
@@ -151,17 +151,17 @@ const evalgraph = props => {
   // Cascade human methods on top of ml methods.
   if (data) {
     if (filter === "human") {
-      addChart(mlMethods, lines, scatters, legends, data, dateRange, lightColorScheme);
-      addChart(humanMethods, lines, scatters, legends, data, dateRange, darkColorScheme);
+      addChart(mlMethods, lines, scatters, legends, data, dateRange, metrics, lightColorScheme);
+      addChart(humanMethods, lines, scatters, legends, data, dateRange, metrics, darkColorScheme);
 
       // Cascade ml methods on top of human methods.
     } else if (filter === "ml") {
-      addChart(humanMethods, lines, scatters, legends, data, dateRange, lightColorScheme);
-      addChart(mlMethods, lines, scatters, legends, data, dateRange, darkColorScheme);
+      addChart(humanMethods, lines, scatters, legends, data, dateRange, metrics, lightColorScheme);
+      addChart(mlMethods, lines, scatters, legends, data, dateRange, metrics, darkColorScheme);
 
       // If no filter specified, foreground all methods.
     } else {
-      addChart(allMethods, lines, scatters, legends, data, dateRange, darkColorScheme);
+      addChart(allMethods, lines, scatters, legends, data, dateRange, metrics, darkColorScheme);
     }
   }
 
@@ -172,7 +172,7 @@ const evalgraph = props => {
         data: { fill: "#ffffff" },
       }}
       size={0}
-      data={[{ x: " ", y: 200 }]}
+      data={[{ x: " ", y: (metrics === "mape")? 1 : 200 }]}
     />
   );
 
@@ -197,7 +197,7 @@ const evalgraph = props => {
         />
         <VictoryAxis
           dependentAxis
-          label="MAE"
+          label={metrics.toUpperCase()}
           style={{
             tickLabels: { fontSize: 6, padding: 1 },
             axisLabel: { fontSize: 6, padding: 20 },

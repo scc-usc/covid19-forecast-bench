@@ -135,8 +135,8 @@ class Evaluation extends Component {
       csvData: [],
       mainGraphData: {},
       rankingTableData: [],
-      metrics: "MAE",
-      metricsList: ["MAE", "MAPE (coming soon)", "RMSE (coming soon)"],
+      metrics: "mae",
+      metricsList: ["mae", "mape"],
       forecastType: "state_death_eval",
       timeSpan: "avg",
       maxDateRange: [],
@@ -164,9 +164,9 @@ class Evaluation extends Component {
     let url =
       "https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/US-COVID/state_death_eval/mae_avg_states.csv";
     if (this.state.timeSpan == "avg") {
-      url = `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/${this.state.scope}/${this.state.forecastType}/mae_avg_${this.state.region}.csv`;
+      url = `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/${this.state.scope}/${this.state.forecastType}/${this.state.metrics}_avg_${this.state.region}.csv`;
     } else {
-      url = `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/${this.state.scope}/${this.state.forecastType}/mae_${this.state.timeSpan}_weeks_ahead_${this.state.region}.csv`;
+      url = `https://raw.githubusercontent.com/scc-usc/covid19-forecast-bench/master/evaluation/${this.state.scope}/${this.state.forecastType}/${this.state.metrics}_${this.state.timeSpan}_weeks_ahead_${this.state.region}.csv`;
     }
     return url;
   };
@@ -240,7 +240,7 @@ class Evaluation extends Component {
           if (col === "") {
             method.id = csvRow[col];
           } else {
-            const val = parseInt(csvRow[col]);
+            const val = parseFloat(csvRow[col]);
             if (!isNaN(val)) {
               allNaN = false;
             }
@@ -276,16 +276,19 @@ class Evaluation extends Component {
     const selectedDateRange = this.state.selectedDateRange;
     const maxDateRange = this.state.maxDateRange;
     // First filter out the covid hub baseline MAE average.
-    let baselineAverageMAE;
+    let baseline;
     if (this.state.scope === "US-COVID") {
-      baselineAverageMAE = this.state.csvData.filter(
+      baseline = this.state.csvData.filter(
         method => method.id === "FH_COVIDhub_baseline"
       )[0];
     } else {
-      baselineAverageMAE = this.state.csvData.filter(
+      baseline = this.state.csvData.filter(
         method => method.id === "EUFH_LANL_GrowthRate"
       )[0];
     }
+
+    let baselineAverageError = 0;
+    baselineAverageError = baseline.data[baseline.data.length - 1].y;
 
     const rankingTableData = this.state.csvData
       .map(method => {
@@ -294,8 +297,8 @@ class Evaluation extends Component {
           ? "ML/AI"
           : "Human-Expert";
         let forecastCount = 0;
-        let MAE_Sum = 0;
-        let relativeMAE_Sum = 0; // Sum of method_MAE/baseline_MAE
+        let ErrorSum = 0;
+        let relativeErrorSum = 0; // Sum of method_MAE/baseline_MAE
         let fromSelectedStartDate = false;
         let upToSelectedEndDate = false;
         let updating = false;
@@ -303,11 +306,10 @@ class Evaluation extends Component {
           if (
             !isNaN(dp.y) &&
             dp.x >= selectedDateRange[0] &&
-            dp.x <= selectedDateRange[1] &&
-            baselineAverageMAE.data[idx].y
+            dp.x <= selectedDateRange[1]
           ) {
-            MAE_Sum += dp.y;
-            relativeMAE_Sum += dp.y / baselineAverageMAE.data[idx].y;
+            ErrorSum += dp.y;
+            relativeErrorSum += dp.y / baselineAverageError;
             forecastCount++;
           }
           if (!isNaN(dp.y) && dp.x == selectedDateRange[0]) {
@@ -324,18 +326,18 @@ class Evaluation extends Component {
           return null;
         }
         const fitWithinDateRange = fromSelectedStartDate && upToSelectedEndDate;
-        const averageMAE = (MAE_Sum / forecastCount).toFixed(2);
-        let relativeMAE = relativeMAE_Sum / forecastCount;
-        // Baseline model is the benchmark of relative MAE.
+        const averageError = (ErrorSum / forecastCount).toFixed(2);
+        let relativeError = relativeErrorSum / forecastCount;
+        // Baseline model is the benchmark of relative MAE/MAPE.
         if (method.id === "FH_COVIDhub_baseline") {
-          relativeMAE = 1;
+          relativeError = 1;
         }
-        relativeMAE = relativeMAE.toFixed(3);
+        relativeError = relativeError.toFixed(3);
         return {
           methodName,
           methodType,
-          averageMAE,
-          relativeMAE,
+          averageError,
+          relativeError,
           forecastCount,
           fitWithinDateRange,
           updating,
@@ -611,6 +613,26 @@ class Evaluation extends Component {
     );
   };
 
+  handleMetricsChange = metrics => {
+    this.setState(
+      {
+        metrics: metrics,
+      },
+      () => {
+        Papa.parse(this.getUrl(), {
+          download: true,
+          worker: true,
+          header: true,
+          skipEmptyLines: true,
+          complete: result => {
+            this.updateData(result, this.generateRanking);
+            console.log(this.state.csvData);
+          },
+        });
+      }
+    );
+  };
+
   render() {
     const {
       scope,
@@ -740,14 +762,14 @@ class Evaluation extends Component {
                       {methodOptions}
                     </Select>
                   </Form.Item>
-                  {/* TODO: The metrics options have not been implemented. */}
                   <Form.Item label="Metrics" name="metrics">
-                    <Select showSearch defaultValue="MAE">
-                      {metricsList.map((m, idx) => (
-                        <Option value={m} key={idx}>
-                          {m}
-                        </Option>
-                      ))}
+                    <Select
+                      showSearch
+                      defaultValue="mae"
+                      onChange={this.handleMetricsChange}
+                    >
+                      <Option value="mae">MAE</Option>
+                      <Option value="mape">MAPE</Option>
                     </Select>
                   </Form.Item>
 
@@ -798,6 +820,7 @@ class Evaluation extends Component {
               <RankingTable
                 data={rankingTableData}
                 addMethod={this.addMethod}
+                metrics={metrics}
               />
             </div>
           </Row>

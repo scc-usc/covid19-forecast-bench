@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Table, Tag } from "antd";
 
 const rankingTable = props => {
-  const { data, addMethod } = props;
+  const { data, addMethod, metrics } = props;
 
   const columns = [
     {
@@ -44,16 +44,16 @@ const rankingTable = props => {
       },
     },
     {
-      title: "Relative MAE",
-      dataIndex: "relativeMAE",
-      sorter: (a, b) => a.relativeMAE - b.relativeMAE,
+      title: `Relative ${metrics.toUpperCase()}`,
+      dataIndex: "relativeError",
+      sorter: (a, b) => a.relativeError - b.relativeError,
       defaultSortOrder: "ascend",
       sortDirections: ["ascend", "descend"],
     },
     {
-      title: "MAE",
-      dataIndex: "averageMAE",
-      sorter: (a, b) => a.averageMAE - b.averageMAE,
+      title: metrics.toUpperCase(),
+      dataIndex: "averageError",
+      sorter: (a, b) => a.averageError - b.averageError,
       sortDirections: ["ascend", "descend"],
     },
     {

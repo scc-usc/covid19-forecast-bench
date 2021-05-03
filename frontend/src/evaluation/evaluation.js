@@ -328,10 +328,6 @@ class Evaluation extends Component {
         const fitWithinDateRange = fromSelectedStartDate && upToSelectedEndDate;
         const averageError = (ErrorSum / forecastCount).toFixed(2);
         let relativeError = relativeErrorSum / forecastCount;
-        // Baseline model is the benchmark of relative MAE/MAPE.
-        if (method.id === "FH_COVIDhub_baseline") {
-          relativeError = 1;
-        }
         relativeError = relativeError.toFixed(3);
         return {
           methodName,

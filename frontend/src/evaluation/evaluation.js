@@ -287,9 +287,6 @@ class Evaluation extends Component {
       )[0];
     }
 
-    let baselineAverageError = 0;
-    baselineAverageError = baseline.data[baseline.data.length - 1].y;
-
     const rankingTableData = this.state.csvData
       .map(method => {
         const methodName = method.id;
@@ -303,14 +300,17 @@ class Evaluation extends Component {
         let upToSelectedEndDate = false;
         let updating = false;
         method.data.forEach((dp, idx) => {
+          const baselineAverageError = baseline.data[idx].y;
           if (
             !isNaN(dp.y) &&
             dp.x >= selectedDateRange[0] &&
             dp.x <= selectedDateRange[1]
           ) {
             ErrorSum += dp.y;
-            relativeErrorSum += dp.y / baselineAverageError;
             forecastCount++;
+            if (baselineAverageError) {
+              relativeErrorSum += dp.y / baselineAverageError;
+            }
           }
           if (!isNaN(dp.y) && dp.x == selectedDateRange[0]) {
             fromSelectedStartDate = true;
@@ -328,6 +328,10 @@ class Evaluation extends Component {
         const fitWithinDateRange = fromSelectedStartDate && upToSelectedEndDate;
         const averageError = (ErrorSum / forecastCount).toFixed(2);
         let relativeError = relativeErrorSum / forecastCount;
+        // Baseline model is the benchmark of relative MAE/MAPE.
+        if (method.id === "FH_COVIDhub_baseline") {
+          relativeError = 1;
+        }
         relativeError = relativeError.toFixed(3);
         return {
           methodName,

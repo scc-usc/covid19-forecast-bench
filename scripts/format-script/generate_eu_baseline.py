@@ -40,7 +40,7 @@ EU_REGIONS = [
 
 DAY_ZERO = datetime.datetime(2020, 1, 22)
 
-def generate_baseline(pred_date, pred_type, output_dir):
+def generate_eu_baseline(pred_date, pred_type, output_dir):
     filename = "baseline_{}.csv".format((pred_date - DAY_ZERO).days)
     last_week = pred_date - datetime.timedelta(days=7)
     jhu_df = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_{}_global.csv"

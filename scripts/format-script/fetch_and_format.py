@@ -6,7 +6,7 @@ from generate_eu_baseline import generate_eu_baseline
 TIME_SPAN = 7
 TODAY = datetime.datetime.combine(datetime.date.today(), datetime.datetime.min.time())
 last_sunday = TODAY
-while last_sunday.weekday() != 5:
+while last_sunday.weekday() != 6:
     last_sunday -= datetime.timedelta(days=1)
 
 def merge(src, dst):

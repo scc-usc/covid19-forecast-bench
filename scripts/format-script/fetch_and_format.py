@@ -1,9 +1,13 @@
 import os
 import datetime
 import shutil
+from generate_eu_baseline import generate_eu_baseline
 
 TIME_SPAN = 7
-TODAY = datetime.datetime.now()
+TODAY = datetime.datetime.combine(datetime.date.today(), datetime.datetime.min.time())
+last_sunday = TODAY
+while last_sunday.weekday() != 5:
+    last_sunday -= datetime.timedelta(days=1)
 
 def merge(src, dst):
     if os.path.isdir(src) and os.path.isdir(dst):
@@ -179,6 +183,9 @@ for csv in os.listdir("./input/"):
 print("Fetch EU Death Forecasts:")
 exec(open("./fetch_forecasts_eu_death.py").read())
 os.system("./add_EUFH_prefix.sh")
+# Generate baseline prediction from past week inc.
+os.mkdir("./output/baseline/")
+generate_eu_baseline(last_sunday, "deaths", "./output/baseline/")
 for model in os.listdir("./output/"):
     if (os.path.isdir("./output/"+model+'/')):
         merge("./output/"+model+'/', "../../formatted-forecasts/EU-COVID/eu-death/"+model+'/')
@@ -187,6 +194,9 @@ for model in os.listdir("./output/"):
 print("Fetch EU Case Forecasts:")
 exec(open("./fetch_forecasts_eu_case.py").read())
 os.system("./add_EUFH_prefix.sh")
+# Generate baseline prediction from past week inc.
+os.mkdir("./output/baseline/")
+generate_eu_baseline(last_sunday, "confirmed", "./output/baseline/")
 for model in os.listdir("./output/"):
     if (os.path.isdir("./output/"+model+'/')):
         merge("./output/"+model+'/', "../../formatted-forecasts/EU-COVID/eu-case/"+model+'/')

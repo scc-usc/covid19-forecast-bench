@@ -283,7 +283,7 @@ class Evaluation extends Component {
       )[0];
     } else {
       baseline = this.state.csvData.filter(
-        method => method.id === "EUFH_LANL_GrowthRate"
+        method => method.id === "baseline"
       )[0];
     }
 

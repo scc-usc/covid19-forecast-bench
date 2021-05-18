@@ -2,7 +2,7 @@ import os
 import datetime
 import shutil
 
-TIME_SPAN = 9
+TIME_SPAN = 7
 TODAY = datetime.datetime.now()
 
 def merge(src, dst):

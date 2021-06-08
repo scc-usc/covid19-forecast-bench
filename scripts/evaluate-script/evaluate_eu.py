@@ -6,6 +6,7 @@ import threading
 
 
 DAY_ZERO = datetime.datetime(2020,1,22)
+TODAY = datetime.datetime.combine(datetime.date.today(), datetime.datetime.min.time())
 FORECASTS_NAMES = "forecasts_filenames.txt"
 MODEL_NAMES = "models.txt"
 EU_INC_DEATH_URL = "https://raw.githubusercontent.com/epiforecasts/covid19-forecast-hub-europe/main/data-truth/JHU/truth_JHU-Incident%20Deaths.csv"
@@ -34,6 +35,8 @@ def get_inc_truth(url):
         date_str = row["date"]
         val = int(row["value"])
         next_sat = find_next_sat(date_str)
+        if next_sat > datetime_to_str(TODAY):
+            return
         if location not in dataset:
             dataset[location] = {}
         if next_sat not in dataset[location]:

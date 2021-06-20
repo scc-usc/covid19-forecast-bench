@@ -1,8 +1,8 @@
 # Instructions to Add New Metrics on Covid Bench
 
-To add new metrics to the covid bench, you need to add evaluation files to the `evaluation` folder, and then edit some frontend code so that the new metrics could be shown on our web app.
+To add new metrics to the covid bench, you need to add evaluation files under the `evaluation` folder, and then edit some frontend code so that the new metrics could be shown on our web app.
 
-Because we no longer have any backend databases for the covid bench web page. Instead, we pre-calculate the performance of each method and store the method performance in csv files, which I will refer as "evaluation files". The basic workflow of the web app is that the frontend downloads the evaluation file from the GitHub repository, and then it will generate the visualization.
+We no longer have any backend databases for the covid bench web page. Instead, we pre-calculate the performance of each method and store the method performance in csv files, which I will refer as "evaluation files". The basic workflow of the web app is that the frontend downloads the evaluation file from the GitHub repository, and based on that the frontend will generate the visualization.
 
 ## Add New Evaluation Files
 All new evaluation files should be added to the `evaluation` folder, under `EU-COVID` or `US-COVID`, and then under `eu/state_case/death_eval` folder based on the forecasting type and regions.
@@ -10,7 +10,7 @@ All new evaluation files should be added to the `evaluation` folder, under `EU-C
 ### File Naming
 The evaluation file is generally named as `<metric>_<forecast target week>_<region>.csv`. For example, `state_case_eval/mae_1_weeks_ahead_Alabama.csv` is the MAEs of methods forecasting Alabama incident cases 1 week ahead of its forecast date; `state_death_eval/mape_4_weeks_ahead_Michigan.csv` is the MAPEs of methods forecasting Michigan incident deaths 4 week ahead of its forecast date.
 
-Please note that `<forecast target week>` can be `1_week_ahead`, `2_week_ahead`, `3_week ahead`, `4_week_ahead`, or `avg`. The evalaution of methods' average performance throughout 4 weeks is named with `avg`.
+Please note that `<forecast target week>` can be `1_week_ahead`, `2_week_ahead`, `3_week ahead`, `4_week_ahead`, or `avg`. The evalaution of methods' average performance throughout 4 weeks is tagged with `avg`.
 
 Please also note that besides evaluation for each US states, you may also need to add an evaluation file for the entire United States, and suffix that evaluation file with `_states.csv`. For example, `mape_avg_states.csv` is the average 4-week performance of methods forecasting United States. For EU evaluations, we suffix evaulations of entire Europe with `_EU.csv`.
 

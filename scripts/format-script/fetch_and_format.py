@@ -207,3 +207,4 @@ open("eu_death.txt", 'w').close()
 open("eu_case.txt", 'w').close()
 for csv in os.listdir("./input/"):
     os.remove("./input/"+csv)
+
